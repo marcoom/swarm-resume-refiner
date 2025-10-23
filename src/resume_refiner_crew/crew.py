@@ -21,22 +21,9 @@ class ResumeRefinerCrew():
         self.resume_pdf = PDFKnowledgeSource(file_paths="CV.pdf") # TODO get from input
         self.job_description_txt = TextFileKnowledgeSource(file_paths=["job_description.txt"])
 
-        # Configure LLM from environment variables for Ollama
-        model = os.getenv("MODEL", "llama3.1:latest")
-        api_base = os.getenv("API_BASE", "http://localhost:11434")
-        self.llm = LLM(
-            model=f"ollama/{model}",
-            base_url=api_base
-        )
-
-        # Configure embedder to use Ollama
-        self.embedder = {
-            "provider": "ollama",
-            "config": {
-                "model_name": "nomic-embed-text:latest",
-                "url": f"{api_base}/api/embeddings"
-            }
-        }
+        # Configure LLM from environment variables for OpenAI
+        model = os.getenv("OPENAI_MODEL", "gpt-5-mini")
+        self.llm = LLM(model=model)
 
     @agent
     def resume_analyzer(self) -> Agent:
@@ -108,6 +95,5 @@ class ResumeRefinerCrew():
             agents=self.agents,
             tasks=self.tasks,
             verbose=True,
-            process=Process.sequential,
-            embedder=self.embedder
+            process=Process.sequential
         )

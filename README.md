@@ -20,7 +20,17 @@ crewai install
 ```
 ### Customizing
 
-**Add your `OPENAI_API_KEY` into the `.env` file**
+**Add your `OPENAI_API_KEY` into the `.env` file (REQUIRED)**
+
+This project uses OpenAI's API. You must set your OpenAI API key in the `.env` file:
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+Optionally, you can customize the model (default is `gpt-5-mini`):
+```bash
+OPENAI_MODEL=gpt-5-mini
+```
 
 - Modify `src/resume_refiner_crew/config/agents.yaml` to define your agents
 - Modify `src/resume_refiner_crew/config/tasks.yaml` to define your tasks

@@ -1,0 +1,58 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Crew - Main",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "resume_refiner_crew.main",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
+            "justMyCode": false,
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "name": "Debug Crew - Direct Run",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/resume_refiner_crew/main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
+            "justMyCode": false,
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "name": "Debug Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
+            "justMyCode": true,
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "name": "Debug with Args",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/resume_refiner_crew/main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "args": [],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
+            "justMyCode": false,
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
