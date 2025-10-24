@@ -16,7 +16,9 @@ def run():
     """
     Run the crew.
     """
-    inputs = {}
+    inputs = {
+        'TARGET_RESUME_WORDS': os.getenv("TARGET_RESUME_WORDS", "500")
+    }
 
     try:
         storage_dir = "./.crewai_temp"

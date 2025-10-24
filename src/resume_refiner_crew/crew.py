@@ -18,8 +18,8 @@ class ResumeRefinerCrew():
 
     def __init__(self) -> None:
         """Sample resume PDF for testing from https://www.hbs.edu/doctoral/Documents/job-market/CV_Mohan.pdf"""
-        self.resume_pdf = PDFKnowledgeSource(file_paths="CV.pdf") # TODO get from input
-        self.job_description_txt = TextFileKnowledgeSource(file_paths=["job_description.txt"])
+        self.resume = PDFKnowledgeSource(file_paths="CV.pdf") # TODO get from input
+        self.job_description = TextFileKnowledgeSource(file_paths=["job_description.txt"])
 
         # Configure LLM from environment variables for OpenAI
         model = os.getenv("OPENAI_MODEL", "gpt-5-mini")
@@ -39,7 +39,7 @@ class ResumeRefinerCrew():
             config=self.agents_config['job_analyzer'],
             verbose=True,
             llm=self.llm,
-            knowledge_sources=[self.job_description_txt]
+            knowledge_sources=[self.job_description]
         )
 
     @agent
@@ -84,18 +84,8 @@ class ResumeRefinerCrew():
 
     @task
     def generate_resume_task(self) -> Task:
-        # Get target word count from environment
-        target_words = os.getenv("TARGET_RESUME_WORDS", "500")
-
-        # Replace placeholder in task description
-        task_config = self.tasks_config['generate_resume_task'].copy()
-        task_config['description'] = task_config['description'].replace(
-            '{TARGET_RESUME_WORDS}',
-            target_words
-        )
-
         return Task(
-            config=task_config,
+            config=self.tasks_config['generate_resume_task'],
             output_file='output/optimized_resume.md'
         )
 
@@ -121,5 +111,5 @@ class ResumeRefinerCrew():
             verbose=True,
             process=Process.sequential,
             memory=False,
-            knowledge_sources=[self.resume_pdf]
+            knowledge_sources=[self.resume]
         )
