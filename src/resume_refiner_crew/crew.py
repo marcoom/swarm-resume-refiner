@@ -19,7 +19,6 @@ class ResumeRefinerCrew():
     def __init__(self) -> None:
         """Sample resume PDF for testing from https://www.hbs.edu/doctoral/Documents/job-market/CV_Mohan.pdf"""
         self.resume_pdf = PDFKnowledgeSource(file_paths="CV.pdf") # TODO get from input
-        #self.resume_fact_ckeck = PDFKnowledgeSource(file_paths="CV.pdf")
         self.job_description_txt = TextFileKnowledgeSource(file_paths=["job_description.txt"])
 
         # Configure LLM from environment variables for OpenAI
@@ -32,7 +31,6 @@ class ResumeRefinerCrew():
             config=self.agents_config['resume_analyzer'],
             verbose=True,
             llm=self.llm,
-            #knowledge_sources=[self.resume_pdf]
         )
 
     @agent
@@ -58,7 +56,6 @@ class ResumeRefinerCrew():
             config=self.agents_config['fact_checker'],
             verbose=True,
             llm=self.llm,
-            #knowledge_sources=[self.resume_fact_ckeck]
         )
 
     @agent
@@ -123,5 +120,6 @@ class ResumeRefinerCrew():
             tasks=self.tasks,
             verbose=True,
             process=Process.sequential,
+            memory=False,
             knowledge_sources=[self.resume_pdf]
         )

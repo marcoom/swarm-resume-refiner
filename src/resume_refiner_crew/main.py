@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import os
+import shutil
 import warnings
 
 from resume_refiner_crew.crew import ResumeRefinerCrew
@@ -17,8 +19,14 @@ def run():
     inputs = {}
 
     try:
-        ResumeRefinerCrew().crew().kickoff(inputs=inputs)
-        ResumeRefinerCrew().crew().reset_memories(command_type='all')
+        storage_dir = "./.crewai_temp"
+        if os.path.exists(storage_dir):
+            shutil.rmtree(storage_dir)
+        os.makedirs(storage_dir)
+        os.environ["CREWAI_STORAGE_DIR"] = storage_dir
+
+        crew = ResumeRefinerCrew().crew()
+        crew.kickoff(inputs=inputs)
     except Exception as e:
         raise Exception(f"An error occurred while running the crew: {e}")
     

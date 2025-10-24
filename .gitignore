@@ -210,5 +210,10 @@ __marimo__/
 CLAUDE.md
 .claude
 
+# System specific data
+knowledge/*
+output/*
+.crewai_temp/
+
 # Other
 similar_projects/
