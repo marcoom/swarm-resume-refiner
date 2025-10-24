@@ -1,0 +1,42 @@
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\setlength{\parindent}{0pt}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage[left=1.06cm,top=1.7cm,right=1.06cm,bottom=0.49cm]{geometry}
+
+% Customize section formatting - make sections centered and bold
+\usepackage{titlesec}
+\titleformat{\section}{\centering\bfseries\normalsize}{\thesection}{0em}{}
+\titleformat{\subsection}{\centering\bfseries\normalsize}{\thesubsection}{0em}{}
+\titleformat{\subsubsection}{\bfseries\normalsize}{\thesubsubsection}{0em}{}
+
+% Reduce spacing around sections
+\titlespacing{\section}{0pt}{12pt}{6pt}
+\titlespacing{\subsection}{0pt}{12pt}{6pt}
+\titlespacing{\subsubsection}{0pt}{8pt}{4pt}
+
+% Tighten list spacing to match Harvard style
+\setlist[itemize]{noitemsep, topsep=0pt, partopsep=0pt, parsep=0pt, leftmargin=*}
+
+% Define tightlist command used by Pandoc for tight lists
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% Hyperref setup for links
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    pdfborder={0 0 0}
+}
+
+\begin{document}
+
+% Pandoc will inject the converted markdown content here
+$body$
+
+\end{document}
