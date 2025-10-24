@@ -5,7 +5,8 @@ from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
 from crewai.knowledge.source.text_file_knowledge_source import TextFileKnowledgeSource
 from .models import (
     JobRequirements,
-    ResumeOptimization
+    ResumeOptimization,
+    HarvardFormattedResume
 )
 
 
@@ -17,7 +18,7 @@ class ResumeRefinerCrew():
     tasks_config = 'config/tasks.yaml'
 
     def __init__(self) -> None:
-        """Sample resume PDF for testing from https://www.hbs.edu/doctoral/Documents/job-market/CV_Mohan.pdf"""
+        """Sample resume PDF for testing"""
         self.resume = PDFKnowledgeSource(file_paths="CV.pdf") # TODO get from input
         self.job_description = TextFileKnowledgeSource(file_paths=["job_description.txt"])
 
@@ -66,6 +67,14 @@ class ResumeRefinerCrew():
             llm=self.llm
         )
 
+    @agent
+    def harvard_formatter(self) -> Agent:
+        return Agent(
+            config=self.agents_config['harvard_formatter'],
+            verbose=True,
+            llm=self.llm
+        )
+
     @task
     def analyze_job_task(self) -> Task:
         return Task(
@@ -101,6 +110,14 @@ class ResumeRefinerCrew():
         return Task(
             config=self.tasks_config['generate_report_task'],
             output_file='output/final_report.md'
+        )
+
+    @task
+    def harvard_format_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['harvard_format_task'],
+            output_file='output/structured_resume.json',
+            output_pydantic=HarvardFormattedResume
         )
 
     @crew

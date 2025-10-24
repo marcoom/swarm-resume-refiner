@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import os
-import shutil
 import warnings
 import logging
 
 from resume_refiner_crew.crew import ResumeRefinerCrew
-from resume_refiner_crew.tools.pdf_generator import generate_resume_pdf
+from resume_refiner_crew.tools.latex_generator import generate_resume_pdf_from_json
+from resume_refiner_crew.utils import setup_clean_storage
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -27,36 +27,22 @@ def run():
     }
 
     try:
-        storage_dir = "./.crewai_temp"
-        if os.path.exists(storage_dir):
-            shutil.rmtree(storage_dir)
-        os.makedirs(storage_dir)
-        os.environ["CREWAI_STORAGE_DIR"] = storage_dir
+        setup_clean_storage()
 
         logger.info("Starting Resume Refiner Crew...")
         crew = ResumeRefinerCrew().crew()
         crew.kickoff(inputs=inputs)
 
-        logger.info("\n" + "="*60)
-        logger.info("Crew execution completed successfully!")
-        logger.info("="*60 + "\n")
-
-        # Generate PDF from the verified resume
-        logger.info("Generating PDF resume with Harvard template...")
-        pdf_path = generate_resume_pdf()
+        logger.info("Generating PDF resume with Harvard formatting from structured data...")
+        pdf_path = generate_resume_pdf_from_json()
 
         if pdf_path:
-            logger.info("\n" + "="*60)
             logger.info(f"✓ PDF Resume generated: {pdf_path}")
-            logger.info("="*60 + "\n")
         else:
-            logger.warning("\n" + "="*60)
-            logger.warning("PDF generation failed or skipped.")
-            logger.warning("Note: Ensure pypandoc and pdflatex are installed.")
-            logger.warning("="*60 + "\n")
+            logger.warning("PDF generation failed.")
 
     except Exception as e:
-        raise Exception(f"An error occurred while running the crew: {e}")
+        raise Exception(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     run()

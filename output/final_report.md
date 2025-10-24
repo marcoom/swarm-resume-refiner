@@ -1,234 +1,194 @@
-## Data Integration Overview
-- Data sources integrated
-  - Job analysis and scores (match_score, skill_details, strengths, gaps, scoring factors)
-  - Resume optimization details (profile header, experience structure, education emphasis, ATS keyword strategy)
-  - Final resume changes (consolidated actions to implement in the updated resume)
+## Executive Summary 🚀
 
-- Quick benchmarking numbers
-  - Overall match score: 0.85
-  - Technical skills match: 0.90
-  - Soft skills match: 0.85
-  - Experience match: 0.88
-  - Education match: 0.90
-  - Industry match: 0.50
-  - Notable strengths: hands-on CV/DL in production environments, end-to-end CV systems and data pipelines, cloud/DevOps tooling, cross-functional collaboration
-  - Notable gaps: cosmetic/defect-grading domain experience not demonstrated on resume; cosmetics manufacturing domain knowledge not clearly shown
-
-- Resume optimization details (what was targeted)
-  - Profile/Summary rewritten to be concise, ATS-friendly, and role-aligned
-  - Experience bullets standardized for readability, tense consistency, and measurable outcomes
-  - Education and certifications aligned to highlight ML/Data Science focus
-  - Skills highlighted to match high-importance keywords (CV, ETL, AWS, GCP, Airflow, CI/CD, Docker, Kubernetes, Edge computing, IoT)
-  - ATS keyword enrichment using a curated keyword list and domain-relevant terms (cosmetic grading, manufacturing, quality inspection)
-
-- Final resume changes (highlights)
-  - Header/Profile updated with a strong, keyword-rich summary tailored to a Senior Computer Vision Engineer role
-  - Location signaling updated to Palo Alto, CA with relocation note
-  - Reworked Experience section to emphasize outcomes, multi-object detection/tracking, edge computing, IoT integration, real-time dashboards, and production deployment
-  - Education section reorganized to foreground ML/Data Science focus and relevant specialization
-  - Skills section expanded to include IoT, remote sensing, GIS, ETL, Airflow, CI/CD, and cloud platforms
-  - ATS-oriented keyword mapping aligned with the job description and industry terms
-
----
-
-## Executive Summary
-- Overall snapshot
-  - Strong match for a Senior Computer Vision Engineer focused on grading/quality inspection in industrial settings. Production-grade CV systems, end-to-end data pipelines, and cloud/DevOps experience position the candidate well for implementation in manufacturing or logistics contexts. ATS-optimized content increases visibility for both human readers and applicant tracking systems.
-
-- Quick wins (high impact, easy wins)
-  - Add a concise Profile Summary that contains ATS keywords and a clear senior-level framing
-  - Reformat Experience bullets to highlight outcomes, timelines, and specific technologies (multi-object detection, edge computing, IoT, real-time dashboards)
-  - Emphasize ML/Data Science coursework and ML specialization to reinforce the education fit
-  - Integrate cosmetics/manufacturing domain keywords (cosmetic grading, quality inspection, defect detection) to close industry gap
-
+- Overall match score: **77.69%** (0.77685) — strong technical and soft-skill fit; largest gaps are domain (financial/stock forecasting) and explicit Prophet experience.
+- Quick wins (0–2 weeks)
+  - Add a concise 2–3 sentence Professional Summary that targets "Time-Series Forecasting", "Prophet", "backtesting", and "model deployment".
+  - Publish a short reproducible Prophet + backtesting notebook on GitHub and link it in Projects.
+  - Reorder Skills into targeted categories and surface keywords (Prophet, backtesting, rolling-window validation, FastAPI, Grafana).
 - Key strengths
-  - Hands-on CV and DL experience in production environments
-  - End-to-end design, deployment, and maintenance of CV systems
-  - Proficiency with AWS, Docker, Kubernetes, and CI/CD
-  - Strong cross-functional collaboration and communication skills
-
-- Improvement areas (gaps to close)
-  - Direct cosmetic/defect-grading domain experience not explicitly shown on the resume
-  - Cosmetics manufacturing/quality standards knowledge should be demonstrated or paralleled with manufacturing/visual inspection experience
-
-- Action items priority (Top 5)
-  1. Implement Profile Summary revision with ATS keywords and senior framing
-  2. Rework Experience bullets for clarity, outcomes, and consistent tense
-  3. Align Education with ML/Data Science emphasis (certifications and specialization)
-  4. Expand Skills section to explicitly include cosmetics/quality-inspection terms
-  5. Add a short "Cosmetic grading / quality inspection domain" narrative or project note if applicable
+  - High technical competency in Python, ML, productionization and MLOps (Docker, CI/CD, FastAPI).
+  - Strong soft skills: stakeholder communication, product ownership, cross-functional leadership (soft_skills_match = 0.90).
+  - Demonstrated applied time-series projects (energy forecasting, satellite temporal analysis) and production experience.
+- Main improvement areas
+  - No explicit Prophet / NeuralProphet experience (match_level 0.2).
+  - Little to no direct financial/stock forecasting experience (industry_match 0.20; stock market match_level 0.1).
+  - Need clear, visible backtesting/financial model validation evidence in resume/portfolio.
+- Action items (priority)
+  1. Create and publish a Prophet + XGBoost/LSTM POC with rolling-window backtesting and evaluation (HIGH).
+  2. Add targeted Professional Summary and Projects section with direct GitHub links (HIGH).
+  3. Reformat Skills into grouped categories and add specific keywords for ATS (MEDIUM).
+  4. Prepare a one-page technical note explaining monitoring/backtesting approach and productionization (MEDIUM).
+  5. Undertake targeted financial time-series learning / course and add certificate (LOW–MEDIUM).
 
 ---
 
-## Job Fit Analysis
+## Job Fit Analysis 🔍
 
-### Detailed Score Breakdown
-| Category | Score | Notes |
-|---|---:|---|
-| Overall Match | 0.85 | Strong alignment with CV/production systems and cross-functional collaboration |
-| Technical Skills | 0.90 | Excellent coverage: Python, PyTorch, TF/Keras, OpenCV, CV domains, AWS, ETL, CI/CD, Docker, Kubernetes, Edge |
-| Soft Skills | 0.85 | Leadership, stakeholder communication, cross-functional teamwork, storytelling |
-| Experience | 0.88 | 4+ years in CV, production systems, data pipelines; leadership in end-to-end projects |
-| Education | 0.90 | ML specialization and data science focus align well with role expectations |
-| Industry | 0.50 | Manufacturing/visual inspection domain familiarity present but cosmetics-specific domain not clearly shown |
+### Detailed score breakdown (components and weighted contributions)
 
-- Scoring factors and weights
-  - Technical importance: 0.35
-  - Soft importance: 0.20
-  - Experience importance: 0.25
-  - Education importance: 0.10
-  - Industry importance: 0.10
+| Component | Match Score | Weight | Weighted Contribution |
+|---|---:|---:|---:|
+| Technical skills | 0.781 | 0.35 | 0.2734 |
+| Soft skills | 0.900 | 0.20 | 0.1800 |
+| Experience | 0.850 | 0.25 | 0.2125 |
+| Education | 0.900 | 0.10 | 0.0900 |
+| Industry knowledge | 0.200 | 0.10 | 0.0200 |
+| **Overall** | **0.77685** | 1.00 | **0.77685** |
 
-### Skills Match Assessment
-| Skill | Required | Match Level | Years Experience | Context Score |
-|---|---:|---:|---:|---:|
-| Python | true | 1.0 | 5.0 | 0.90 |
-| PyTorch | true | 1.0 | 4.5 | 0.90 |
-| TensorFlow / Keras | true | 1.0 | 4.5 | 0.90 |
-| OpenCV | true | 0.9 | 3.5 | 0.90 |
-| Image Classification | true | 1.0 | 4.5 | 0.90 |
-| Image Segmentation | true | 0.9 | 4.0 | 0.85 |
-| Object Detection | true | 1.0 | 4.0 | 0.90 |
-| AWS | true | 0.9 | 3.5 | 0.85 |
-| Data Pipelines / ETL | true | 0.9 | 3.5 | 0.85 |
-| CI/CD (GitHub Actions) | true | 0.8 | 2.5 | 0.75 |
-| Docker | true | 0.85 | 3.0 | 0.75 |
-| Kubernetes | true | 0.8 | 2.5 | 0.70 |
-| Edge Computing | true | 0.8 | 2.5 | 0.75 |
+Interpretation: Technical, experience and soft-skill components are strengths; industry/domain knowledge (financial markets) is the dominant negative factor.
 
-- Strengths (from match data)
-  - Strong hands-on CV and DL experience across production environments
-  - Proven ability to lead end-to-end CV systems and data pipelines
-  - Experience with AWS, Docker, Kubernetes, and CI/CD
-  - Cross-functional collaboration and stakeholder communication
+### Skills match assessment ✅ / ⚠️
 
+- Strong matches
+  - Python (NumPy, Pandas, Scikit-learn): match_level 1.0 — core competency for role.
+  - Machine Learning (general): match_level 0.95 — robust modeling experience.
+  - Model deployment / productionization (APIs, Docker, CI/CD): match_level 0.90 — production readiness.
+- Partial matches / actionable gaps
+  - Time-series forecasting: match_level 0.8 (years_experience 2.5) — solid but less focused on finance.
+  - Prophet (Facebook Prophet / NeuralProphet): match_level 0.2 (years_experience 0.0) — needs explicit POC/experience.
+  - Stock market / financial forecasting: match_level 0.1 — domain-specific knowledge missing.
+- Full skill detail table
+
+| Skill | Required | Match Level | Years Exp | Notes / Action |
+|---|:---:|---:|---:|---|
+| Python | Yes | 1.0 | 6.0 | Keep examples of production code and tests in portfolio. |
+| Time-series forecasting | Yes | 0.8 | 2.5 | Highlight temporal feature engineering & backtesting in projects. |
+| Prophet / NeuralProphet | Yes | 0.2 | 0.0 | Create a one-off POC to lift this to >0.8 quickly. |
+| Machine Learning (general) | Yes | 0.95 | 4.0 | Strong — showcase model comparison experiments. |
+| Stock market forecasting | Yes | 0.1 | 0.0 | Complete 1–2 finance-focused projects to improve alignment. |
+| Model deployment | Yes | 0.9 | 3.0 | Already strong — document CI/CD and API endpoints explicitly. |
+
+### Experience alignment — how responsibilities map to candidate experience
+
+- Matches
+  - Developing and validating forecasting models: existing energy and satellite forecasting projects demonstrate method and validation knowledge.
+  - Feature engineering for temporal data: explicit experience in multi-spectral temporal pipelines (crop detection).
+  - Model deployment and reproducible pipelines: demonstrated Docker, FastAPI, CI/CD, Airflow usage and production rollouts.
+  - Cross-functional collaboration: Product Owner experience and stakeholder presentations (SABIA-Mar MCDR).
 - Gaps to address
-  - Direct cosmetics/defect-grading domain experience not demonstrated on resume
-  - Cosmetics manufacturing domain knowledge not clearly shown
-
-### Experience Alignment
-- Key responsibilities alignment
-  - Design, train, and deploy deep learning models for fine-grained visual inspection and defect detection → aligns with Python, PyTorch, TF/Keras, OpenCV, Object Detection, Image Segmentation
-  - Apply image analysis techniques (segmentation, feature extraction, contrast enhancement) → aligns with CV skill set above
-  - Develop cosmetic grading models to classify surface conditions and assign quality grades → gap to address with explicit cosmetics domain mention or projects
-  - Address inconsistencies in human annotations via labeling strategies and human-in-the-loop feedback → leverage data annotation/acquisition processes and ETL
-  - Architect and manage image data pipelines from acquisition to annotation and model training → aligns with Data Pipelines/ETL, Airflow (present in tools)
-  - Collaborate with software engineers, QA, and hardware support to productionize models → aligns with cross-functional collaboration strengths
-
-- Industry familiarity
-  - Strength: visual inspection, defect detection, manufacturing/logistics exposure
-  - Gap: cosmetics-specific domain knowledge; recommended to weave cosmetics-grade language into the Experience and Projects sections
+  - Direct application to stock price forecasting, model risk/compliance and regulatory considerations.
+  - Explicit backtesting frameworks for financial forecasting; need to show rolling-window validation and drift detection for price series.
 
 ---
 
-## Optimization Overview
+## Optimization Overview ✍️
 
-### Key Resume Improvements
-- Profile/Summary
-  - Added a concise, ATS-friendly header that foregrounds senior CV expertise, end-to-end project leadership, and cross-functional impact
-- Experience section
-  - Rewritten bullets for clarity, consistency, and impact
-  - Segmented long bullets into single-outcome lines; used past-tense for consistency
-  - Emphasized measurable outcomes and real-time dashboards, edge computing, and IoT integration
-- Education & Certifications
-  - Highlighted ML/Data Science focus and specialization
-  - Consolidated to improve ATS readability
-- Skills and keywords
-  - Expanded to include IoT, remote sensing imagery, GIS, ETL, Airflow, CI/CD, GitHub Actions, Docker, Kubernetes, Edge computing
-  - Integrated a robust set of ATS keywords from the provided list
-- Domain alignment
-  - Introduced cosmetics/quality-inspection terminology and related manufacturing language to better align with the target role
+### Key resume improvements implemented / recommended
 
-### ATS Optimization Results
-- Keyword strategy
-  - Implemented a comprehensive list (e.g., computer vision, image classification, image segmentation, object detection, production-control system, data pipelines, ETL, AWS, GCP, Azure, Airflow, CI/CD, GitHub Actions, Docker, Kubernetes, Edge computing, IoT, real-time dashboards, multi-object tracking, remote sensing imagery, GIS, industrial, manufacturing, quality inspection, defect detection, cosmetic grading)
-- Resume readability
-  - Shorter bullets per line, consistent tense, and action-oriented verbs to improve parsing and readability
-- Domain signaling
-  - Added cosmetics/quality-inspection language to bridge the industry gap without claiming unverified domain experience
+- Professional Summary added (2–3 sentences)
+  - Emphasize: "4+ years applied ML, time-series forecasting specialist, productionization (Docker, CI/CD, FastAPI), available to provide Prophet + backtesting notebooks."
+- Skills section restructured into grouped categories
+  - Example groups: Time-series & Forecasting; Modeling & Deep Learning; MLOps & Deployment; Data Engineering & ETL; Monitoring & Visualization.
+- Projects section (Selected Projects) added with direct GitHub links
+  - Priority projects to include:
+    - Time-series energy forecasting (methods, metrics, repo link).
+    - Crop detection: temporal feature engineering pipeline (repo link).
+    - Stock forecasting POC: Prophet + XGBoost + rolling-window backtesting (new — repo link).
+- Experience bullets rewritten to surface forecasting, validation, deployment and monitoring
+  - Inline tech stack per bullet (Python, Docker, FastAPI, GitHub Actions, Airflow, Grafana).
+- Achievements made concise and measurable
+  - "Implemented 20+ Python improvements to SABIA-Mar L0 processor within 3 months, improving system reliability and data availability."
+  - "Winner, Datathon Río Cuarto 2024 — led ETL and model improvements for LLM-based chatbot."
 
-### Impact Metrics (Projected)
-- Improved alignment with role-specific keywords by 25–35% based on keyword density and section placement
-- Enhanced scannability and readability, increasing targeted recruiter screening likelihood
-- Strengthened evidence of end-to-end ownership, from data pipelines to production CV systems
+### ATS optimization results (estimated impact)
 
----
+- Current baseline: overall_match ≈ 77.7%; technical component ≈ 78.1%.
+- With recommended changes (Professional Summary with keywords, Projects with Prophet POC, Skills grouped and keyworded): estimated ATS keyword hit and recruiter relevance could increase by ~8–12 percentage points for job-match metrics, potentially moving the overall match into the mid-to-high 80s (estimate).
+- Rationale: adding explicit "Prophet", "stock forecasting", "backtesting", and structured project links directly addresses high-weighted job keywords and the biggest domain gap.
 
-## Next Steps
+### Impact metrics (what to expect after changes)
 
-### Prioritized Action Items
-1) Finalize Profile Summary
-- Use the proposed summary: “Senior Computer Vision Engineer with 4+ years of hands-on experience designing, deploying, and maintaining production-grade CV systems. Proven ability to lead end-to-end CV/data-pipeline projects in industrial settings, leveraging Python, PyTorch, OpenCV, and cloud/DevOps tools (AWS, Docker, Kubernetes, GitHub Actions). Adept at translating complex technical concepts for cross-functional teams and delivering measurable improvements in performance and efficiency.”
-
-2) Refine Experience bullets (readability and ATS compatibility)
-- Update key bullets to reflect outcomes and maintain consistent tense
-- Example improvements:
-  - Led end-to-end design, deployment, and maintenance of a computer-vision production-control system for an industrial plant, enabling multi-object detection and tracking, edge computing, IoT integration, and real-time dashboards for performance monitoring.
-  - Founded and launched the AI division; built in-house CV and Industry 4.0 capabilities, enabling new client engagements in computer vision solutions.
-  - Implemented 20+ improvements to the L0 processor for the SABIA-Mars satellite mission using Python, delivering client-required functionalities within a 3-month timeframe.
-
-3) Education and Certifications alignment
-- Emphasize ML/Data Science specialization and courses
-- Example: Machine Learning Specialization, Stanford Online (2025); University Diploma in Data Science, National University of Córdoba (2024)
-
-4) ATS keyword enrichment and domain signaling
-- Ensure cosmetics/quality-inspection terms are present in Experience or Projects
-- Expand Projects section with cosmetics/quality-inspection focused items (if applicable)
-
-5) Profile/Location and formatting
-- Update header with relocation note to Palo Alto, CA, USA (Open to relocation)
-- Standardize date formats and bullet lengths for ATS friendliness
-
-### Skill Development Plan (Next 3–6 Months)
-- Short-term (0–3 months)
-  - Deepen cosmetics/quality-inspection domain knowledge through targeted reading, case studies, or training
-  - Build a small, explicit cosmetics-grade CV project or case study (even if synthetic) to demonstrate domain-thinking
-  - Polish portfolio with remote sensing, GIS, and manufacturing-focused CV tasks
-
-- Mid-term (3–6 months)
-  - Gain practical COSMETIC/defect-grading exposure via a pilot project or collaboration
-  - Complete an advanced ML/AI specialization or certification focused on manufacturing or industrial AI
-
-- Continuous
-  - Maintain familiarity with Edge Computing and IoT integrations in CV pipelines
-  - Continue refining storytelling for technical and non-technical audiences
-
-### Application Strategy
-- Target roles with explicit manufacturing/quality inspection or cosmetic grading components
-- Prioritize Palo Alto, CA-based opportunities, with explicit relocation or hybrid options
-- Use the optimized resume with ATS-focused keywords, strong executive summary, and outcomes-driven Experience bullets
-- Prepare talking points that map to key responsibilities (e.g., end-to-end CV system design, data pipelines, production deployment, cross-functional collaboration)
-- Leverage cross-functional strengths in leadership, risk/ budget management, and KPI/OKR-driven decision making to position for senior roles
+- Short-term (after POC + resume update): improved recruiter callbacks for forecasting roles; stronger interview invitations from fintech and time-series teams.
+- Medium-term (after 1–2 finance POCs): demonstrable domain shift — industry_match expected to rise from 0.20 → 0.60+ depending on depth of POCs and domain narrative.
+- Long-term: moving from "generalist with forecasting experience" to "specialist in temporal forecasting with finance-capable production skills".
 
 ---
 
-Profile Summary (Proposed ATS-Ready Text)
-- Senior Computer Vision Engineer with 4+ years of hands-on experience designing, deploying, and maintaining production-grade CV systems. Proven ability to lead end-to-end CV/data-pipeline projects in industrial settings, leveraging Python, PyTorch, OpenCV, and cloud/DevOps tools (AWS, Docker, Kubernetes, GitHub Actions). Adept at translating complex technical concepts for cross-functional teams and delivering measurable improvements in performance and efficiency.
+## Next Steps ✅
 
-Experience (Sample optimized bullets)
-- Led end-to-end design, deployment, and maintenance of a computer-vision production-control system for an industrial plant, enabling multi-object detection and tracking, edge computing, IoT integration, and real-time dashboards for performance monitoring.
-- Founded and launched the AI division; built in-house CV and Industry 4.0 capabilities, enabling new client engagements in computer vision solutions.
-- Implemented 20+ improvements to the L0 processor for the SABIA-Mars satellite mission using Python, delivering client-required functionalities within a 3-month timeframe.
-- Developed a Python platform for automatic crop detection; achieved 80% accuracy using supervised classification on time-series multi-spectral satellite imagery.
+### Prioritized action items (owner = Candidate; timeline in parentheses)
 
-Skills (Key highlights)
-- Python, PyTorch, TensorFlow / Keras, OpenCV
-- Image Classification, Image Segmentation, Object Detection, Multi-object Tracking
-- Data Pipelines / ETL, Apache Airflow
-- AWS, GCP, CI/CD (GitHub Actions)
-- Docker, Kubernetes, Edge Computing
-- IoT protocols, Remote Sensing imagery, GIS
-- Real-time dashboards, Cross-functional leadership, Stakeholder communication
+High priority — immediate (0–2 weeks)
+1. Add a targeted Professional Summary / Title to the resume highlighting "Time-Series Forecasting Specialist" and key keywords. (0–1 day)
+2. Create and publish a reproducible Prophet + XGBoost/LSTM notebook on GitHub demonstrating:
+   - Data pull (e.g., Yahoo Finance), preprocessing, temporal feature engineering.
+   - Prophet model + at least one alternative (XGBoost or LSTM).
+   - Rolling-window backtesting and metrics (MAE, RMSE). (3–10 hours)
+3. Add a "Selected Projects" section with direct raw GitHub URLs including the new stock POC. (1 day)
 
-Education
-- Machine Learning Specialization, Stanford Online (2025)
-- University Diploma in Data Science, National University of Córdoba (2024)
-- Telecommunications Engineering, UNRC (GPA 8.71, 2013–2022)
+Medium priority — short term (2–6 weeks)
+4. Rework Experience bullets to include inline technology and validation language (FastAPI, Docker, GitHub Actions, Airflow, Grafana, backtesting). (3–7 days)
+5. Reformat Skills into grouped categories and include ATS keywords list (Prophet, backtesting, rolling-window validation, drift detection). (1–3 days)
+6. Prepare a one-page technical note describing monitoring/backtesting and productionization approach for interviews. (3–7 days)
 
-ATS Keywords (selected)
-computer vision, image classification, image segmentation, object detection, production-control system, data pipelines, ETL, AWS, GCP, Airflow, CI/CD, GitHub Actions, Docker, Kubernetes, Edge computing, IoT, real-time dashboards, multi-object tracking, remote sensing imagery, GIS, industrial, manufacturing, quality inspection, defect detection, cosmetic grading
+Lower priority — medium term (6–12 weeks)
+7. Complete a short course / certificate on financial time-series / quantitative finance (e.g., Coursera/QuantInsti) and add to resume. (4–12 weeks)
+8. Build/fork an open-source backtesting framework or dataset repo that demonstrates model risk practices for financial forecasting. (4–12 weeks)
 
-Final Notes
-- The updated resume should be tuned for Palo Alto/USA-based roles with relocation flexibility.
-- The optimization emphasizes production-grade CV systems, cross-functional leadership, and domain-relevant keywords to bridge the cosmetics domain gap.
-- If you’d like, I can draft the exact resume sections (Profile, Experience, Education, Skills) using the after-call content to provide a ready-to-paste version.
+Ongoing / long-term (3–6 months)
+9. Network with quant/forecasting teams; seek informational interviews and referrals. Prepare tailored cover letters highlighting POC and monitoring approach.
+10. Apply to 8–12 targeted roles per month: mid-senior forecasting/data science roles in fintech, trading firms, and product teams that accept cross-domain onboarding.
+
+### Skill development plan (concrete & measurable)
+
+- Week 0–2: Prophet POC (deliverable: GitHub notebook + README; metric: working notebook with metrics and backtesting).
+- Week 2–6: Financial time-series course + small LSTM/XGBoost experiments on stock data (deliverable: short report comparing models).
+- Week 6–12: Advanced monitoring/backtesting: implement drift detection, retraining trigger logic and Grafana dashboard demo (deliverable: demo video + repo).
+- Continuous: Weekly 2–4 hour practice on financial datasets (Kaggle, Yahoo Finance); update portfolio weekly.
+
+Suggested learning resources
+- Prophet docs & examples (official Facebook/Meta docs)
+- "Hands-On Time Series Analysis with Python" — targeted chapters on backtesting
+- Coursera: Financial Engineering / Time Series for Finance courses
+- Papers/tutorials on rolling-window cross-validation and model risk
+
+### Application strategy & interview prep 🎯
+
+- Tailor resume per application: put most relevant projects and keywords at the top for each job description.
+- Use the Prophet POC as a live artifact in applications and interviews; be ready to walk through code, assumptions, metrics and backtesting.
+- Prepare 2–3 talking points about productionization: API endpoints, containerization, CI/CD and monitoring (include specific examples from Ascentio).
+- Request a short technical assignment or offer to provide the Prophet POC notebook as evidence.
+- Interview story: emphasize how cross-domain time-series experience (energy, satellite) transfers to finance — focus on evaluation, feature engineering, and production concerns that are domain-agnostic.
+- Negotiation (preparation)
+  - Research market ranges for "Data Scientist — Time Series / Forecasting" at the target location and company stage.
+  - Lead with demonstrated value: production deployments + available reproducible POC; quantify impact where possible (reliability, time-to-deploy).
+  - If compensation is discussed, be ready to negotiate with evidence of deliverables (repo links, notebooks, presentation of MCDR/Datathon wins) and ask for time-bound growth/mentorship commitments if domain ramp-up needed.
+
+---
+
+## Resume & Portfolio Changes — Concrete Edits ✨
+
+Suggested text snippets to insert (copy-paste friendly)
+
+- Professional Summary (example)
+  - Data Scientist (4+ years applied ML) specializing in time-series forecasting and production ML. Experienced in Python (NumPy, Pandas), model deployment (Docker, CI/CD, FastAPI), and temporal feature engineering for energy and satellite data. Available to provide reproducible notebooks demonstrating Prophet and rolling-window backtesting on financial series.
+
+- Project entry (Stock forecasting POC)
+  - Stock forecasting POC — Prophet + XGBoost with rolling-window backtesting. Reproducible notebook with preprocessing, feature engineering, model comparison and evaluation (MAE, RMSE). GitHub: https://github.com/<username>/stock-prophet-poc
+
+- Experience bullet rewrite examples
+  - Implemented 20+ Python improvements to the SABIA-Mar L0 data processor within 3 months, improving system reliability and data product availability (Python, Git, CI/CD).
+  - Built a reproducible Python pipeline for supervised classification over multi-spectral temporal sequences; implemented temporal feature extraction and validation routines (temporal feature engineering, rolling-window validation, Docker).
+
+- Achievements (compact)
+  - Winner, Datathon Río Cuarto 2024 — led ETL and model improvements for an LLM-based chatbot (team of 4).
+  - Presenter, SABIA-Mar MCDR (2023) — presented L0 Processor systems to international stakeholders (NASA, CNES).
+
+---
+
+## Quick Checklist (first 14 days) ✅
+
+- [ ] Add targeted Professional Summary / Title to resume.
+- [ ] Create and publish Prophet + XGBoost/LSTM notebook with backtesting (GitHub).
+- [ ] Add Projects section with raw GitHub links (include POC).
+- [ ] Reformat Skills into grouped categories and insert ATS keywords.
+- [ ] Update 3–5 Experience bullets to include inline tech and validation language.
+- [ ] Prepare a 1-page technical note on monitoring/backtesting for interviews.
+
+---
+
+## Closing note (what success looks like) 🏁
+
+- Within 2 weeks: resume + portfolio updated and Prophet POC published.
+- Within 6–12 weeks: demonstrable financial forecasting examples and improved ATS relevance; expected increase in callbacks for forecasting-focused roles.
+- Within 3–6 months: shift perceived industry fit from satellite/IoT to "forecasting specialist with finance-capable production skills" — enabling interviews for mid-senior forecasting roles.

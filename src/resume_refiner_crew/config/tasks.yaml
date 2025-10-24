@@ -63,12 +63,13 @@ optimize_resume_task:
        - Evaluate section organization
        - Check formatting consistency
        - Assess information hierarchy
-       - Verify contact details
+       - Evaluate what sections or items in the resume are irrelevant or unrelated to the job description, and do not add any value from the point of view of the recuiter
 
     3. Generate Suggestions:
        - Content improvements with before/after examples that only rephrase verified details from the resume. Do not introduce new skills, metrics, or claims that are not present in the original resume.
        - Skills to highlight based on job match
        - Achievements to add or modify
+       - Sections or items to remove, since they are irrelevant for the role
        - ATS optimization recommendations
 
   expected_output: >
@@ -83,8 +84,8 @@ generate_resume_task:
     create a polished resume in markdown format.
     Do not add markdown code blocks like '```'.
 
-    IMPORTANT: Target approximately {TARGET_RESUME_WORDS} words for the resume content
-    (±10-15% flexibility). Prioritize quality and completeness while staying close to this target.
+    IMPORTANT: Target approximately {TARGET_RESUME_WORDS} words for the resume content. 
+    Prioritize quality and completeness while staying close to this target.
 
     1. Content Integration:
        - Incorporate optimization suggestions
@@ -98,17 +99,11 @@ generate_resume_task:
        - Create clear section hierarchy
        - Use bullet points effectively
 
-    3. Documentation:
-       - Track changes made
-       - Note preserved elements
-       - Explain optimization choices
-
   expected_output: >
     A beautifully formatted markdown resume document that:
     - Incorporates all optimization suggestions
     - Uses proper markdown formatting
     - Is ATS-friendly
-    - Documents all changes made
   agent: resume_writer
   context: [optimize_resume_task]
 
@@ -153,7 +148,8 @@ verify_resume_task:
 generate_report_task:
   description: >
     Create an executive summary report using data from previous steps.
-    Format in markdown without code blocks '```'.
+    Format in markdown without code blocks '```'. The output must be
+    ONLY the report in markdown format - no introductions, no conclusions, no commentary.
 
     1. Data Integration:
        - Job analysis and scores
@@ -192,3 +188,100 @@ generate_report_task:
     actionable, clear document with concrete next steps.
   agent: report_generator
   context: [analyze_job_task, optimize_resume_task]
+
+harvard_format_task:
+  description: >
+    **CRITICAL - DATA SOURCE PRIORITY:**
+    You have access to TWO sources of resume data:
+    1. The verified resume (from verify_resume_task context) ← **USE THIS ONE ONLY**
+    2. The original resume (from knowledge sources) ← **IGNORE THIS COMPLETELY**
+
+    YOU MUST USE **ONLY** THE VERIFIED RESUME from the task context (verify_resume_task).
+    DO NOT use, reference, or mix any content from the original resume knowledge source.
+    The original resume is available for other agents but you must IGNORE IT ENTIRELY.
+    If you find yourself accessing knowledge sources or the original PDF, STOP - you are
+    doing this task incorrectly. Use ONLY the verified_resume.md content from context.
+
+    Parse the verified markdown resume and structure it into Harvard format
+    with precise data extraction. Extract job title from the job analysis.
+
+    CRITICAL: This task is ONLY to reformat the content from the verified resume
+    into the required structured format. ALL information must be preserved - no
+    content should be lost or omitted. The output must contain the same content
+    as the input, just structured differently according to the HarvardFormattedResume
+    schema. Every section present in the verified resume must be captured in the
+    appropriate fields.
+
+    1. Extract Metadata:
+       - Candidate's full name from the first heading (# Name)
+       - Contact information line (email, LinkedIn, GitHub, location, etc.)
+       - Job title from the job_analysis context (job_title field)
+       - Summary/Objective: Extract from "## Summary" section if present in the
+         verified resume. If no summary section exists, set to null. Do not create
+         or infer a summary if it's not in the source document.
+
+    2. Parse Work Experience:
+       For each work experience entry, extract:
+       - Institution/Company name
+       - Location (City, State/Country or "Remote")
+       - Role(s) held (can be multiple if promoted)
+       - Start date (format: "Month YYYY" like "July 2022")
+       - End date (format: "Month YYYY" or "Present")
+       - List of achievements/responsibilities as bullet points
+       - Identify 3-5 keywords per experience that should be bolded for emphasis
+         (technical skills, tools, metrics, key achievements)
+
+    3. Parse Education:
+       For each education entry, extract:
+       - Institution name
+       - Location (or "Online" if remote)
+       - Degree/diploma title
+       - Start year (if available)
+       - End year (if available, can be same as start for single-year programs)
+       - Additional info like GPA, honors, thesis (if mentioned)
+
+    4. Parse Certifications:
+       For each certification, extract:
+       - Year obtained
+       - Certification/course name
+       - Provider/issuing organization
+       - Grade or level (if mentioned, e.g., "C2 Proficient", "Grade A")
+
+    5. Parse Additional Sections (with Mixed Content Support):
+       - Skills: organize by category (Technical Skills, Soft Skills, etc.)
+       - Languages, Projects, and Additional Sections: Use mixed content format
+
+       MIXED CONTENT FORMAT:
+       Each section (languages, projects, additional_sections) should be structured
+       as a LIST of content blocks, where each block is EITHER:
+         * A string (str): Represents a paragraph of text
+         * A list of strings (List[str]): Represents a bullet list
+
+       Example for a section with intro + bullets + outro:
+       [
+         "Intro paragraph text here",        # paragraph block
+         [                                    # bullet list block
+           "First bullet point",
+           "Second bullet point"
+         ],
+         "Outro paragraph text here"         # paragraph block
+       ]
+
+       Example for a simple list-only section:
+       [
+         [                                    # bullet list block
+           "Item 1",
+           "Item 2"
+         ]
+       ]
+
+       This preserves the original structure and prevents "double listing" issues.
+
+    CRITICAL: Ensure all dates, names, and facts match exactly what is in the
+    verified resume. Do not infer or add information not present in the source.
+
+  expected_output: >
+    Structured JSON data containing the resume in HarvardFormattedResume
+    format with all sections properly parsed and metadata extracted.
+  agent: harvard_formatter
+  context: [verify_resume_task]
