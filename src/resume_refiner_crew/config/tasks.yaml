@@ -66,7 +66,7 @@ optimize_resume_task:
        - Verify contact details
 
     3. Generate Suggestions:
-       - Content improvements with before/after examples
+       - Content improvements with before/after examples that only rephrase verified details from the resume. Do not introduce new skills, metrics, or claims that are not present in the original resume.
        - Skills to highlight based on job match
        - Achievements to add or modify
        - ATS optimization recommendations
@@ -79,9 +79,12 @@ optimize_resume_task:
 
 generate_resume_task:
   description: >
-    Using the optimization suggestions and job analysis from previous steps, 
+    Using the provided resume from knowledge sources, apply the optimization suggestions from previous steps, to
     create a polished resume in markdown format.
     Do not add markdown code blocks like '```'.
+
+    IMPORTANT: Target approximately {TARGET_RESUME_WORDS} words for the resume content
+    (±10-15% flexibility). Prioritize quality and completeness while staying close to this target.
 
     1. Content Integration:
        - Incorporate optimization suggestions
@@ -107,7 +110,45 @@ generate_resume_task:
     - Is ATS-friendly
     - Documents all changes made
   agent: resume_writer
-  context: [optimize_resume_task, analyze_job_task]
+  context: [optimize_resume_task]
+
+verify_resume_task:
+  description: >
+    Cross-reference the optimized resume against the original CV to ensure factual accuracy.
+    Remove any hallucinated, embellished, or unverifiable content.
+
+    CRITICAL OUTPUT REQUIREMENTS:
+    - Output ONLY the markdown resume content
+    - DO NOT include ANY introductory text (e.g., "Here is the resume:", "Below is the verified resume:")
+    - DO NOT include ANY concluding remarks (e.g., "This resume will...", "Good luck with...")
+    - DO NOT include ANY meta-commentary or explanations
+    - The output must start directly with the resume header/title
+    - The output must end with the last line of the resume content
+
+    1. Fact Verification Process:
+       - Compare every claim in the optimized resume against the original CV
+       - Verify job titles, dates, company names match exactly
+       - Confirm all skills listed appear in the original CV
+       - Validate all achievements and accomplishments are sourced from original
+       - Check education credentials, certifications, and qualifications
+
+    2. Content Removal Rules:
+       - Remove ANY content that cannot be directly verified in the original CV
+       - Delete embellished or exaggerated claims
+       - Eliminate hallucinated experiences, skills, or achievements
+       - Strip out inferred qualifications not explicitly stated in original
+
+    3. Preserve Original Facts:
+       - Keep all content that accurately reflects the original CV
+       - Maintain the formatting and structure from the optimized version
+       - Preserve keyword optimizations that are factually accurate
+
+  expected_output: >
+    Pure markdown resume content with absolute factual accuracy. The output must be
+    ONLY the resume in markdown format - no introductions, no conclusions, no commentary.
+    Every single claim must be verifiable against the original CV.
+  agent: fact_checker
+  context: [generate_resume_task]
 
 generate_report_task:
   description: >

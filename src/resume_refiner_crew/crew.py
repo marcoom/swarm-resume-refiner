@@ -19,6 +19,7 @@ class ResumeRefinerCrew():
     def __init__(self) -> None:
         """Sample resume PDF for testing from https://www.hbs.edu/doctoral/Documents/job-market/CV_Mohan.pdf"""
         self.resume_pdf = PDFKnowledgeSource(file_paths="CV.pdf") # TODO get from input
+        #self.resume_fact_ckeck = PDFKnowledgeSource(file_paths="CV.pdf")
         self.job_description_txt = TextFileKnowledgeSource(file_paths=["job_description.txt"])
 
         # Configure LLM from environment variables for OpenAI
@@ -31,7 +32,7 @@ class ResumeRefinerCrew():
             config=self.agents_config['resume_analyzer'],
             verbose=True,
             llm=self.llm,
-            knowledge_sources=[self.resume_pdf]
+            #knowledge_sources=[self.resume_pdf]
         )
 
     @agent
@@ -49,6 +50,15 @@ class ResumeRefinerCrew():
             config=self.agents_config['resume_writer'],
             verbose=True,
             llm=self.llm
+        )
+
+    @agent
+    def fact_checker(self) -> Agent:
+        return Agent(
+            config=self.agents_config['fact_checker'],
+            verbose=True,
+            llm=self.llm,
+            #knowledge_sources=[self.resume_fact_ckeck]
         )
 
     @agent
@@ -77,9 +87,26 @@ class ResumeRefinerCrew():
 
     @task
     def generate_resume_task(self) -> Task:
+        # Get target word count from environment
+        target_words = os.getenv("TARGET_RESUME_WORDS", "500")
+
+        # Replace placeholder in task description
+        task_config = self.tasks_config['generate_resume_task'].copy()
+        task_config['description'] = task_config['description'].replace(
+            '{TARGET_RESUME_WORDS}',
+            target_words
+        )
+
         return Task(
-            config=self.tasks_config['generate_resume_task'],
+            config=task_config,
             output_file='output/optimized_resume.md'
+        )
+
+    @task
+    def verify_resume_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['verify_resume_task'],
+            output_file='output/verified_resume.md'
         )
 
     @task
@@ -95,5 +122,6 @@ class ResumeRefinerCrew():
             agents=self.agents,
             tasks=self.tasks,
             verbose=True,
-            process=Process.sequential
+            process=Process.sequential,
+            knowledge_sources=[self.resume_pdf]
         )

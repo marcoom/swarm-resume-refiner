@@ -18,6 +18,7 @@ def run():
 
     try:
         ResumeRefinerCrew().crew().kickoff(inputs=inputs)
+        ResumeRefinerCrew().crew().reset_memories(command_type='all')
     except Exception as e:
         raise Exception(f"An error occurred while running the crew: {e}")
     
