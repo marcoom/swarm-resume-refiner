@@ -1,5 +1,5 @@
 from typing import List, Dict, Optional, Union, Any
-from pydantic import BaseModel, Field, confloat
+from pydantic import BaseModel, Field
 
 # Type alias for sections that can contain mixed content (paragraphs and lists)
 # Each section is a list of "content blocks" where each block is either:
@@ -10,30 +10,37 @@ MixedContent = List[Union[str, List[str]]]
 class SkillScore(BaseModel):
     skill_name: str = Field(description="Name of the skill being scored")
     required: bool = Field(description="Whether this skill is required or nice-to-have")
-    match_level: confloat(ge=0, le=1) = Field(description="How well the candidate's experience matches (0-1)")
+    match_level: float = Field(ge=0, le=1, description="How well the candidate's experience matches (0-1)")
     years_experience: Optional[float] = Field(description="Years of experience with this skill", default=None)
-    context_score: confloat(ge=0, le=1) = Field(
+    context_score: float = Field(
+        ge=0, le=1,
         description="How relevant the skill usage context is to the job requirements",
         default=0.5
     )
 
 class JobMatchScore(BaseModel):
-    overall_match: confloat(ge=0, le=100) = Field(
+    overall_match: float = Field(
+        ge=0, le=100,
         description="Overall match percentage (0-100)"
     )
-    technical_skills_match: confloat(ge=0, le=100) = Field(
+    technical_skills_match: float = Field(
+        ge=0, le=100,
         description="Technical skills match percentage"
     )
-    soft_skills_match: confloat(ge=0, le=100) = Field(
+    soft_skills_match: float = Field(
+        ge=0, le=100,
         description="Soft skills match percentage"
     )
-    experience_match: confloat(ge=0, le=100) = Field(
+    experience_match: float = Field(
+        ge=0, le=100,
         description="Experience level match percentage"
     )
-    education_match: confloat(ge=0, le=100) = Field(
+    education_match: float = Field(
+        ge=0, le=100,
         description="Education requirements match percentage"
     )
-    industry_match: confloat(ge=0, le=100) = Field(
+    industry_match: float = Field(
+        ge=0, le=100,
         description="Industry experience match percentage"
     )
     skill_details: List[SkillScore] = Field(

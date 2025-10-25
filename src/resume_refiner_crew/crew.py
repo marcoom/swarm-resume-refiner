@@ -26,15 +26,8 @@ class ResumeRefinerCrew():
         model = os.getenv("OPENAI_MODEL", "gpt-5-mini")
         self.llm = LLM(model=model)
 
-    @agent
-    def resume_analyzer(self) -> Agent:
-        return Agent(
-            config=self.agents_config['resume_analyzer'],
-            verbose=True,
-            llm=self.llm,
-            tools=[self.pdf_tool]
-        )
-
+    # ANALYZE JOB
+    # Analyze job descriptions and score candidate fit
     @agent
     def job_analyzer(self) -> Agent:
         return Agent(
@@ -44,7 +37,39 @@ class ResumeRefinerCrew():
             knowledge_sources=[self.job_description],
             tools=[self.pdf_tool]
         )
-
+    
+    @task
+    def analyze_job_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['analyze_job_task'],
+            output_file='output/job_analysis.json',
+            output_pydantic=JobRequirements,
+            agent=self.job_analyzer()
+        )
+    
+    # OPTIMIZE RESUME
+    # Analyze resumes and provide structured optimization suggestions
+    @agent
+    def resume_analyzer(self) -> Agent:
+        return Agent(
+            config=self.agents_config['resume_analyzer'],
+            verbose=True,
+            llm=self.llm,
+            tools=[self.pdf_tool]
+        )
+    
+    @task
+    def optimize_resume_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['optimize_resume_task'],
+            output_file='output/resume_optimization.json',
+            output_pydantic=ResumeOptimization,
+            agent=self.resume_analyzer(),
+            context=[self.analyze_job_task()]
+        )
+    
+    # GENERATE RESUME
+    # Create beautifully formatted, ATS-optimized resumes in markdown
     @agent
     def resume_writer(self) -> Agent:
         return Agent(
@@ -53,7 +78,19 @@ class ResumeRefinerCrew():
             llm=self.llm,
             tools=[self.pdf_tool]
         )
+    
+    @task
+    def generate_resume_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['generate_resume_task'],
+            output_file='output/optimized_resume.md',
+            agent=self.resume_writer(),
+            context=[self.optimize_resume_task()]
+        )
 
+    # VERIFY RESUME
+    # Verify all claims in the optimized resume against the original CV 
+    # and remove any hallucinated content
     @agent
     def fact_checker(self) -> Agent:
         return Agent(
@@ -62,15 +99,19 @@ class ResumeRefinerCrew():
             llm=self.llm,
             tools=[self.pdf_tool]
         )
-
-    @agent
-    def report_generator(self) -> Agent:
-        return Agent(
-            config=self.agents_config['report_generator'],
-            verbose=True,
-            llm=self.llm
+    
+    @task
+    def verify_resume_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['verify_resume_task'],
+            output_file='output/verified_resume.md',
+            agent=self.fact_checker(),
+            context=[self.generate_resume_task()]
         )
 
+    # FORMAT TO HARVARD
+    # Parse and structure resume content into Harvard-compliant format 
+    # with precise data extraction
     @agent
     def harvard_formatter(self) -> Agent:
         return Agent(
@@ -80,48 +121,33 @@ class ResumeRefinerCrew():
         )
 
     @task
-    def analyze_job_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['analyze_job_task'],
-            output_file='output/job_analysis.json',
-            output_pydantic=JobRequirements
-        )
-
-    @task
-    def optimize_resume_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['optimize_resume_task'],
-            output_file='output/resume_optimization.json',
-            output_pydantic=ResumeOptimization
-        )
-
-    @task
-    def generate_resume_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['generate_resume_task'],
-            output_file='output/optimized_resume.md'
-        )
-
-    @task
-    def verify_resume_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['verify_resume_task'],
-            output_file='output/verified_resume.md'
-        )
-
-    @task
-    def generate_report_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['generate_report_task'],
-            output_file='output/final_report.md'
-        )
-
-    @task
     def harvard_format_task(self) -> Task:
         return Task(
             config=self.tasks_config['harvard_format_task'],
             output_file='output/structured_resume.json',
-            output_pydantic=HarvardFormattedResume
+            output_pydantic=HarvardFormattedResume,
+            agent=self.harvard_formatter(),
+            context=[self.verify_resume_task()]
+        )
+    
+    # GENERATE REPORT
+    # Create comprehensive, visually appealing, and actionable reports 
+    # from job application analysis
+    @agent
+    def report_generator(self) -> Agent:
+        return Agent(
+            config=self.agents_config['report_generator'],
+            verbose=True,
+            llm=self.llm
+        )
+    
+    @task
+    def generate_report_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['generate_report_task'],
+            output_file='output/final_report.md',
+            agent=self.report_generator(),
+            context=[self.analyze_job_task(), self.optimize_resume_task()]
         )
 
     @crew

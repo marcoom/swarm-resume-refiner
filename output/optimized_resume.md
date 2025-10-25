@@ -1,52 +1,52 @@
-# Marco Mongi — Computer Vision Engineer (4+ years production CV)  
-marcomongi@gmail.com • https://linkedin.com/in/marco-mongi • https://github.com/marcoom • Río Cuarto, Argentina
+# Marco Mongi
+marcomongi@gmail.com • LinkedIn: marco-mongi • GitHub: marcoom • Río Cuarto, Argentina
 
-Profile  
-Computer vision engineer with 4+ years designing, training and deploying production CV systems (object detection, segmentation, fine-grained inspection) using PyTorch/TensorFlow, OpenCV and cloud/edge deployments. Experienced owning image pipelines (acquisition → annotation → training → deployment) with Apache Airflow, Dockerized model serving (FastAPI), CI/CD (GitHub Actions) and edge inference (MQTT, Raspberry Pi, accelerators). Strong product ownership, cross-functional leadership and stakeholder communication.
+## Professional Summary
+Results-driven Product Owner and Systems Engineer with 5+ years delivering end-to-end computer-vision (CV) systems in production. Expertise spans design, deployment, and maintenance of CV workflows with edge computing, IoT integration, and real-time dashboards. Strong in data pipelines, ETL, and ML deployment (CI/CD, Docker/Kubernetes) on AWS/GCP. Proven ability to lead cross-functional teams, communicate with stakeholders, and translate complex CV concepts into production-ready solutions.
 
 ## Experience
+Ascentio Technologies, Río Cuarto, Argentina
+Product Owner, Systems Engineer | July 2022 – July 2025
+- Led end-to-end design, deployment, and maintenance of a computer-vision production-control system for an industrial plant, featuring multi-object detection, edge computing, IoT protocols, and real-time dashboards.
+- Launched the company’s AI division, expanding CV/Industry 4.0 capabilities and enabling new client engagements; established production-ready CV workflows (Dockerized pipelines) to support engagements.
+- Directed cross-functional teams of up to 10, guiding the Technological Infrastructure and Science Data Processing subsystems of the SABIA-Mar mission.
+- Implemented 20+ improvements to the SABIA-Mar L0 processor in Python, delivering client-required functionalities within a 3-month window.
 
-### Product Owner, Systems Engineer — Ascentio Technologies, Río Cuarto, Argentina  
-July 2022 — July 2025
-- Founded and launched the company's artificial-intelligence division; transferred expertise via training and documentation, enabling new client engagements in computer vision and Industry 4.0.  
-- Designed and deployed an end-to-end computer-vision production-control system for an industrial plant (multi-object detection & tracking) using YOLO-family detectors and DeepSORT for tracking; led rollout and ongoing operations as product owner.  
-- Integrated edge inference stack (Dockerized FastAPI model servers → AWS ECR/EC2 or on‑prem images), CI/CD pipelines (GitHub Actions), and monitoring dashboards (Grafana/Prometheus) to ensure reliable production serving and alerting.  
-- Architected ETL for image data collection and preprocessing; orchestrated annotation workflows and automated training pipelines with Apache Airflow to reduce iteration time between data collection and model retraining.  
-- Coordinated with product managers, operations and QA to define acceptance criteria, rollout schedule and KPIs; presented system status at Critical Design Reviews for SABIA‑Mar stakeholders.  
-- Implemented >20 improvements to the L0 processor for the SABIA‑Mar satellite mission in Python, meeting client requirements within tight deadlines.  
-- Managed cross-functional teams up to 10 engineers and researchers; mentored junior staff and led technical reviews.
-
-### Intern — Ascentio Technologies, Río Cuarto, Argentina  
-September 2020 — December 2020
-- Developed an automatic crop-detection platform in Python using supervised classification over multi-spectral time series (≈80% accuracy).
-
-### Intern — Faculty of Engineering, UNRC, Río Cuarto, Argentina  
-2018 — 2019
-- Contributed to accessibility systems and implementation projects (hardware/software integration).
-
-## Selected Projects (CV-focused)
-- Real-time license-plate detection pipeline — YOLOv8 + DeepSORT + OCR; Dockerized, real-time stream, deployed prototype with FastAPI and demo UI.  
-- Automated blood-cell counting prototype — YOLO detection + SAM2 segmentation; containerized inference, Gradio UI, documented reproduction steps.  
-- Defect & cosmetic grading prototype — fine-grained classification + segmentation for surface defects; includes experiments on label-noise mitigation (consensus labeling, label smoothing, simple uncertainty estimation) and HITL validation workflows.  
-- Image ETL & training orchestration — Apache Airflow pipelines for large image datasets, automated annotation handoff, preprocessing (normalization, augmentation, contrast enhancement) and scheduled retraining.
-
-## Technical Skills
-Core technical skills: Computer Vision, Object Detection (YOLOv8), Segmentation (SAM2), Image Classification, Digital Image Processing, Feature Extraction, Image Preprocessing (normalization, augmentation, filtering), Contrast Enhancement, Defect Detection, Cosmetic Grading (prototype experience).  
-Frameworks & libraries: Python, PyTorch, TensorFlow / Keras, OpenCV, NumPy, Pandas.  
-Deployment & DevOps: Docker, Kubernetes, GitHub Actions (CI/CD), FastAPI, Gradio/Streamlit, AWS (ECR/EC2/S3), GCP (familiar), Edge / IoT (MQTT, Raspberry Pi, hardware accelerators).  
-Data & testing: ETL, Apache Airflow, Annotation workflows, pytest, system/e2e testing, monitoring (Grafana/Prometheus).  
-Soft skills: Product ownership, cross-functional collaboration, stakeholder communication, mentoring, technical presentations.
+Intern | September 2020 – December 2020
+- Developed a platform for automatic crop detection in Python, achieving ~80% accuracy on time-series multi-spectral imagery.
 
 ## Education
-- Stanford University (Online) — Machine Learning Specialization, 2025  
-- National University of Córdoba — University Diploma in Data Science, 2024  
-- National University of Río Cuarto (UNRC) — Telecommunications Engineering, Radiocommunications Orientation, GPA: 8.71, 2013–2022
+Stanford University Online
+Machine Learning Specialization, 2025
 
-## Selected publications
-- "Design of 5G-oriented patch antennas" (2021) — EAI Transactions; signal-processing and systems design background relevant to sensor/imaging systems.  
-- "Deep Learning applied to the handoff of cellular systems" (2019) — TechRxiv; includes ML methodology applicable to CV pipelines.
+National University of Córdoba / MundosECórdoba
+University Diploma in Data Science, 2024
 
-Languages & Additional  
-Spanish (native); English (C2 EF SET). Portfolio & code samples: https://github.com/marcoom. Available to provide detailed project notebooks, model cards and production diagrams on request.
+National University of Río Cuarto (UNRC), Río Cuarto, Argentina
+Telecommunications Engineering, Radiocommunications Orientation, GPA: 8.71, 2013 – 2022
 
-Keywords: Computer Vision, Defect Detection, Fine-grained Visual Inspection, Cosmetic Grading, YOLOv8, SAM, PyTorch, TensorFlow, OpenCV, Docker, FastAPI, CI/CD, AWS, Apache Airflow, Edge Computing, MQTT, HITL, Label Smoothing, Uncertainty Quantification.
+## Certifications
+- EF SET English Certificate, C2 Proficient, 2025
+- Gen AI Intensive Course, Google / Kaggle, 2025
+- Introduction to Statistics, Stanford University, 2024
+- First Certificate in English, Cambridge, 2017
+
+## Skills
+- End-to-end CV systems: design, deployment, maintenance
+- Edge computing and IoT integration in CV workflows
+- Multi-object detection and tracking: YOLOv8, DeepSORT
+- Real-time dashboards and production monitoring
+- Data pipelines and ETL: Apache Airflow
+- Containerization and orchestration: Docker, Kubernetes; CI/CD
+- Cloud platforms: AWS, GCP
+- Python, PyTorch, OpenCV; ML/DL, LLMs; NLP basics
+- Cross-functional collaboration; stakeholder management; agile/project management
+
+## Languages
+- Spanish: Native
+- English: C2 (EF SET) / C1 (Cambridge FCE)
+
+## Projects
+- Real-time license plate detection (YOLOv8, DeepSORT, OCR) and automated blood cell counting (YOLO + SAM2) pipelines
+- Local AI chat platform with RAG and agentic workflows; bilingual voice interaction; Whisper transcription
+- CV/AI data pipelines with Dockerized deployments and user-friendly UIs

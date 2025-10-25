@@ -3,6 +3,9 @@ analyze_job_task:
     Analyze the job description from the provided knowledge source and score the candidate's fit based on their resume.
     Output will be saved as structured JSON data.
 
+    For efficiency, plan your information needs upfront and group related queries
+    into 1-2 comprehensive tool calls rather than making multiple separate queries.
+
     1. Extract Requirements:
        - Technical skills (required vs nice-to-have)
        - Soft skills
@@ -46,12 +49,14 @@ analyze_job_task:
   expected_output: >
     Structured JSON data containing job analysis and scoring details according to
     the JobRequirements model schema.
-  agent: job_analyzer
 
 optimize_resume_task:
   description: >
     Review the provided resume against the job analysis and create structured optimization suggestions.
     Output will be saved as structured JSON data.
+
+    For efficiency, plan your information needs upfront and group related queries
+    into 1-2 comprehensive tool calls rather than making multiple separate queries.
 
     1. Content Analysis:
        - Compare resume content with job requirements
@@ -75,8 +80,6 @@ optimize_resume_task:
   expected_output: >
     Structured JSON data containing detailed optimization suggestions according to
     the ResumeOptimization model schema.
-  agent: resume_analyzer
-  context: [analyze_job_task]
 
 generate_resume_task:
   description: >
@@ -84,8 +87,11 @@ generate_resume_task:
     create a polished resume in markdown format.
     Do not add markdown code blocks like '```'.
 
-    IMPORTANT: Target approximately {TARGET_RESUME_WORDS} words for the resume content. 
+    IMPORTANT: Target approximately {TARGET_RESUME_WORDS} words for the resume content.
     Prioritize quality and completeness while staying close to this target.
+
+    For efficiency, plan your information needs upfront and group related queries
+    into 1-2 comprehensive tool calls rather than making multiple separate queries.
 
     1. Content Integration:
        - Incorporate optimization suggestions
@@ -94,9 +100,10 @@ generate_resume_task:
        - Ensure ATS compatibility
 
     2. Formatting:
-       - Use proper markdown headers (#, ##, ###)
-       - Apply consistent styling
        - Create clear section hierarchy
+       - Use standar resume section names (Summary, Work Experience, Education, Certifications, Skills, Languages, Projects, etc.)
+       - Use proper markdown headers (#, ##, ###). Ensure each section titles and subtitles are correctly formatted
+       - Apply consistent styling
        - Use bullet points effectively
 
   expected_output: >
@@ -104,13 +111,14 @@ generate_resume_task:
     - Incorporates all optimization suggestions
     - Uses proper markdown formatting
     - Is ATS-friendly
-  agent: resume_writer
-  context: [optimize_resume_task]
 
 verify_resume_task:
   description: >
     Cross-reference the optimized resume against the original CV to ensure factual accuracy.
     Remove any hallucinated, embellished, or unverifiable content.
+
+    For efficiency, plan your information needs upfront and group related queries
+    into 1-2 comprehensive tool calls rather than making multiple separate queries.
 
     CRITICAL OUTPUT REQUIREMENTS:
     - Output ONLY the markdown resume content
@@ -142,52 +150,6 @@ verify_resume_task:
     Pure markdown resume content with absolute factual accuracy. The output must be
     ONLY the resume in markdown format - no introductions, no conclusions, no commentary.
     Every single claim must be verifiable against the original CV.
-  agent: fact_checker
-  context: [generate_resume_task]
-
-generate_report_task:
-  description: >
-    Create an executive summary report using data from previous steps.
-    Format in markdown without code blocks '```'. The output must be
-    ONLY the report in markdown format - no introductions, no conclusions, no commentary.
-
-    1. Data Integration:
-       - Job analysis and scores
-       - Resume optimization details
-       - Final resume changes
-
-    2. Report Sections:
-       ## Executive Summary
-       - Overall match score and quick wins
-       - Key strengths and improvement areas
-       - Action items priority list
-
-       ## Job Fit Analysis
-       - Detailed score breakdown
-       - Skills match assessment
-       - Experience alignment
-
-       ## Optimization Overview
-       - Key resume improvements
-       - ATS optimization results
-       - Impact metrics
-
-       ## Next Steps
-       - Prioritized action items
-       - Skill development plan
-       - Application strategy
-
-    3. Formatting:
-       - Use proper markdown headers
-       - Include relevant emojis
-       - Create tables where appropriate
-       - Use bullet points for scannability
-
-  expected_output: >
-    A comprehensive markdown report that combines all analyses into an
-    actionable, clear document with concrete next steps.
-  agent: report_generator
-  context: [analyze_job_task, optimize_resume_task]
 
 harvard_format_task:
   description: >
@@ -271,5 +233,45 @@ harvard_format_task:
   expected_output: >
     Structured JSON data containing the resume in HarvardFormattedResume
     format with all sections properly parsed and metadata extracted.
-  agent: harvard_formatter
-  context: [verify_resume_task]
+
+generate_report_task:
+  description: >
+    Create an executive summary report using data from previous steps.
+    Format in markdown without code blocks '```'. The output must be
+    ONLY the report in markdown format - no introductions, no conclusions, no commentary.
+
+    1. Data Integration:
+       - Job analysis and scores
+       - Resume optimization details
+       - Final resume changes
+
+    2. Report Sections:
+       ## Executive Summary
+       - Overall match score and quick wins
+       - Key strengths and improvement areas
+       - Action items priority list
+
+       ## Job Fit Analysis
+       - Detailed score breakdown
+       - Skills match assessment
+       - Experience alignment
+
+       ## Optimization Overview
+       - Key resume improvements
+       - ATS optimization results
+       - Impact metrics
+
+       ## Next Steps
+       - Prioritized action items
+       - Skill development plan
+       - Application strategy
+
+    3. Formatting:
+       - Use proper markdown headers
+       - Include relevant emojis
+       - Create tables where appropriate
+       - Use bullet points for scannability
+
+  expected_output: >
+    A comprehensive markdown report that combines all analyses into an
+    actionable, clear document with concrete next steps.

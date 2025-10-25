@@ -53,6 +53,45 @@ def escape_latex(text: str) -> str:
     return text
 
 
+def format_section_title(title: str) -> str:
+    """
+    Format section title to Title Case with proper word spacing.
+
+    Converts underscores and hyphens to spaces, normalizes whitespace,
+    and applies Title Case formatting.
+
+    Args:
+        title: Raw section title string
+
+    Returns:
+        Formatted title in Title Case with space-separated words
+
+    Examples:
+        >>> format_section_title("volunteer_work")
+        "Volunteer Work"
+        >>> format_section_title("AWARDS")
+        "Awards"
+        >>> format_section_title("professional-development")
+        "Professional Development"
+    """
+    if not title:
+        return title
+
+    # Replace underscores and hyphens with spaces
+    formatted = title.replace('_', ' ').replace('-', ' ')
+
+    # Normalize multiple spaces to single space
+    formatted = re.sub(r'\s+', ' ', formatted)
+
+    # Apply Title Case
+    formatted = formatted.title()
+
+    # Strip leading/trailing spaces
+    formatted = formatted.strip()
+
+    return formatted
+
+
 def bold_keywords(text: str, keywords: List[str]) -> str:
     """
     Apply bold formatting to specific keywords in text.
@@ -334,7 +373,8 @@ def generate_additional_sections(
     # Additional sections
     if additional_sections:
         for section_name, section_content in additional_sections.items():
-            section_name_escaped = escape_latex(section_name)
+            section_name_formatted = format_section_title(section_name)
+            section_name_escaped = escape_latex(section_name_formatted)
             latex += r"\begin{center}" + "\n"
             latex += f"    \\textbf{{{section_name_escaped}}}\n"
             latex += r"\end{center}" + "\n\n"
