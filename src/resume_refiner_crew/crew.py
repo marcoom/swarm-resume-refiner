@@ -2,7 +2,7 @@ import os
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai.knowledge.source.text_file_knowledge_source import TextFileKnowledgeSource
-from .tools.custom_tool import PDFParserTool
+from crewai_tools import PDFSearchTool
 from .models import (
     JobRequirements,
     ResumeOptimization,
@@ -18,9 +18,9 @@ class ResumeRefinerCrew():
     tasks_config = 'config/tasks.yaml'
 
     def __init__(self) -> None:
-        """Initialize crew with job description knowledge source and PDF parser tool"""
+        """Initialize crew with job description knowledge source and PDF search tool"""
         self.job_description = TextFileKnowledgeSource(file_paths=["job_description.txt"])
-        self.pdf_parser_tool = PDFParserTool()
+        self.pdf_search_tool = PDFSearchTool()
 
         # Configure LLM from environment variables for OpenAI
         model = os.getenv("OPENAI_MODEL", "gpt-5-mini")
@@ -34,7 +34,7 @@ class ResumeRefinerCrew():
             config=self.agents_config['resume_parser'],
             verbose=True,
             llm=self.llm,
-            tools=[self.pdf_parser_tool]
+            tools=[self.pdf_search_tool]
         )
 
     @task

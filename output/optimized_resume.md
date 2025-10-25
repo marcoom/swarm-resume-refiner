@@ -1,56 +1,65 @@
 # Marco Mongi
-
-Río Cuarto, Argentina | marcomongi@gmail.com | LinkedIn: marco-mongi | GitHub: marcoom
+marcomongi@gmail.com • LinkedIn: marco-mongi • GitHub: marcoom • Río Cuarto, Argentina
 
 ## Summary
-Results-driven Product Owner and Systems Engineer with 5+ years delivering end-to-end computer vision (CV) and AI solutions across satellite and industrial contexts. Proven track record in production deployment, manufacturing/quality improvement, and cross-functional leadership. Skilled at translating complex technical concepts for stakeholders, driving Industry 4.0 initiatives, and delivering measurable performance gains in real-time analytics and operations.
+Data Scientist, Product Owner, and Systems Engineer with 5+ years leveraging satellite data, computer vision, and Industry 4.0 to deliver production-ready ML pipelines and real-time dashboards. Expert in time-series forecasting, edge computing, and cross-functional leadership. Proficient in Python, ML frameworks, cloud platforms, and communicating complex concepts to diverse stakeholders.
 
-## Experience
+## Work Experience
 
-### Ascentio Technologies — Product Owner, Systems Engineer
-Río Cuarto, Argentina | July 2022 – July 2025
-- Led teams of up to 10 as Product Owner and Systems Engineer, directing the Technological Infrastructure and Science Data Processing subsystems of the SABIA-Mar satellite mission, with emphasis on production-aligned delivery.
-- Launched the company’s AI division, transferring CV/AI expertise to the team and enabling new client opportunities in computer vision and Industry 4.0.
-- Directed end-to-end deployment of a computer-vision production-control system for an industrial plant, integrating multi-object detection/tracking, edge computing, IoT protocols and real-time dashboards to optimize production monitoring and efficiency.
-- Implemented 20+ enhancements to the L0 processor of the SABIA-Mar mission in Python, delivering client-required functionalities within a three-month window.
+### Ascentio Technologies, Río Cuarto, Argentina
+**Product Owner, Systems Engineer** — Jul 2022 – Jul 2025
+- Led cross-functional teams of up to 10 to deliver SABIA-Mar subsystems, enabling real-time performance monitoring and data-driven decisions.
+- Launched the AI division, enabling new client engagements in computer vision and Industry 4.0.
+- Directed end-to-end development of a computer-vision production-control system for an industrial plant; implemented edge computing, IoT protocols, and real-time dashboards to monitor efficiency.
+- Delivered 20+ Python-based improvements to the L0 data pipeline within 3 months, aligning with client requirements and improving throughput.
 
-### Ascentio Technologies — Intern
-Río Cuarto, Argentina | September 2020 – December 2020
-- Built a platform for automatic crop detection in Python, achieving 80% accuracy using supervised time-series classification on multi-spectral satellite imagery.
+### Ascentio Technologies, Río Cuarto, Argentina
+**Intern** — Sep 2020 – Dec 2020
+- Built a Python platform for automatic crop detection; achieved ~80% accuracy using supervised classification on multi-spectral time-series imagery.
 
-### Faculty of Engineering, UNRC — Intern
-Río Cuarto, Argentina | 2018 – 2019
-- Contributed to the Hearing Loops accessibility project, implementing systems to enhance hearing for people with impairments.
-
-## Achievements & Projects
-
-### Competitions
-- Datathon Río Cuarto 2024 — Winner: part of a four-person team competing among ~100 participants to develop an ETL/AI-driven chatbot enhancement, showcasing practical ML/ETL integration and teamwork.
-
-### Personal & Academic Projects
-- Real-time license plate detection (CV): YOLOv8 + DeepSORT + OCR; blood cell counting pipeline using CV and ML best practices; Dockerized for production readiness.
-- Local AI assistant: RAG-based chatbot with agentic workflows; bilingual voice interaction and Whisper transcription studio.
-- Moonshot ML: deep reinforcement learning lunar landing controller; CNN-based digit classifier achieving 99.5% accuracy; time-series energy forecasting and anomaly detection projects.
-- Data pipelines: Apache Airflow ETL workflows with real-time anomaly streaming (TIG stack); comprehensive documentation and UI layers (Streamlit, Gradio).
+### Faculty of Engineering, UNRC, Río Cuarto, Argentina
+**Intern** — 2018 – 2019
+- Contributed to “Improving university campus accessibility – Hearing loops,” enhancing assistive listening systems.
 
 ## Education
-
 - Stanford University Online — Machine Learning Specialization, 2025
-- National University of Córdoba / MundosE — University Diploma in Data Science, 2024
-- National University of Río Cuarto (UNRC) — Telecommunications Engineering, Radiocommunications Orientation; GPA: 8.71, 2013–2022
+- National University of Córdoba (Mundos Córdoba) — University Diploma in Data Science, 2024
+- National University of Río Cuarto (UNRC) — Telecommunications Engineering, Radiocommunications Orientation; GPA: 8.71, 2013 – 2022
 
 ## Certifications
-- EF SET English Certificate — 2025 (C2 Proficient)
-- Gen AI Intensive Course — 2025 (Google / Kaggle)
-- Introduction to Statistics — 2024 (Stanford)
-- First Certificate in English — 2017 (Cambridge, Grade A)
+- EF SET English Certificate — C2 Proficient, 2025
+- Gen AI Intensive Course — Google / Kaggle, 2025
+- Introduction to Statistics — Stanford University, 2024
+- First Certificate in English — Cambridge (FCE), Grade A (C1), 2017
 
-## Skills
+## Projects
+- Real-time license plate detection (YOLOv8, DeepSORT, OCR); production-ready with Docker; GitHub: marcoom
+- Local AI chat platform with RAG and agentic workflows; bilingual voice interaction; GitHub: marcoom
+- Deep reinforcement lunar landing controller and time-series energy forecasting models; GitHub: marcoom
 
-- Technical: Python (OOP, NumPy, Pandas, Scikit-learn, pytest, FastAPI, CI/CD); PyTorch, TensorFlow/Keras; OpenCV; CV: classification, segmentation, object detection; SQL; Apache Airflow; ETL; Docker; Kubernetes; AWS, GCP; Streamlit, Gradio; Tableau, PowerBI, Grafana; IoT (MQTT); Edge computing; RESTful APIs; testing (pytest, unittest); Git/GitHub Actions; JIRA; LaTeX.
-- CV/AI & ML Ops: production deployment, edge inference, model monitoring, data pipelines, MLOps.
-- Soft: Multidisciplinary collaboration, stakeholder communication, KPI/OKR-driven decision making, cross-functional leadership, rapid problem solving.
+## Publications
+- 2021 | Design of 5G-oriented patch antennas: survey. EAI Endorsed Trans. Mobile Communications and Applications. DOI: 10.4108/eai.16-3-2021.169031
+- 2019 | Deep Learning applied to handoff of cellular systems: survey. TechRxiv. DOI: 10.36227/techrxiv.11391906.v1
+
+## Presentations
+- 2024 | Infopork Swine Innovation Forum: AI in agro-industry
+- 2023 | Critical Design Review, SABIA-Mar mission (NASA/CNES/AEB/INPE): system overview in English
+
+## Competitions
+- 2024 | Datathon Río Cuarto: Winner; developed enhancements for an LLM chatbot for bullying prevention
 
 ## Languages
 - Spanish: Native
-- English: C2 EF SET, C1 Cambridge FCE
+- English: C2 (EF SET) / C1 (Cambridge FCE)
+
+## Skills
+- Data Science & ML: time-series forecasting, supervised/unsupervised learning, PyTorch, scikit-learn
+- Programming: Python (OOP, NumPy, Pandas), R, MATLAB
+- Computer Vision: OpenCV, remote sensing imagery, GIS
+- Data Engineering: ETL pipelines, Apache Airflow
+- Visualization: Tableau, PowerBI, Grafana
+- Web/UI: Gradio, Streamlit
+- DevOps & Cloud: Docker, Kubernetes, AWS, GCP, CI/CD (GitHub Actions)
+- IoT & Edge: MQTT, Raspberry Pi
+- Product & PM: Agile/Scrum, JIRA, cross-functional leadership
+- Communications: Public speaking, bilingual technical writing

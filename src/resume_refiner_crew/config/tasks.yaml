@@ -1,18 +1,25 @@
 parse_resume_task:
   description: >
-    Use the PDF parser tool to convert the resume PDF to markdown.
-    Call the tool with pdf_path: "{RESUME_PDF_PATH}"
+    Use the PDFSearchTool to access and extract content from the resume PDF at: {RESUME_PDF_PATH}
+
+    Your goal is to parse the entire resume content and convert it to clean, well-structured markdown format with proper headings and formatting.
+
+    Ensure the markdown output:
+    - Uses proper markdown heading hierarchy (# for main title, ## for sections, ### for subsections)
+    - Preserves all resume sections (contact info, summary, experience, education, skills, etc.)
+    - Maintains proper formatting for lists, dates, and other content
+    - Is clean and professionally formatted
 
     CRITICAL OUTPUT REQUIREMENTS:
     - Output ONLY the parsed markdown resume content
     - DO NOT include ANY introductory text (e.g., "Here is the resume:", "I parsed the PDF:")
     - DO NOT include ANY concluding remarks or explanations
     - DO NOT include ANY meta-commentary about the parsing process
-    - The output must be the pure markdown content from the PDF parser tool
+    - The output must be the pure markdown content, starting with the resume header
 
   expected_output: >
-    Pure markdown text extracted from the PDF resume. No introductions,
-    no conclusions, no commentary - only the parsed content.
+    Pure markdown text of the complete resume with proper structure and formatting.
+    No introductions, no conclusions, no commentary - only the parsed content.
 
 analyze_job_task:
   description: >
@@ -78,7 +85,14 @@ optimize_resume_task:
        - Evaluate section organization
        - Check formatting consistency
        - Assess information hierarchy
-       - Evaluate what sections or items in the resume are irrelevant or unrelated to the job description, and do not add any value from the point of view of the recuiter
+       - Identify non-standard section names and suggest renaming to standard names (e.g., "Professional Summary" → "Summary", "Work History" → "Work Experience", "Technical Skills" → "Skills")
+       - A summary section should be present, with professional tone and tailored to the job description
+       - Identify sections or items that are irrelevant to the job description:
+         * Sections/items with zero keywords matching the job requirements
+         * Experiences or skills from completely unrelated industries or domains
+         * Outdated, overly basic, or commodity skills that don't differentiate the candidate
+         * Hobbies, personal interests, or generic statements that don't demonstrate job-relevant competencies
+         * For each irrelevant item, provide explicit removal suggestion with justification explaining why it doesn't add value to the recruiter
 
     3. Generate Suggestions:
        - Content improvements with before/after examples that only rephrase verified details from the resume. Do not introduce new skills, metrics, or claims that are not present in the original resume.
@@ -108,7 +122,6 @@ generate_resume_task:
 
     2. Formatting:
        - Create clear section hierarchy
-       - Use standar resume section names (Summary, Work Experience, Education, Certifications, Skills, Languages, Projects, etc.)
        - Use proper markdown headers (#, ##, ###). Ensure each section titles and subtitles are correctly formatted
        - Apply consistent styling
        - Use bullet points effectively
