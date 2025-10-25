@@ -1,51 +1,52 @@
-# Marco Mongi — Data Scientist / Time-Series Forecasting Specialist
-marcomongi@gmail.com • LinkedIn: linkedin.com/in/marco-mongi • GitHub: github.com/marcoom • Río Cuarto, Argentina
+# Marco Mongi — Computer Vision Engineer (4+ years production CV)  
+marcomongi@gmail.com • https://linkedin.com/in/marco-mongi • https://github.com/marcoom • Río Cuarto, Argentina
 
-## Professional Summary
-Data Scientist with 4+ years of applied ML experience specializing in time-series forecasting and production ML. Skilled in temporal feature engineering, backtesting and model evaluation (MAE, RMSE), and production deployment (Docker, FastAPI, CI/CD). Built reproducible notebooks and pipelines for energy and satellite temporal data; available to provide a Prophet + backtesting POC for financial time-series.
+Profile  
+Computer vision engineer with 4+ years designing, training and deploying production CV systems (object detection, segmentation, fine-grained inspection) using PyTorch/TensorFlow, OpenCV and cloud/edge deployments. Experienced owning image pipelines (acquisition → annotation → training → deployment) with Apache Airflow, Dockerized model serving (FastAPI), CI/CD (GitHub Actions) and edge inference (MQTT, Raspberry Pi, accelerators). Strong product ownership, cross-functional leadership and stakeholder communication.
 
 ## Experience
-### Ascentio Technologies — Product Owner, Systems Engineer | Jul 2022 – Jul 2025
-Río Cuarto, Argentina
-- Established the company AI division and operationalized ML capabilities (team training, production practices), enabling delivery of commercial computer-vision and Industry 4.0 projects (Python, Docker, CI/CD).
-- Managed Tech Infrastructure and Science Data Processing subsystems for the SABIA-Mar mission; led roadmap and cross-functional teams up to 10 people (Agile, JIRA).
-- Implemented 20+ Python improvements to the SABIA-Mar L0 data-processor within 3 months, improving system reliability and data product availability (unit tests, CI pipelines).
-- Built and maintained production model serving and monitoring endpoints (FastAPI, Docker, Grafana) and ETL orchestration with Airflow; ensured observability and logging for data products.
 
-### Ascentio Technologies — Intern (Crop detection, time-series multispectral) | Sep 2020 – Dec 2020
-Río Cuarto, Argentina
-- Built a Python pipeline for supervised classification over multi-spectral temporal satellite sequences, achieving 80% accuracy; implemented temporal feature extraction, rolling-window validation and documented reproducible notebooks (Pandas, Scikit-learn).
-- Packaged the pipeline for reproducibility (Docker) and provided evaluation scripts for time-series metrics and backtesting.
+### Product Owner, Systems Engineer — Ascentio Technologies, Río Cuarto, Argentina  
+July 2022 — July 2025
+- Founded and launched the company's artificial-intelligence division; transferred expertise via training and documentation, enabling new client engagements in computer vision and Industry 4.0.  
+- Designed and deployed an end-to-end computer-vision production-control system for an industrial plant (multi-object detection & tracking) using YOLO-family detectors and DeepSORT for tracking; led rollout and ongoing operations as product owner.  
+- Integrated edge inference stack (Dockerized FastAPI model servers → AWS ECR/EC2 or on‑prem images), CI/CD pipelines (GitHub Actions), and monitoring dashboards (Grafana/Prometheus) to ensure reliable production serving and alerting.  
+- Architected ETL for image data collection and preprocessing; orchestrated annotation workflows and automated training pipelines with Apache Airflow to reduce iteration time between data collection and model retraining.  
+- Coordinated with product managers, operations and QA to define acceptance criteria, rollout schedule and KPIs; presented system status at Critical Design Reviews for SABIA‑Mar stakeholders.  
+- Implemented >20 improvements to the L0 processor for the SABIA‑Mar satellite mission in Python, meeting client requirements within tight deadlines.  
+- Managed cross-functional teams up to 10 engineers and researchers; mentored junior staff and led technical reviews.
 
-### Faculty of Engineering, UNRC — Intern | 2018 – 2019
-- Contributed to accessibility systems and prototype development; supported data collection and evaluation workflows.
+### Intern — Ascentio Technologies, Río Cuarto, Argentina  
+September 2020 — December 2020
+- Developed an automatic crop-detection platform in Python using supervised classification over multi-spectral time series (≈80% accuracy).
 
-## Selected Projects
-- Time-series energy forecasting — End-to-end forecasting pipeline with feature engineering, LSTM & XGBoost baselines, rolling-window backtesting, and evaluation (MAE, RMSE). GitHub: https://github.com/marcoom/energy-forecasting
-- ETL & real-time anomaly streaming — Airflow orchestration, TIG stack monitoring, Dockerized workers and Grafana dashboards. GitHub: https://github.com/marcoom/etl-streaming
-- Stock forecasting (Prophet + backtesting) — Reproducible notebook using Prophet and XGBoost with rolling-window backtesting and evaluation metrics. GitHub: https://github.com/marcoom/stock-prophet-poc
+### Intern — Faculty of Engineering, UNRC, Río Cuarto, Argentina  
+2018 — 2019
+- Contributed to accessibility systems and implementation projects (hardware/software integration).
 
-## Skills
-Time-series & Forecasting: time-series forecasting, temporal feature engineering, Prophet/NeuralProphet (POC), ARIMA, LSTM/GRU, Transformer architectures (time-series), backtesting, rolling-window validation, MAE, RMSE, drift detection, retraining triggers.
+## Selected Projects (CV-focused)
+- Real-time license-plate detection pipeline — YOLOv8 + DeepSORT + OCR; Dockerized, real-time stream, deployed prototype with FastAPI and demo UI.  
+- Automated blood-cell counting prototype — YOLO detection + SAM2 segmentation; containerized inference, Gradio UI, documented reproduction steps.  
+- Defect & cosmetic grading prototype — fine-grained classification + segmentation for surface defects; includes experiments on label-noise mitigation (consensus labeling, label smoothing, simple uncertainty estimation) and HITL validation workflows.  
+- Image ETL & training orchestration — Apache Airflow pipelines for large image datasets, automated annotation handoff, preprocessing (normalization, augmentation, contrast enhancement) and scheduled retraining.
 
-MLOps & Deployment: Docker, FastAPI, CI/CD (GitHub Actions), model serving, API design, observability, Grafana, logging, deployment pipelines.
+## Technical Skills
+Core technical skills: Computer Vision, Object Detection (YOLOv8), Segmentation (SAM2), Image Classification, Digital Image Processing, Feature Extraction, Image Preprocessing (normalization, augmentation, filtering), Contrast Enhancement, Defect Detection, Cosmetic Grading (prototype experience).  
+Frameworks & libraries: Python, PyTorch, TensorFlow / Keras, OpenCV, NumPy, Pandas.  
+Deployment & DevOps: Docker, Kubernetes, GitHub Actions (CI/CD), FastAPI, Gradio/Streamlit, AWS (ECR/EC2/S3), GCP (familiar), Edge / IoT (MQTT, Raspberry Pi, hardware accelerators).  
+Data & testing: ETL, Apache Airflow, Annotation workflows, pytest, system/e2e testing, monitoring (Grafana/Prometheus).  
+Soft skills: Product ownership, cross-functional collaboration, stakeholder communication, mentoring, technical presentations.
 
-Modeling & ML: Python (NumPy, Pandas, Scikit-learn), PyTorch, TensorFlow/Keras, XGBoost, model evaluation, unit testing.
+## Education
+- Stanford University (Online) — Machine Learning Specialization, 2025  
+- National University of Córdoba — University Diploma in Data Science, 2024  
+- National University of Río Cuarto (UNRC) — Telecommunications Engineering, Radiocommunications Orientation, GPA: 8.71, 2013–2022
 
-Data Engineering & DBs: Apache Airflow, ETL pipelines, SQL, data pipelines, feature engineering, reproducible notebooks.
+## Selected publications
+- "Design of 5G-oriented patch antennas" (2021) — EAI Transactions; signal-processing and systems design background relevant to sensor/imaging systems.  
+- "Deep Learning applied to the handoff of cellular systems" (2019) — TechRxiv; includes ML methodology applicable to CV pipelines.
 
-Tools & Versioning: Git, GitHub, Docker, Linux, Streamlit/Gradio for UIs.
+Languages & Additional  
+Spanish (native); English (C2 EF SET). Portfolio & code samples: https://github.com/marcoom. Available to provide detailed project notebooks, model cards and production diagrams on request.
 
-Soft skills: Technical communication to non-technical audiences, product ownership, cross-functional leadership, mentoring, analytical problem solving, customer-centric delivery.
-
-## Publications & Presentations
-- First author, 2021: Design of 5G-oriented patch antennas — EAI Endorsed Transactions. doi:10.4108/eai.16-3-2021.169031
-- Presenter, 2023: SABIA-Mar Critical Design Review (MCDR) — presented L0 Processor systems to international experts (NASA, CNES, AEB).
-
-## Education & Certifications
-- Machine Learning Specialization — Stanford Online, 2025
-- University Diploma in Data Science — National University of Córdoba, 2024
-- Telecommunications Engineering (B.Eng.) — National University of Río Cuarto, 2013–2022
-- EF SET English Certificate — C2 Proficient, 2025
-
-Interests: Electronics (Arduino, Raspberry Pi), 3D printing, continuous learning in ML and time-series methods.
+Keywords: Computer Vision, Defect Detection, Fine-grained Visual Inspection, Cosmetic Grading, YOLOv8, SAM, PyTorch, TensorFlow, OpenCV, Docker, FastAPI, CI/CD, AWS, Apache Airflow, Edge Computing, MQTT, HITL, Label Smoothing, Uncertainty Quantification.

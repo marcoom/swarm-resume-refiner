@@ -279,9 +279,6 @@ class HarvardFormattedResume(BaseModel):
     contact_info: str = Field(
         description="Full contact line with email, LinkedIn, location, etc. separated by bullets"
     )
-    job_title: str = Field(
-        description="Target job title from the job analysis"
-    )
     summary: Optional[str] = Field(
         description="Professional summary or objective statement (optional)",
         default=None

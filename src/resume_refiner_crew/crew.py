@@ -1,7 +1,7 @@
 import os
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
-from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
+from crewai_tools import PDFSearchTool
 from crewai.knowledge.source.text_file_knowledge_source import TextFileKnowledgeSource
 from .models import (
     JobRequirements,
@@ -19,7 +19,7 @@ class ResumeRefinerCrew():
 
     def __init__(self) -> None:
         """Sample resume PDF for testing"""
-        self.resume = PDFKnowledgeSource(file_paths="CV.pdf") # TODO get from input
+        self.pdf_tool = PDFSearchTool(pdf="./knowledge/CV.pdf")  # Tool for agents that need CV access
         self.job_description = TextFileKnowledgeSource(file_paths=["job_description.txt"])
 
         # Configure LLM from environment variables for OpenAI
@@ -32,6 +32,7 @@ class ResumeRefinerCrew():
             config=self.agents_config['resume_analyzer'],
             verbose=True,
             llm=self.llm,
+            tools=[self.pdf_tool]
         )
 
     @agent
@@ -40,7 +41,8 @@ class ResumeRefinerCrew():
             config=self.agents_config['job_analyzer'],
             verbose=True,
             llm=self.llm,
-            knowledge_sources=[self.job_description]
+            knowledge_sources=[self.job_description],
+            tools=[self.pdf_tool]
         )
 
     @agent
@@ -48,7 +50,8 @@ class ResumeRefinerCrew():
         return Agent(
             config=self.agents_config['resume_writer'],
             verbose=True,
-            llm=self.llm
+            llm=self.llm,
+            tools=[self.pdf_tool]
         )
 
     @agent
@@ -57,6 +60,7 @@ class ResumeRefinerCrew():
             config=self.agents_config['fact_checker'],
             verbose=True,
             llm=self.llm,
+            tools=[self.pdf_tool]
         )
 
     @agent
@@ -127,6 +131,5 @@ class ResumeRefinerCrew():
             tasks=self.tasks,
             verbose=True,
             process=Process.sequential,
-            memory=False,
-            knowledge_sources=[self.resume]
+            memory=False
         )

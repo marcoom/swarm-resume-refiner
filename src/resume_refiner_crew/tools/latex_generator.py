@@ -516,9 +516,18 @@ def generate_resume_pdf_from_json(
 
         logger.info("Structured resume data loaded successfully")
 
-        # Extract name and job title for filename
+        # Extract name for filename
         candidate_name = resume_data.get('candidate_name', 'Resume')
-        job_title = resume_data.get('job_title', 'Position')
+
+        # Load job title from job_analysis.json
+        job_analysis_path = base_dir / "output/job_analysis.json"
+        if job_analysis_path.exists():
+            with open(job_analysis_path, 'r', encoding='utf-8') as f:
+                job_analysis = json.load(f)
+            job_title = job_analysis.get('job_title', 'Position')
+        else:
+            logger.warning("job_analysis.json not found, using default job title")
+            job_title = 'Position'
 
         # Split name into first and last
         name_parts = candidate_name.split()

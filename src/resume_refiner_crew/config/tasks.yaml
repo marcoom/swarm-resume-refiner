@@ -191,19 +191,8 @@ generate_report_task:
 
 harvard_format_task:
   description: >
-    **CRITICAL - DATA SOURCE PRIORITY:**
-    You have access to TWO sources of resume data:
-    1. The verified resume (from verify_resume_task context) ← **USE THIS ONE ONLY**
-    2. The original resume (from knowledge sources) ← **IGNORE THIS COMPLETELY**
-
-    YOU MUST USE **ONLY** THE VERIFIED RESUME from the task context (verify_resume_task).
-    DO NOT use, reference, or mix any content from the original resume knowledge source.
-    The original resume is available for other agents but you must IGNORE IT ENTIRELY.
-    If you find yourself accessing knowledge sources or the original PDF, STOP - you are
-    doing this task incorrectly. Use ONLY the verified_resume.md content from context.
-
     Parse the verified markdown resume and structure it into Harvard format
-    with precise data extraction. Extract job title from the job analysis.
+    with precise data extraction.
 
     CRITICAL: This task is ONLY to reformat the content from the verified resume
     into the required structured format. ALL information must be preserved - no
@@ -215,7 +204,6 @@ harvard_format_task:
     1. Extract Metadata:
        - Candidate's full name from the first heading (# Name)
        - Contact information line (email, LinkedIn, GitHub, location, etc.)
-       - Job title from the job_analysis context (job_title field)
        - Summary/Objective: Extract from "## Summary" section if present in the
          verified resume. If no summary section exists, set to null. Do not create
          or infer a summary if it's not in the source document.
