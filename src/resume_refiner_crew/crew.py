@@ -1,8 +1,8 @@
 import os
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
-from crewai_tools import PDFSearchTool
 from crewai.knowledge.source.text_file_knowledge_source import TextFileKnowledgeSource
+from .tools.custom_tool import PDFParserTool
 from .models import (
     JobRequirements,
     ResumeOptimization,
@@ -18,13 +18,32 @@ class ResumeRefinerCrew():
     tasks_config = 'config/tasks.yaml'
 
     def __init__(self) -> None:
-        """Sample resume PDF for testing"""
-        self.pdf_tool = PDFSearchTool(pdf="./knowledge/CV.pdf")  # Tool for agents that need CV access
+        """Initialize crew with job description knowledge source and PDF parser tool"""
         self.job_description = TextFileKnowledgeSource(file_paths=["job_description.txt"])
+        self.pdf_parser_tool = PDFParserTool()
 
         # Configure LLM from environment variables for OpenAI
         model = os.getenv("OPENAI_MODEL", "gpt-5-mini")
         self.llm = LLM(model=model)
+
+    # PARSE RESUME
+    # Parse PDF resume to markdown format
+    @agent
+    def resume_parser(self) -> Agent:
+        return Agent(
+            config=self.agents_config['resume_parser'],
+            verbose=True,
+            llm=self.llm,
+            tools=[self.pdf_parser_tool]
+        )
+
+    @task
+    def parse_resume_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['parse_resume_task'],
+            output_file='output/parsed_resume.md',
+            agent=self.resume_parser()
+        )
 
     # ANALYZE JOB
     # Analyze job descriptions and score candidate fit
@@ -34,17 +53,17 @@ class ResumeRefinerCrew():
             config=self.agents_config['job_analyzer'],
             verbose=True,
             llm=self.llm,
-            knowledge_sources=[self.job_description],
-            tools=[self.pdf_tool]
+            knowledge_sources=[self.job_description]
         )
-    
+
     @task
     def analyze_job_task(self) -> Task:
         return Task(
             config=self.tasks_config['analyze_job_task'],
             output_file='output/job_analysis.json',
             output_pydantic=JobRequirements,
-            agent=self.job_analyzer()
+            agent=self.job_analyzer(),
+            context=[self.parse_resume_task()]
         )
     
     # OPTIMIZE RESUME
@@ -54,10 +73,9 @@ class ResumeRefinerCrew():
         return Agent(
             config=self.agents_config['resume_analyzer'],
             verbose=True,
-            llm=self.llm,
-            tools=[self.pdf_tool]
+            llm=self.llm
         )
-    
+
     @task
     def optimize_resume_task(self) -> Task:
         return Task(
@@ -65,7 +83,7 @@ class ResumeRefinerCrew():
             output_file='output/resume_optimization.json',
             output_pydantic=ResumeOptimization,
             agent=self.resume_analyzer(),
-            context=[self.analyze_job_task()]
+            context=[self.parse_resume_task(), self.analyze_job_task()]
         )
     
     # GENERATE RESUME
@@ -75,38 +93,36 @@ class ResumeRefinerCrew():
         return Agent(
             config=self.agents_config['resume_writer'],
             verbose=True,
-            llm=self.llm,
-            tools=[self.pdf_tool]
+            llm=self.llm
         )
-    
+
     @task
     def generate_resume_task(self) -> Task:
         return Task(
             config=self.tasks_config['generate_resume_task'],
             output_file='output/optimized_resume.md',
             agent=self.resume_writer(),
-            context=[self.optimize_resume_task()]
+            context=[self.parse_resume_task(), self.optimize_resume_task()]
         )
 
     # VERIFY RESUME
-    # Verify all claims in the optimized resume against the original CV 
+    # Verify all claims in the optimized resume against the original CV
     # and remove any hallucinated content
     @agent
     def fact_checker(self) -> Agent:
         return Agent(
             config=self.agents_config['fact_checker'],
             verbose=True,
-            llm=self.llm,
-            tools=[self.pdf_tool]
+            llm=self.llm
         )
-    
+
     @task
     def verify_resume_task(self) -> Task:
         return Task(
             config=self.tasks_config['verify_resume_task'],
             output_file='output/verified_resume.md',
             agent=self.fact_checker(),
-            context=[self.generate_resume_task()]
+            context=[self.parse_resume_task(), self.generate_resume_task()]
         )
 
     # FORMAT TO HARVARD

@@ -23,7 +23,9 @@ def run():
     Run the crew and generate PDF resume.
     """
     inputs = {
-        'TARGET_RESUME_WORDS': os.getenv("TARGET_RESUME_WORDS", "500")
+        'TARGET_RESUME_WORDS': os.getenv("TARGET_RESUME_WORDS", "500"),
+        'RESUME_PDF_PATH': os.getenv("RESUME_PDF_PATH", "./knowledge/CV.pdf"),
+        'JOB_DESCRIPTION_PATH': os.getenv("JOB_DESCRIPTION_PATH", "job_description.txt")
     }
 
     try:

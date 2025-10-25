@@ -1,10 +1,23 @@
+parse_resume_task:
+  description: >
+    Use the PDF parser tool to convert the resume PDF to markdown.
+    Call the tool with pdf_path: "{RESUME_PDF_PATH}"
+
+    CRITICAL OUTPUT REQUIREMENTS:
+    - Output ONLY the parsed markdown resume content
+    - DO NOT include ANY introductory text (e.g., "Here is the resume:", "I parsed the PDF:")
+    - DO NOT include ANY concluding remarks or explanations
+    - DO NOT include ANY meta-commentary about the parsing process
+    - The output must be the pure markdown content from the PDF parser tool
+
+  expected_output: >
+    Pure markdown text extracted from the PDF resume. No introductions,
+    no conclusions, no commentary - only the parsed content.
+
 analyze_job_task:
   description: >
     Analyze the job description from the provided knowledge source and score the candidate's fit based on their resume.
     Output will be saved as structured JSON data.
-
-    For efficiency, plan your information needs upfront and group related queries
-    into 1-2 comprehensive tool calls rather than making multiple separate queries.
 
     1. Extract Requirements:
        - Technical skills (required vs nice-to-have)
@@ -55,9 +68,6 @@ optimize_resume_task:
     Review the provided resume against the job analysis and create structured optimization suggestions.
     Output will be saved as structured JSON data.
 
-    For efficiency, plan your information needs upfront and group related queries
-    into 1-2 comprehensive tool calls rather than making multiple separate queries.
-
     1. Content Analysis:
        - Compare resume content with job requirements
        - Identify missing keywords and skills
@@ -83,15 +93,12 @@ optimize_resume_task:
 
 generate_resume_task:
   description: >
-    Using the provided resume from knowledge sources, apply the optimization suggestions from previous steps, to
+    Using the provided resume from context, apply the optimization suggestions from previous steps, to
     create a polished resume in markdown format.
     Do not add markdown code blocks like '```'.
 
     IMPORTANT: Target approximately {TARGET_RESUME_WORDS} words for the resume content.
     Prioritize quality and completeness while staying close to this target.
-
-    For efficiency, plan your information needs upfront and group related queries
-    into 1-2 comprehensive tool calls rather than making multiple separate queries.
 
     1. Content Integration:
        - Incorporate optimization suggestions
@@ -116,9 +123,6 @@ verify_resume_task:
   description: >
     Cross-reference the optimized resume against the original CV to ensure factual accuracy.
     Remove any hallucinated, embellished, or unverifiable content.
-
-    For efficiency, plan your information needs upfront and group related queries
-    into 1-2 comprehensive tool calls rather than making multiple separate queries.
 
     CRITICAL OUTPUT REQUIREMENTS:
     - Output ONLY the markdown resume content
