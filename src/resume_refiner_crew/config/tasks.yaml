@@ -111,62 +111,88 @@ generate_resume_task:
     create a polished resume in markdown format.
     Do not add markdown code blocks like '```'.
 
-    IMPORTANT: Target approximately {TARGET_RESUME_WORDS} words for the resume content.
-    Prioritize quality and completeness while staying close to this target.
+    CRITICAL: Target approximately {TARGET_RESUME_WORDS} words for the resume content.
+    You MUST use the Word Counter and Target Checker tool iteratively to ensure the final
+    resume meets this target.
 
-    1. Content Integration:
+    WORKFLOW:
+
+    1. Initial Draft Creation:
        - Incorporate optimization suggestions
        - Add missing keywords and skills
        - Enhance achievement descriptions
        - Ensure ATS compatibility
+       - Create clear section hierarchy with proper markdown headers (#, ##, ###)
+       - Apply consistent styling and effective bullet points
 
-    2. Formatting:
-       - Create clear section hierarchy
-       - Use proper markdown headers (#, ##, ###). Ensure each section titles and subtitles are correctly formatted
-       - Apply consistent styling
-       - Use bullet points effectively
+    2. Iterative Word Count Checking (REQUIRED):
+       a) Use the "Word Counter and Target Checker" tool with your current resume draft as text.
+          The tool automatically reads the target word count from configuration.
+          Example: Call the tool with just the text parameter (your resume markdown).
+
+       b) Check the tool's output, specifically the "is_within_target" flag:
+          - If is_within_target = True: You're done! The resume is within acceptable range (85%-115% of target)
+          - If is_within_target = False: Proceed to step c
+
+       c) Adjust the resume based on word_count vs target_word_count:
+
+          IF word_count > target_word_count (TOO LONG):
+          - Remove sections or items that were flagged as irrelevant in the optimization suggestions
+          - Rephrase content more concisely while preserving key information
+          - Prioritize removing the least relevant content first
+
+          IF word_count < target_word_count (TOO SHORT):
+          - Incorporate additional items from less relevant sections (if available)
+          - Expand on existing descriptions with more detail
+          - NEVER invent new information - only add details from the original resume
+
+       d) After adjustments, use the Word Counter tool again to check progress
+
+       e) Repeat steps b-d until is_within_target = True
+
+    3. Final Quality Check:
+       - Ensure all content is factually accurate
+       - Verify ATS compatibility is maintained
+       - Confirm markdown formatting is clean and professional
 
   expected_output: >
     A beautifully formatted markdown resume document that:
     - Incorporates all optimization suggestions
     - Uses proper markdown formatting
     - Is ATS-friendly
+    - Has word count within 85%-115% of {TARGET_RESUME_WORDS} words (as verified by the Word Counter tool)
 
 verify_resume_task:
   description: >
-    Cross-reference the optimized resume against the original CV to ensure factual accuracy.
-    Remove any hallucinated, embellished, or unverifiable content.
+    Cross-reference the optimized resume against the original resume to ensure factual accuracy (source of truth is the original resume).
+    Remove any hallucinated, embellished, or unverifiable content. If everything is correct, then return the optimized resume without changes.
+    If you encounter a mismatch, fix it with the minimal changes possible.
 
     CRITICAL OUTPUT REQUIREMENTS:
     - Output ONLY the markdown resume content
-    - DO NOT include ANY introductory text (e.g., "Here is the resume:", "Below is the verified resume:")
-    - DO NOT include ANY concluding remarks (e.g., "This resume will...", "Good luck with...")
-    - DO NOT include ANY meta-commentary or explanations
-    - The output must start directly with the resume header/title
-    - The output must end with the last line of the resume content
+    - DO NOT include ANY extra commentary
+    - Make the minimal changes to the optimized resume to ensure accuracy
+    - DO NOT add additional information to the optimized resume, even if it is in the original one
 
     1. Fact Verification Process:
-       - Compare every claim in the optimized resume against the original CV
+       - Compare every claim in the optimized resume against the original resume
        - Verify job titles, dates, company names match exactly
-       - Confirm all skills listed appear in the original CV
-       - Validate all achievements and accomplishments are sourced from original
-       - Check education credentials, certifications, and qualifications
+       - If the original resume has additional information not present in the optimized one, DO NOT add it
 
     2. Content Removal Rules:
-       - Remove ANY content that cannot be directly verified in the original CV
+       - Remove ANY content that cannot be directly verified in the original resume
        - Delete embellished or exaggerated claims
        - Eliminate hallucinated experiences, skills, or achievements
        - Strip out inferred qualifications not explicitly stated in original
 
     3. Preserve Original Facts:
-       - Keep all content that accurately reflects the original CV
        - Maintain the formatting and structure from the optimized version
        - Preserve keyword optimizations that are factually accurate
 
   expected_output: >
     Pure markdown resume content with absolute factual accuracy. The output must be
     ONLY the resume in markdown format - no introductions, no conclusions, no commentary.
-    Every single claim must be verifiable against the original CV.
+    Every single claim must be verifiable against the original resume.
 
 harvard_format_task:
   description: >

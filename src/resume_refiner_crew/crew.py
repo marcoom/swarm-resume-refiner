@@ -8,6 +8,7 @@ from .models import (
     ResumeOptimization,
     HarvardFormattedResume
 )
+from .tools.word_counter_tool import WordCounterTool
 
 
 @CrewBase
@@ -93,7 +94,8 @@ class ResumeRefinerCrew():
         return Agent(
             config=self.agents_config['resume_writer'],
             verbose=True,
-            llm=self.llm
+            llm=self.llm,
+            tools=[WordCounterTool()]
         )
 
     @task
