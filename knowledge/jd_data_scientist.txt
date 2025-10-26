@@ -1,1 +1,0 @@
-The applicant should be a specialist in data science, with focus on temporal series analysis: forecasting temporal series with Python, with strong knowledge on Prophet algorithms. The responsibilities of the job include developing machine learning models to forecast future stock prices based on historical values. Must have: strong machine learning skills

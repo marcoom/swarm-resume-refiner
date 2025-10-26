@@ -1,1 +1,0 @@
-We need a Product Owner for a web application that uses python as a backend, angular as the frontend and a postgresql database. The required knowledge includes Apache Airflow, Docker and hardware prototyping. 3d modeling and 3d printing is a plus
