@@ -87,26 +87,42 @@ Before installing, ensure you have the following:
 
 This project uses [UV](https://docs.astral.sh/uv/) for fast, reliable dependency management.
 
-### 1. Install UV Package Manager
-
-```bash
-pip install uv
-```
-
-### 2. Clone the Repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/marcoom/resume-refiner-crew.git
 cd resume-refiner-crew
 ```
 
-### 3. Install Dependencies
+### 2. Create Virtual Environment
+
+It is recommended to create a virtual environment:
 
 ```bash
-crewai install
+python -m venv .venv
 ```
 
-This command uses UV to lock and install all dependencies defined in `pyproject.toml`.
+Activate the virtual environment:
+
+```bash
+source .venv/bin/activate  # On Linux/Mac
+# or
+.venv\Scripts\activate     # On Windows
+```
+
+### 3. Install UV Package Manager
+
+```bash
+pip install uv
+```
+
+### 4. Install Dependencies
+
+```bash
+uv pip install -e .
+```
+
+This command installs the project and all dependencies defined in `pyproject.toml` using UV's fast resolver.
 
 ---
 
