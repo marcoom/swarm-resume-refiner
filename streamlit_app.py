@@ -327,6 +327,14 @@ st.markdown("Transform your resume into a job-specific, ATS-optimized document")
 @st.fragment(run_every=1.0)
 def show_processing_progress():
     """Auto-updating fragment that displays processing progress."""
+    # Check if thread has completed (checked every 1 second via fragment auto-refresh)
+    if st.session_state.thread_result and st.session_state.thread_result.get('completed'):
+        # Thread finished - update session state from main thread
+        st.session_state.result = st.session_state.thread_result.get('result')
+        st.session_state.processing = False
+        st.session_state.completed = True
+        st.rerun()
+
     # Get current progress
     completed, agent_name, status_text, logs = get_current_progress()
 
@@ -356,15 +364,7 @@ def show_processing_progress():
 
 # PROCESSING PHASE
 if st.session_state.processing:
-    # Check if thread has completed
-    if st.session_state.thread_result and st.session_state.thread_result.get('completed'):
-        # Thread finished - update session state from main thread
-        st.session_state.result = st.session_state.thread_result.get('result')
-        st.session_state.processing = False
-        st.session_state.completed = True
-        st.rerun()
-
-    # Call fragment - auto-updates every 1 second
+    # Call fragment - auto-updates every 1 second and checks for completion
     show_processing_progress()
 
 # RESULTS PHASE
