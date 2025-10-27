@@ -93,6 +93,8 @@ if 'thread_result' not in st.session_state:
     st.session_state.thread_result = None
 if 'start_time' not in st.session_state:
     st.session_state.start_time = None
+if 'elapsed_time' not in st.session_state:
+    st.session_state.elapsed_time = None
 if 'show_logs' not in st.session_state:
     st.session_state.show_logs = False
 if 'balloons_shown' not in st.session_state:
@@ -115,6 +117,7 @@ def reset_session():
     st.session_state.thread = None
     st.session_state.thread_result = None
     st.session_state.start_time = None
+    st.session_state.elapsed_time = None
     st.session_state.show_logs = False
     st.session_state.balloons_shown = False
     st.session_state.show_reset_toast = False
@@ -222,7 +225,7 @@ def show_optimization_report():
 st.sidebar.subheader("1. Job Description")
 job_description = st.sidebar.text_area(
     "Add the complete job posting",
-    height=200,
+    height=150,
     placeholder="Add the complete job description here",
     label_visibility="collapsed",
     help="Include the full job description with requirements and responsibilities, the text formatting is not important"
@@ -236,10 +239,6 @@ uploaded_file = st.sidebar.file_uploader(
     help="Upload your current resume in PDF format",
     label_visibility="collapsed"
 )
-
-# Show uploaded filename
-if uploaded_file is not None:
-    st.toast(f"✓ Uploaded: {uploaded_file.name}", icon="✅")
 
 # Options Section (collapsible)
 with st.sidebar.expander("⚙️ Options", expanded=False):
@@ -285,9 +284,6 @@ with st.sidebar.expander("⚙️ Options", expanded=False):
         help="400-600 words for single page, 600-800 for two pages"
     )
 
-
-st.sidebar.divider()
-
 # Validate inputs
 inputs_valid = (
     uploaded_file is not None
@@ -295,43 +291,50 @@ inputs_valid = (
     and len(api_key.strip()) > 0
 )
 
+# Show input validation hints
+if not inputs_valid:
+    st.sidebar.warning("⚠️ Please complete all required inputs above")
+else:
+    st.sidebar.write("&nbsp;")
+
 # Process Button
 if st.sidebar.button(
     "🚀 Process Resume",
     type="primary",
-    disabled=not inputs_valid or st.session_state.processing,
+    disabled=not inputs_valid or st.session_state.processing or st.session_state.completed,
     use_container_width=True
 ):
-    reset_session()
-    st.session_state.processing = True
-    st.session_state.start_time = time.time()
+    # Safety check (should never be None due to button disabled state)
+    if uploaded_file is not None:
+        reset_session()
+        st.session_state.processing = True
+        st.session_state.start_time = time.time()
 
-    # Create a result container for thread communication
-    st.session_state.thread_result = {'result': None, 'completed': False}
+        # Create a result container for thread communication
+        st.session_state.thread_result = {'result': None, 'completed': False}
 
-    # Start processing in background thread
-    st.session_state.thread = threading.Thread(
-        target=run_crew_thread,
-        args=(
-            uploaded_file.read(),
-            job_description,
-            api_key,
-            model,
-            target_words,
-            st.session_state.thread_result
+        # Start processing in background thread
+        st.session_state.thread = threading.Thread(
+            target=run_crew_thread,
+            args=(
+                uploaded_file.read(),
+                job_description,
+                api_key,
+                model,
+                target_words,
+                st.session_state.thread_result
+            )
         )
-    )
-    st.session_state.thread.start()
-    st.rerun()
+        st.session_state.thread.start()
+        st.rerun()
+    else:
+        st.error("No file uploaded")
 
 # Reset Button
-if st.sidebar.button("🔄 Start Over", use_container_width=True):
+if st.sidebar.button("🔄 Start Over", disabled=not st.session_state.completed, use_container_width=True):
     reset_session()
     st.rerun()
 
-# Show input validation hints
-if not inputs_valid:
-    st.sidebar.warning("⚠️ Please complete all required inputs above")
 
 # ===== MAIN CONTENT AREA =====
 
@@ -350,6 +353,9 @@ def show_processing_progress():
         st.session_state.result = st.session_state.thread_result.get('result')
         st.session_state.processing = False
         st.session_state.completed = True
+        # Store the elapsed time once when processing completes
+        if st.session_state.start_time:
+            st.session_state.elapsed_time = time.time() - st.session_state.start_time
         st.rerun()
 
     # Get current progress
@@ -402,8 +408,8 @@ elif st.session_state.completed:
         
         with col_time:
         # Show elapsed time
-            if st.session_state.start_time:
-                elapsed = time.time() - st.session_state.start_time
+            if st.session_state.elapsed_time:
+                elapsed = st.session_state.elapsed_time
                 st.info(f"⏱️ Processing completed in {int(elapsed//60)}m {int(elapsed%60)}s")
 
         # OPTIMIZATION REPORT BUTTON
@@ -448,9 +454,13 @@ elif st.session_state.completed:
 
                 # Validate JSON
                 try:
-                    json.loads(edited_json)
-                    json_valid = True
-                    json_error = None
+                    if edited_json is not None:
+                        json.loads(edited_json)
+                        json_valid = True
+                        json_error = None
+                    else:
+                        json_valid = False
+                        json_error = "No JSON content"
                 except json.JSONDecodeError as e:
                     json_valid = False
                     json_error = str(e)
@@ -476,7 +486,7 @@ elif st.session_state.completed:
                             pdf_path = generate_resume_pdf_from_json(
                                 json_path=str(json_path)
                             )
-                            if pdf_path:
+                            if pdf_path and st.session_state.result is not None:
                                 st.session_state.result['pdf_path'] = pdf_path
                                 st.session_state.show_reset_toast = True
                                 st.rerun()
@@ -490,21 +500,24 @@ elif st.session_state.completed:
                         type="primary",
                         use_container_width=True
                     ):
-                        # Save edited JSON to new file
-                        modified_json_path = Path("output/structured_resume_modified.json")
-                        modified_json_path.write_text(edited_json, encoding='utf-8')
+                        # Save edited JSON to new file (validated via button disabled state)
+                        if edited_json is not None:
+                            modified_json_path = Path("output/structured_resume_modified.json")
+                            modified_json_path.write_text(edited_json, encoding='utf-8')
 
-                        # Regenerate PDF from modified JSON
-                        with st.spinner("Regenerating PDF from modified resume..."):
-                            pdf_path = generate_resume_pdf_from_json(
-                                json_path=str(modified_json_path)
-                            )
-                            if pdf_path:
-                                st.session_state.result['pdf_path'] = pdf_path
-                                st.session_state.show_apply_toast = True
-                                st.rerun()
-                            else:
-                                st.error("PDF generation failed")
+                            # Regenerate PDF from modified JSON
+                            with st.spinner("Regenerating PDF from modified resume..."):
+                                pdf_path = generate_resume_pdf_from_json(
+                                    json_path=str(modified_json_path)
+                                )
+                                if pdf_path and st.session_state.result is not None:
+                                    st.session_state.result['pdf_path'] = pdf_path
+                                    st.session_state.show_apply_toast = True
+                                    st.rerun()
+                                else:
+                                    st.error("PDF generation failed")
+                        else:
+                            st.error("No JSON content to save")
             else:
                 st.warning("structured_resume.json not found")
 
@@ -566,8 +579,8 @@ else:
 
     st.subheader("How it works:")
     st.markdown("""
-    1. **Upload** your current resume (PDF format)
-    2. **Paste** the complete job description
+    1. **Paste** the complete job description
+    2. **Upload** your current resume (PDF format)
     3. **Process** and watch the multi-agent system optimize your resume
     4. **Download** your tailored, ATS-optimized resume
 
