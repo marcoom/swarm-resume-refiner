@@ -87,8 +87,6 @@ if 'edited_json' not in st.session_state:
     st.session_state.edited_json = None
 if 'original_json' not in st.session_state:
     st.session_state.original_json = None
-if 'json_edit_mode' not in st.session_state:
-    st.session_state.json_edit_mode = False
 if 'thread' not in st.session_state:
     st.session_state.thread = None
 if 'thread_result' not in st.session_state:
@@ -97,6 +95,14 @@ if 'start_time' not in st.session_state:
     st.session_state.start_time = None
 if 'show_logs' not in st.session_state:
     st.session_state.show_logs = False
+if 'balloons_shown' not in st.session_state:
+    st.session_state.balloons_shown = False
+if 'show_reset_toast' not in st.session_state:
+    st.session_state.show_reset_toast = False
+if 'show_apply_toast' not in st.session_state:
+    st.session_state.show_apply_toast = False
+if 'editor_key' not in st.session_state:
+    st.session_state.editor_key = 0
 
 
 def reset_session():
@@ -106,11 +112,14 @@ def reset_session():
     st.session_state.result = None
     st.session_state.edited_json = None
     st.session_state.original_json = None
-    st.session_state.json_edit_mode = False
     st.session_state.thread = None
     st.session_state.thread_result = None
     st.session_state.start_time = None
     st.session_state.show_logs = False
+    st.session_state.balloons_shown = False
+    st.session_state.show_reset_toast = False
+    st.session_state.show_apply_toast = False
+    st.session_state.editor_key = 0
 
 
 def run_crew_thread(resume_bytes, job_desc, api_key, model, target_words, result_container):
@@ -258,16 +267,6 @@ with st.sidebar.expander("⚙️ Options", expanded=False):
         help="400-600 words for single page, 600-800 for two pages"
     )
 
-    # Advanced Options
-    st.subheader("Advanced Options")
-    download_all = st.checkbox(
-        "Download all output files",
-        help="Include Markdown, JSON, and LaTeX files in addition to PDF"
-    )
-    allow_editing = st.checkbox(
-        "Allow final resume editing",
-        help="Edit the structured JSON before generating the final PDF"
-    )
 
 st.sidebar.divider()
 
@@ -372,45 +371,54 @@ elif st.session_state.completed:
     result = st.session_state.result
 
     if result and result['success']:
-        st.success("✅ Your optimized resume is ready!")
-        st.balloons()
 
+        col_success, col_time = st.columns(2)
+
+        with col_success:
+
+            # Success message
+            st.success("✅ Your optimized resume is ready!")
+            if not st.session_state.balloons_shown:
+                st.balloons()
+                st.session_state.balloons_shown = True
+        
+        with col_time:
         # Show elapsed time
-        if st.session_state.start_time:
-            elapsed = time.time() - st.session_state.start_time
-            st.info(f"⏱️ Processing completed in {int(elapsed//60)}m {int(elapsed%60)}s")
+            if st.session_state.start_time:
+                elapsed = time.time() - st.session_state.start_time
+                st.info(f"⏱️ Processing completed in {int(elapsed//60)}m {int(elapsed%60)}s")
 
-        # Display final report
-        st.header("📊 Optimization Report")
+        # COLLAPSIBLE EDIT RESUME SECTION
+        with st.expander("✏️ Edit Structured Resume (Optional)", expanded=False):
+            # Display toast messages after rerun
+            if st.session_state.show_reset_toast:
+                st.toast("Changes reset to original", icon="↩️")
+                st.session_state.show_reset_toast = False
 
-        report_path = Path("output/final_report.md")
-        if report_path.exists():
-            report_content = report_path.read_text(encoding='utf-8')
-            st.markdown(report_content)
-        else:
-            st.warning("Report file not found")
-
-        st.divider()
-
-        # JSON EDITING MODE
-        if allow_editing and not st.session_state.json_edit_mode:
-            st.header("✏️ Edit Structured Resume (Optional)")
+            if st.session_state.show_apply_toast:
+                st.toast("PDF regenerated successfully", icon="✅")
+                st.session_state.show_apply_toast = False
 
             json_path = Path("output/structured_resume.json")
+
             if json_path.exists():
                 # Load original JSON if not already loaded
                 if st.session_state.original_json is None:
-                    st.session_state.original_json = json_path.read_text(encoding='utf-8')
-                    st.session_state.edited_json = st.session_state.original_json
+                    original_content = json_path.read_text(encoding='utf-8')
+                    # Format JSON for better readability
+                    formatted_json = json.dumps(json.loads(original_content), indent=2)
+                    st.session_state.original_json = formatted_json
+                    st.session_state.edited_json = formatted_json
 
-                st.info("You can edit the structured resume data below before generating the final PDF")
+                st.info("Edit the structured resume data below and apply changes to regenerate the PDF")
 
                 # JSON editor
                 edited_json = st.text_area(
                     "Structured Resume JSON",
                     value=st.session_state.edited_json,
                     height=400,
-                    key="json_editor"
+                    key=f"json_editor_{st.session_state.editor_key}",
+                    label_visibility="collapsed"
                 )
 
                 # Update session state
@@ -420,67 +428,106 @@ elif st.session_state.completed:
                 try:
                     json.loads(edited_json)
                     json_valid = True
+                    json_error = None
                 except json.JSONDecodeError as e:
                     json_valid = False
-                    st.error(f"Invalid JSON: {str(e)}")
+                    json_error = str(e)
+
+                # Show validation error
+                if not json_valid:
+                    st.error(f"Invalid JSON: {json_error}")
 
                 # Buttons
                 col1, col2 = st.columns(2)
 
                 with col1:
-                    if st.button("↺ Restore Original JSON"):
-                        st.session_state.edited_json = st.session_state.original_json
-                        st.rerun()
+                    if st.button("↺ Reset Changes", use_container_width=True):
+                        # Reload original JSON from file
+                        original_content = json_path.read_text(encoding='utf-8')
+                        formatted_json = json.dumps(json.loads(original_content), indent=2)
+                        st.session_state.original_json = formatted_json
+                        st.session_state.edited_json = formatted_json
+                        st.session_state.editor_key += 1  # Force re-render
 
-                with col2:
-                    if st.button(
-                        "✓ Apply Changes and Generate PDF",
-                        disabled=not json_valid,
-                        type="primary"
-                    ):
-                        # Save edited JSON
-                        json_path.write_text(edited_json, encoding='utf-8')
-
-                        # Regenerate PDF
-                        with st.spinner("Generating PDF from edited resume..."):
-                            pdf_path = generate_resume_pdf_from_json()
+                        # Regenerate PDF from original JSON
+                        with st.spinner("Regenerating PDF from original resume..."):
+                            pdf_path = generate_resume_pdf_from_json(
+                                json_path=str(json_path)
+                            )
                             if pdf_path:
                                 st.session_state.result['pdf_path'] = pdf_path
-                                st.session_state.json_edit_mode = True
-                                st.success(f"✓ PDF regenerated: {pdf_path}")
+                                st.session_state.show_reset_toast = True
                                 st.rerun()
                             else:
                                 st.error("PDF generation failed")
 
-                st.divider()
+                with col2:
+                    if st.button(
+                        "✓ Apply Changes",
+                        disabled=not json_valid,
+                        type="primary",
+                        use_container_width=True
+                    ):
+                        # Save edited JSON to new file
+                        modified_json_path = Path("output/structured_resume_modified.json")
+                        modified_json_path.write_text(edited_json, encoding='utf-8')
 
-        # DOWNLOAD SECTION
-        if not allow_editing or st.session_state.json_edit_mode:
-            st.header("📥 Download Your Resume")
+                        # Regenerate PDF from modified JSON
+                        with st.spinner("Regenerating PDF from modified resume..."):
+                            pdf_path = generate_resume_pdf_from_json(
+                                json_path=str(modified_json_path)
+                            )
+                            if pdf_path:
+                                st.session_state.result['pdf_path'] = pdf_path
+                                st.session_state.show_apply_toast = True
+                                st.rerun()
+                            else:
+                                st.error("PDF generation failed")
+            else:
+                st.warning("structured_resume.json not found")
 
-            # PDF Download (always available)
+        # DOWNLOAD BUTTONS (always visible)
+        st.write("&nbsp;")
+        col1, col2 = st.columns(2)
+
+        # PDF Download
+        with col1:
             pdf_path = Path(result['pdf_path'])
             if pdf_path.exists():
                 with open(pdf_path, 'rb') as f:
                     st.download_button(
-                        label="📄 Download PDF Resume",
+                        label="📄 Download Optimized Resume PDF",
                         data=f.read(),
                         file_name=pdf_path.name,
                         mime="application/pdf",
+                        type="primary",
                         use_container_width=True
                     )
             else:
                 st.error("PDF file not found")
 
-            # ZIP Download (if enabled)
-            if download_all:
-                st.download_button(
-                    label="📦 Download All Files (ZIP)",
-                    data=create_zip_archive(),
-                    file_name="resume_optimization_complete.zip",
-                    mime="application/zip",
-                    use_container_width=True
-                )
+        # ZIP Download (all artifacts)
+        with col2:
+            st.download_button(
+                label="📦 Download All Artifacts",
+                data=create_zip_archive(),
+                file_name="resume_optimization_complete.zip",
+                mime="application/zip",
+                type="secondary",
+                use_container_width=True
+            )
+
+        st.divider()
+
+        # OPTIMIZATION REPORT (at the end)
+        st.header("📊 Optimization Report")
+
+        report_path = Path("output/final_report.md")
+        if report_path.exists():
+            report_content = report_path.read_text(encoding='utf-8')
+            st.markdown(report_content)
+        else:
+            st.warning("Report file not found")
 
     else:
         # Error handling
