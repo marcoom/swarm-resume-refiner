@@ -92,7 +92,7 @@ class JobRequirements(BaseModel):
         default_factory=list
     )
     job_title: str = Field(
-        description="Official job title",
+        description="Job title (simplified)",
         default=""
     )
     department: Optional[str] = Field(

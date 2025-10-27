@@ -240,7 +240,7 @@ if st.session_state.processing:
     st.divider()
 
     # Live logs
-    st.subheader("📋 Live Progress Logs")
+    st.subheader("📋 Crew execution logs")
     log_container = st.container(height=400)
 
     with log_container:
