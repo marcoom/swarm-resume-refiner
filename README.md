@@ -162,6 +162,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 # Optional: Customize these settings
 OPENAI_MODEL=gpt-5-mini                    # Default: gpt-5-mini
 TARGET_RESUME_WORDS=500                     # Default: 500 (400-600 for 1 page, 600-800 for 2 pages)
+DEVELOPER_MODE=false                        # Default: false (see Developer Mode section for details)
 ```
 
 ### 3. Prepare Input Files
@@ -239,6 +240,38 @@ The complete pipeline typically takes 3-5 minutes depending on resume complexity
 
 - **Web UI**: Real-time progress indicators and live log streaming
 - **CLI**: Verbose terminal output showing each agent's reasoning and actions
+
+---
+
+## Developer Mode
+
+**Developer Mode** allows you to test the application's UI and workflows without running the actual multi-agent system. This is particularly useful during development when you want to:
+
+- Test changes to the Streamlit interface without waiting for agents to complete
+- Iterate quickly on UI improvements without incurring API costs
+- Validate the flow from processing to results display
+- Test with consistent, known output data
+
+### How It Works
+
+When `DEVELOPER_MODE=true`, the system:
+
+1. **Skips crew execution** - No agents are run, no API calls are made
+2. **Simulates logs** - Writes realistic log messages to `.crewai_temp/crew_logs.txt` with 1-second delays between entries
+3. **Uses fixture files** - Copies pre-generated output files from `tests/fixtures/output/` to `output/`
+4. **Maintains normal flow** - All other parts of the system (PDF generation, file downloads, UI components) work exactly as they would with real execution
+
+### Using Developer Mode
+
+Edit your `.env` file:
+
+```bash
+DEVELOPER_MODE=true
+```
+
+Once enabled, use the application normally.
+
+The execution will complete in approximately 13 seconds (one second per log message) instead of 3-5 minutes.
 
 ---
 

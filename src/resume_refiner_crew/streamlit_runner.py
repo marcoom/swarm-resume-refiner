@@ -8,9 +8,10 @@ Logs are written to .crewai_temp/crew_logs.txt by CrewAI's output_log_file featu
 import os
 from pathlib import Path
 
+import shutil
 from resume_refiner_crew.crew import ResumeRefinerCrew
 from resume_refiner_crew.tools.latex_generator import generate_resume_pdf_from_json
-from resume_refiner_crew.utils import setup_clean_storage
+from resume_refiner_crew.utils import setup_clean_storage, simulate_crew_execution
 
 
 def run_crew_with_params(
@@ -47,37 +48,57 @@ def run_crew_with_params(
     job_desc_path = knowledge_dir / "job_description.txt"
 
     try:
-        # Write uploaded files to knowledge directory
-        resume_path.write_bytes(resume_pdf_bytes)
-        job_desc_path.write_text(job_description, encoding='utf-8')
+        # Check if developer mode is enabled
+        developer_mode = os.getenv("DEVELOPER_MODE", "false").lower() == "true"
 
-        # Set environment variables for this run
-        os.environ['OPENAI_API_KEY'] = api_key
-        os.environ['OPENAI_MODEL'] = model
-        os.environ['TARGET_RESUME_WORDS'] = str(target_words)
+        if developer_mode:
+            # Developer Mode: Copy fixture knowledge files to knowledge directory
+            fixture_knowledge_dir = Path("tests/fixtures/knowledge")
+            if fixture_knowledge_dir.exists():
+                for file_path in fixture_knowledge_dir.iterdir():
+                    if file_path.is_file():
+                        shutil.copy2(file_path, knowledge_dir / file_path.name)
 
-        # Prepare inputs for crew (using same paths as CLI defaults)
-        inputs = {
-            'TARGET_RESUME_WORDS': str(target_words),
-            'RESUME_PDF_PATH': str(resume_path),
-            'JOB_DESCRIPTION_PATH': str(job_desc_path)
-        }
+            # Set environment variables for this run
+            os.environ['OPENAI_API_KEY'] = api_key
+            os.environ['OPENAI_MODEL'] = model
+            os.environ['TARGET_RESUME_WORDS'] = str(target_words)
 
-        # Clean storage and create crew
-        setup_clean_storage()
+            # Clean storage and simulate execution
+            setup_clean_storage()
+            simulate_crew_execution()
+        else:
+            # Normal Mode: Write uploaded files to knowledge directory
+            resume_path.write_bytes(resume_pdf_bytes)
+            job_desc_path.write_text(job_description, encoding='utf-8')
 
-        # Ensure .crewai_temp directory exists for log file
-        crewai_temp = Path(".crewai_temp")
-        crewai_temp.mkdir(parents=True, exist_ok=True)
+            # Set environment variables for this run
+            os.environ['OPENAI_API_KEY'] = api_key
+            os.environ['OPENAI_MODEL'] = model
+            os.environ['TARGET_RESUME_WORDS'] = str(target_words)
 
-        # TextFileKnowledgeSource prepends knowledge/, PDFSearchTool does not
-        crew = ResumeRefinerCrew(
-            job_description_path="job_description.txt",
-            resume_pdf_path="knowledge/CV.pdf"
-        ).crew()
-        crew.kickoff(inputs=inputs)
+            # Prepare inputs for crew (using same paths as CLI defaults)
+            inputs = {
+                'TARGET_RESUME_WORDS': str(target_words),
+                'RESUME_PDF_PATH': str(resume_path),
+                'JOB_DESCRIPTION_PATH': str(job_desc_path)
+            }
 
-        # Generate PDF resume with Harvard formatting
+            # Clean storage and create crew
+            setup_clean_storage()
+
+            # Ensure .crewai_temp directory exists for log file
+            crewai_temp = Path(".crewai_temp")
+            crewai_temp.mkdir(parents=True, exist_ok=True)
+
+            # TextFileKnowledgeSource prepends knowledge/, PDFSearchTool does not
+            crew = ResumeRefinerCrew(
+                job_description_path="job_description.txt",
+                resume_pdf_path="knowledge/CV.pdf"
+            ).crew()
+            crew.kickoff(inputs=inputs)
+
+        # Generate PDF resume with Harvard formatting (works for both modes)
         pdf_path = generate_resume_pdf_from_json()
 
         if pdf_path:

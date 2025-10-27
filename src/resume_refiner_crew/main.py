@@ -5,7 +5,7 @@ import logging
 
 from resume_refiner_crew.crew import ResumeRefinerCrew
 from resume_refiner_crew.tools.latex_generator import generate_resume_pdf_from_json
-from resume_refiner_crew.utils import setup_clean_storage
+from resume_refiner_crew.utils import setup_clean_storage, simulate_crew_execution
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -29,14 +29,22 @@ def run():
     }
 
     try:
-        setup_clean_storage()
+        # Check if developer mode is enabled
+        developer_mode = os.getenv("DEVELOPER_MODE", "false").lower() == "true"
 
-        logger.info("Starting Resume Refiner Crew...")
-        crew = ResumeRefinerCrew(
-            job_description_path=inputs['JOB_DESCRIPTION_PATH'],
-            resume_pdf_path=inputs['RESUME_PDF_PATH']
-        ).crew()
-        crew.kickoff(inputs=inputs)
+        if developer_mode:
+            logger.info("🚀 Developer Mode: Simulating crew execution with fixture data...")
+            setup_clean_storage()
+            simulate_crew_execution()
+            logger.info("✓ Simulation complete. Output files are ready.")
+        else:
+            setup_clean_storage()
+            logger.info("Starting Resume Refiner Crew...")
+            crew = ResumeRefinerCrew(
+                job_description_path=inputs['JOB_DESCRIPTION_PATH'],
+                resume_pdf_path=inputs['RESUME_PDF_PATH']
+            ).crew()
+            crew.kickoff(inputs=inputs)
 
         logger.info("Generating PDF resume with Harvard formatting from structured data...")
         pdf_path = generate_resume_pdf_from_json()
