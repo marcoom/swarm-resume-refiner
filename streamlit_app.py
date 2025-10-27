@@ -10,6 +10,7 @@ import os
 import json
 import zipfile
 import threading
+import time
 from pathlib import Path
 from io import BytesIO
 
@@ -70,7 +71,7 @@ def get_openai_chat_models():
 # Page configuration
 st.set_page_config(
     page_title="Resume Refiner Crew",
-    page_icon="📄",
+    page_icon="📝",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -92,6 +93,10 @@ if 'thread' not in st.session_state:
     st.session_state.thread = None
 if 'thread_result' not in st.session_state:
     st.session_state.thread_result = None
+if 'start_time' not in st.session_state:
+    st.session_state.start_time = None
+if 'show_logs' not in st.session_state:
+    st.session_state.show_logs = False
 
 
 def reset_session():
@@ -104,6 +109,8 @@ def reset_session():
     st.session_state.json_edit_mode = False
     st.session_state.thread = None
     st.session_state.thread_result = None
+    st.session_state.start_time = None
+    st.session_state.show_logs = False
 
 
 def run_crew_thread(resume_bytes, job_desc, api_key, model, target_words, result_container):
@@ -123,6 +130,51 @@ def run_crew_thread(resume_bytes, job_desc, api_key, model, target_words, result
     # Store result in the provided container (thread-safe, no session state access)
     result_container['result'] = result
     result_container['completed'] = True
+
+
+def get_current_progress():
+    """Parse crew logs to determine current progress.
+
+    Returns:
+        tuple: (completed_count, agent_name, status_text, log_content)
+    """
+    log_file = Path(".crewai_temp/crew_logs.txt")
+
+    if not log_file.exists():
+        return (0, "Initializing", "Starting up...", "")
+
+    log_content = log_file.read_text(encoding='utf-8')
+
+    # Task mapping: task_name -> (position, agent_name, status_text)
+    task_info = {
+        "parse_resume_task": (1, "Resume PDF Parser", "Parsing your resume"),
+        "analyze_job_task": (2, "Job Analyzer", "Analyzing the provided job description"),
+        "optimize_resume_task": (3, "Resume Analyzer", "Identifying improvements to be made"),
+        "generate_resume_task": (4, "Resume Writer", "Generating optimized resume"),
+        "verify_resume_task": (5, "Fact Checker", "Verifying resume accuracy"),
+        "harvard_format_task": (6, "Harvard Formatter", "Formatting resume structure"),
+        "generate_report_task": (7, "Report Generator", "Generating final report")
+    }
+
+    # Find all task_name occurrences in logs
+    import re
+    task_matches = re.findall(r'task_name="([^"]+)"', log_content)
+
+    if not task_matches:
+        return (0, "Initializing", "Starting up...", log_content)
+
+    # Last task found is the current executing task
+    current_task = task_matches[-1]
+
+    if current_task not in task_info:
+        return (0, "Unknown", "Processing...", log_content)
+
+    position, agent_name, status_text = task_info[current_task]
+
+    # Completed count = current task position - 1
+    completed_count = position - 1
+
+    return (completed_count, agent_name, status_text, log_content)
 
 
 def create_zip_archive():
@@ -156,9 +208,10 @@ if uploaded_file is not None:
 # Job Description
 st.sidebar.subheader("2. Job Description")
 job_description = st.sidebar.text_area(
-    "Paste the complete job posting",
+    "Add the complete job posting",
     height=250,
-    help="Include the full job description with requirements and responsibilities"
+    placeholder="Job description here",
+    help="Include the full job description with requirements and responsibilities, the text formatting is not important"
 )
 
 # Options Section (collapsible)
@@ -234,6 +287,7 @@ if st.sidebar.button(
 ):
     reset_session()
     st.session_state.processing = True
+    st.session_state.start_time = time.time()
 
     # Create a result container for thread communication
     st.session_state.thread_result = {'result': None, 'completed': False}
@@ -265,8 +319,40 @@ if not inputs_valid:
 # ===== MAIN CONTENT AREA =====
 
 # Show title
-st.title("📄 Resume Refiner Crew")
+st.title("📝 Resume Refiner Crew")
 st.markdown("Transform your resume into a job-specific, ATS-optimized document")
+
+
+# Fragment for auto-updating progress display
+@st.fragment(run_every=1.0)
+def show_processing_progress():
+    """Auto-updating fragment that displays processing progress."""
+    # Get current progress
+    completed, agent_name, status_text, logs = get_current_progress()
+
+    # Manual elapsed time display (replaces spinner)
+    if st.session_state.start_time:
+        elapsed = time.time() - st.session_state.start_time
+        elapsed_str = f"{int(elapsed//60)}m {int(elapsed%60)}s"
+        st.info(f"⏳ Working on your resume... (Elapsed: {elapsed_str})")
+    else:
+        st.info("⏳ Working on your resume...")
+
+        # Progress bar
+    progress_value = completed / 7
+    st.progress(progress_value, text=f"**Working Agent: {agent_name} ({completed+1}/7)**")
+
+    # Checkbox to control log expansion (persists across fragment reruns)
+    show_logs = st.checkbox("Show detailed logs", value=st.session_state.show_logs, key="show_logs_check")
+    st.session_state.show_logs = show_logs
+
+    # Status container
+    with st.status(label=status_text, state="running", expanded=show_logs):
+        if logs.strip():
+            st.code(logs, language=None, wrap_lines=True)
+        else:
+            st.info("Initializing...")
+
 
 # PROCESSING PHASE
 if st.session_state.processing:
@@ -278,47 +364,8 @@ if st.session_state.processing:
         st.session_state.completed = True
         st.rerun()
 
-    st.header("⚙️ Processing in progress...")
-
-    # Progress visualization
-    progress_steps = [
-        "Parsing Resume",
-        "Analyzing Job Requirements",
-        "Optimizing Content",
-        "Verifying Facts",
-        "Formatting Resume",
-        "Generating PDF"
-    ]
-
-    # Show progress steps
-    cols = st.columns(len(progress_steps))
-    for i, step in enumerate(progress_steps):
-        with cols[i]:
-            st.markdown(f"**{i+1}. {step}**")
-
-    st.divider()
-
-    # Live logs
-    st.subheader("📋 Crew execution logs")
-    log_container = st.container(height=400)
-
-    with log_container:
-        log_file = Path(".crewai_temp/crew_logs.txt")
-        if log_file.exists():
-            # Read and display log file contents
-            log_content = log_file.read_text(encoding='utf-8')
-            if log_content.strip():
-                st.text(log_content)
-            else:
-                st.info("Initializing...")
-        else:
-            st.info("Initializing...")
-
-    # Auto-refresh while processing
-    if st.session_state.processing:
-        import time
-        time.sleep(1)
-        st.rerun()
+    # Call fragment - auto-updates every 1 second
+    show_processing_progress()
 
 # RESULTS PHASE
 elif st.session_state.completed:
@@ -326,6 +373,12 @@ elif st.session_state.completed:
 
     if result and result['success']:
         st.success("✅ Your optimized resume is ready!")
+        st.balloons()
+
+        # Show elapsed time
+        if st.session_state.start_time:
+            elapsed = time.time() - st.session_state.start_time
+            st.info(f"⏱️ Processing completed in {int(elapsed//60)}m {int(elapsed%60)}s")
 
         # Display final report
         st.header("📊 Optimization Report")
