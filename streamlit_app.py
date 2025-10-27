@@ -12,7 +12,6 @@ import zipfile
 import threading
 from pathlib import Path
 from io import BytesIO
-from queue import Queue
 
 from src.resume_refiner_crew.streamlit_runner import run_crew_with_params
 from src.resume_refiner_crew.tools.latex_generator import generate_resume_pdf_from_json
@@ -34,10 +33,6 @@ if 'processing' not in st.session_state:
     st.session_state.processing = False
 if 'completed' not in st.session_state:
     st.session_state.completed = False
-if 'logs' not in st.session_state:
-    st.session_state.logs = []
-if 'logs_queue' not in st.session_state:
-    st.session_state.logs_queue = Queue()
 if 'result' not in st.session_state:
     st.session_state.result = None
 if 'edited_json' not in st.session_state:
@@ -46,38 +41,41 @@ if 'original_json' not in st.session_state:
     st.session_state.original_json = None
 if 'json_edit_mode' not in st.session_state:
     st.session_state.json_edit_mode = False
+if 'thread' not in st.session_state:
+    st.session_state.thread = None
+if 'thread_result' not in st.session_state:
+    st.session_state.thread_result = None
 
 
 def reset_session():
     """Reset session state for a new run."""
     st.session_state.processing = False
     st.session_state.completed = False
-    st.session_state.logs = []
-    st.session_state.logs_queue = Queue()
     st.session_state.result = None
     st.session_state.edited_json = None
     st.session_state.original_json = None
     st.session_state.json_edit_mode = False
+    st.session_state.thread = None
+    st.session_state.thread_result = None
 
 
-def run_crew_thread(resume_bytes, job_desc, api_key, model, target_words, logs_queue):
-    """Run crew in a separate thread."""
-    # Create a thread-safe log callback using the queue
-    def log_to_queue(message: str):
-        logs_queue.put(message)
+def run_crew_thread(resume_bytes, job_desc, api_key, model, target_words, result_container):
+    """Run crew in a separate thread.
 
+    Args:
+        result_container: A mutable dict to store the result (avoids session state warnings)
+    """
     result = run_crew_with_params(
         resume_pdf_bytes=resume_bytes,
         job_description=job_desc,
         api_key=api_key,
         model=model,
-        target_words=target_words,
-        log_callback=log_to_queue
+        target_words=target_words
     )
 
-    # Put result and completion status in queue as special messages
-    logs_queue.put(('__RESULT__', result))
-    logs_queue.put(('__COMPLETE__', True))
+    # Store result in the provided container (thread-safe, no session state access)
+    result_container['result'] = result
+    result_container['completed'] = True
 
 
 def create_zip_archive():
@@ -178,8 +176,11 @@ if st.sidebar.button(
     reset_session()
     st.session_state.processing = True
 
+    # Create a result container for thread communication
+    st.session_state.thread_result = {'result': None, 'completed': False}
+
     # Start processing in background thread
-    thread = threading.Thread(
+    st.session_state.thread = threading.Thread(
         target=run_crew_thread,
         args=(
             uploaded_file.read(),
@@ -187,10 +188,10 @@ if st.sidebar.button(
             api_key,
             model,
             target_words,
-            st.session_state.logs_queue  # Pass the queue to the thread
+            st.session_state.thread_result
         )
     )
-    thread.start()
+    st.session_state.thread.start()
     st.rerun()
 
 # Reset Button
@@ -210,20 +211,13 @@ st.markdown("Transform your resume into a job-specific, ATS-optimized document")
 
 # PROCESSING PHASE
 if st.session_state.processing:
-    # Poll the queue and update session state logs
-    while not st.session_state.logs_queue.empty():
-        item = st.session_state.logs_queue.get()
-
-        # Check for special messages
-        if isinstance(item, tuple):
-            if item[0] == '__RESULT__':
-                st.session_state.result = item[1]
-            elif item[0] == '__COMPLETE__':
-                st.session_state.processing = False
-                st.session_state.completed = True
-        else:
-            # Regular log message
-            st.session_state.logs.append(item)
+    # Check if thread has completed
+    if st.session_state.thread_result and st.session_state.thread_result.get('completed'):
+        # Thread finished - update session state from main thread
+        st.session_state.result = st.session_state.thread_result.get('result')
+        st.session_state.processing = False
+        st.session_state.completed = True
+        st.rerun()
 
     st.header("⚙️ Processing in progress...")
 
@@ -250,9 +244,14 @@ if st.session_state.processing:
     log_container = st.container(height=400)
 
     with log_container:
-        if st.session_state.logs:
-            for log in st.session_state.logs:
-                st.text(log)
+        log_file = Path(".crewai_temp/crew_logs.txt")
+        if log_file.exists():
+            # Read and display log file contents
+            log_content = log_file.read_text(encoding='utf-8')
+            if log_content.strip():
+                st.text(log_content)
+            else:
+                st.info("Initializing...")
         else:
             st.info("Initializing...")
 

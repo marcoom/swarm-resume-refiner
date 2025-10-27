@@ -182,5 +182,6 @@ class ResumeRefinerCrew():
             tasks=self.tasks,
             verbose=True,
             process=Process.sequential,
-            memory=False
+            memory=False,
+            output_log_file=".crewai_temp/crew_logs.txt"
         )
