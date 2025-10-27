@@ -18,10 +18,17 @@ class ResumeRefinerCrew():
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
 
-    def __init__(self) -> None:
-        """Initialize crew with job description knowledge source and PDF search tool"""
-        self.job_description = TextFileKnowledgeSource(file_paths=["job_description.txt"])
-        self.pdf_search_tool = PDFSearchTool()
+    def __init__(self, job_description_path: str = "job_description.txt", resume_pdf_path: str = "knowledge/CV.pdf") -> None:
+        """Initialize crew with job description knowledge source and PDF search tool
+
+        Args:
+            job_description_path: Path to the job description text file (default: "job_description.txt")
+            resume_pdf_path: Path to the resume PDF file (default: "knowledge/CV.pdf")
+        """
+        self.job_description_path = job_description_path
+        self.resume_pdf_path = resume_pdf_path
+        self.job_description = TextFileKnowledgeSource(file_paths=[job_description_path])
+        self.pdf_search_tool = PDFSearchTool(pdf=resume_pdf_path)
 
         # Configure LLM from environment variables for OpenAI
         model = os.getenv("OPENAI_MODEL", "gpt-5-mini")

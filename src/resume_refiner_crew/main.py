@@ -24,7 +24,7 @@ def run():
     """
     inputs = {
         'TARGET_RESUME_WORDS': os.getenv("TARGET_RESUME_WORDS", "500"),
-        'RESUME_PDF_PATH': os.getenv("RESUME_PDF_PATH", "./knowledge/CV.pdf"),
+        'RESUME_PDF_PATH': os.getenv("RESUME_PDF_PATH", "knowledge/CV.pdf"),
         'JOB_DESCRIPTION_PATH': os.getenv("JOB_DESCRIPTION_PATH", "job_description.txt")
     }
 
@@ -32,7 +32,10 @@ def run():
         setup_clean_storage()
 
         logger.info("Starting Resume Refiner Crew...")
-        crew = ResumeRefinerCrew().crew()
+        crew = ResumeRefinerCrew(
+            job_description_path=inputs['JOB_DESCRIPTION_PATH'],
+            resume_pdf_path=inputs['RESUME_PDF_PATH']
+        ).crew()
         crew.kickoff(inputs=inputs)
 
         logger.info("Generating PDF resume with Harvard formatting from structured data...")

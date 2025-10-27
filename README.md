@@ -175,13 +175,44 @@ Place your files in the appropriate locations:
 
 ## Usage
 
-### Basic Usage
+Resume Refiner Crew can be used in two ways: **Web UI** (recommended for most users) or **Command Line**.
 
-Run the complete pipeline:
+### Web Interface (Recommended)
+
+The easiest way to use Resume Refiner Crew is through the Streamlit web interface:
+
+```bash
+./start.sh
+```
+
+Or directly:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+The web interface will open in your browser at `http://localhost:8501` and provides:
+
+- **Visual file upload** - Drag and drop your resume PDF
+- **Guided inputs** - Clear form fields for all settings
+- **Real-time progress** - Watch the agents work with live logs
+- **Interactive results** - View reports and download files with one click
+- **Optional JSON editing** - Fine-tune the structured resume before PDF generation
+- **No file management** - Upload files directly, no need to place them in folders
+
+This is the recommended method for users who prefer a graphical interface and want to process multiple resumes without managing configuration files.
+
+### Command Line Interface
+
+For automation or integration into workflows, use the CLI:
 
 ```bash
 crewai run
 ```
+
+**Before running**, ensure your input files are in place:
+- Resume PDF: `knowledge/CV.pdf`
+- Job Description: `knowledge/job_description.txt`
 
 This command will:
 1. Parse your resume PDF
@@ -193,7 +224,7 @@ This command will:
 7. Generate a PDF resume
 8. Create a comprehensive report
 
-### Alternative Commands
+### Alternative CLI Commands
 
 ```bash
 resume_refiner_crew    # Same as crewai run
@@ -206,7 +237,8 @@ The complete pipeline typically takes 3-5 minutes depending on resume complexity
 
 ### Monitoring Progress
 
-The system runs in verbose mode, so you'll see each agent's progress, reasoning, and actions in the terminal output.
+- **Web UI**: Real-time progress indicators and live log streaming
+- **CLI**: Verbose terminal output showing each agent's reasoning and actions
 
 ---
 
@@ -225,13 +257,14 @@ resume-refiner-crew/
 │   │   └── latex_generator.py       # LaTeX generation and PDF compilation
 │   │
 │   ├── crew.py                      # Crew orchestration, agent/task initialization
-│   ├── main.py                      # Entry point, pipeline execution
+│   ├── main.py                      # Entry point, pipeline execution (CLI)
 │   ├── models.py                    # Pydantic models (JobRequirements, ResumeOptimization, etc.)
+│   ├── streamlit_runner.py          # Wrapper for running crew with custom parameters (Web UI)
 │   └── utils.py                     # Utility functions (storage cleanup)
 │
 ├── knowledge/
-│   ├── CV.pdf                       # Your input resume (place your PDF here)
-│   └── job_description.txt          # Target job posting (plain text)
+│   ├── CV.pdf                       # Your input resume (place your PDF here for CLI)
+│   └── job_description.txt          # Target job posting (plain text, for CLI)
 │
 ├── output/                          # All generated files go here
 │   ├── parsed_resume.md             # Original resume in markdown
@@ -245,6 +278,8 @@ resume-refiner-crew/
 │
 ├── templates/                       # LaTeX templates for reference
 │
+├── streamlit_app.py                 # Streamlit web interface
+├── start.sh                         # Launch script for web UI
 ├── .env                             # Environment configuration (not in git)
 ├── .env.example                     # Example environment configuration
 ├── pyproject.toml                   # Project dependencies and metadata
