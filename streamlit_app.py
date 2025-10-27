@@ -20,6 +20,53 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+
+@st.cache_data
+def get_openai_chat_models():
+    """Fetch available OpenAI chat models dynamically.
+
+    Returns a filtered, sorted list of chat model IDs.
+    Falls back to hardcoded list on error.
+    """
+    import re
+    from openai import OpenAI
+
+    # Fallback model list
+    fallback_models = [
+        "gpt-5-pro", "gpt-5", "gpt-5-mini", "gpt-5-nano",
+        "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano",
+        "gpt-4-turbo", "gpt-4o", "gpt-4o-mini", "gpt-4",
+        "gpt-3.5-turbo-16k", "gpt-3.5-turbo"
+    ]
+
+    try:
+        client = OpenAI()
+        models = [m.id for m in client.models.list()]
+
+        # Regex patterns for filtering
+        INC = re.compile(r"^(gpt-\d)", re.IGNORECASE)  # include GPT*
+        END_DATE = re.compile(r"-\d{4}-\d{2}-\d{2}$")  # ends with YYYY-MM-DD
+        EXCLUDE = re.compile(
+            r"(whisper|sora|dall-e|tts|audio|image|embed(?:ding)?|"
+            r"moderation|realtime|search|transcribe|diarize|codex|"
+            r"davinci|babbage|instruct)",
+            re.IGNORECASE
+        )
+
+        # Filter and sort models
+        chat_models = sorted(
+            (mid for mid in models
+             if INC.search(mid) and not END_DATE.search(mid) and not EXCLUDE.search(mid)),
+            reverse=True
+        )
+
+        return chat_models if chat_models else fallback_models
+
+    except Exception as e:
+        # Return fallback list on any error (invalid key, network issue, etc.)
+        return fallback_models
+
+
 # Page configuration
 st.set_page_config(
     page_title="Resume Refiner Crew",
@@ -93,9 +140,6 @@ def create_zip_archive():
 
 
 # ===== SIDEBAR: INPUTS =====
-st.sidebar.title("Resume Refiner Crew")
-st.sidebar.markdown("AI-powered resume optimization with multi-agent intelligence")
-st.sidebar.divider()
 
 # Upload Resume
 st.sidebar.subheader("1. Upload Resume")
@@ -113,49 +157,64 @@ if uploaded_file is not None:
 st.sidebar.subheader("2. Job Description")
 job_description = st.sidebar.text_area(
     "Paste the complete job posting",
-    height=150,
+    height=250,
     help="Include the full job description with requirements and responsibilities"
 )
 
-# API Key
-st.sidebar.subheader("3. OpenAI API Key")
-api_key = st.sidebar.text_input(
-    "Your OpenAI API key",
-    type="password",
-    value=os.getenv("OPENAI_API_KEY", ""),
-    help="Your API key is never stored permanently"
-)
+# Options Section (collapsible)
+with st.sidebar.expander("⚙️ Options", expanded=False):
+    # API Key
+    st.subheader("OpenAI API Key")
+    api_key = st.text_input(
+        "Your OpenAI API key",
+        type="password",
+        value=os.getenv("OPENAI_API_KEY", ""),
+        help="Your API key is never stored permanently"
+    )
 
-# Model Selection
-st.sidebar.subheader("4. Model Selection")
-model = st.sidebar.selectbox(
-    "Choose AI model",
-    options=["gpt-5-mini", "gpt-5-nano"],
-    index=0,
-    help="Select the OpenAI model to use"
-)
+    # Model Selection
+    st.subheader("Model Selection")
 
-# Target Word Count
-st.sidebar.subheader("5. Target Word Count")
-target_words = st.sidebar.number_input(
-    "Expected resume length",
-    min_value=300,
-    max_value=1000,
-    value=int(os.getenv("TARGET_RESUME_WORDS", "400")),
-    step=50,
-    help="400-600 words for single page, 600-800 for two pages"
-)
+    # Get available models dynamically
+    available_models = get_openai_chat_models()
 
-# Advanced Options
-st.sidebar.subheader("6. Advanced Options")
-download_all = st.sidebar.checkbox(
-    "Download all output files",
-    help="Include Markdown, JSON, and LaTeX files in addition to PDF"
-)
-allow_editing = st.sidebar.checkbox(
-    "Allow final resume editing",
-    help="Edit the structured JSON before generating the final PDF"
-)
+    # Get default model from environment
+    default_model = os.getenv("OPENAI_MODEL", "gpt-5-mini")
+
+    # Find index of default model (fallback to 0 if not found)
+    try:
+        default_index = available_models.index(default_model)
+    except ValueError:
+        default_index = 0
+
+    model = st.selectbox(
+        "Choose AI model",
+        options=available_models,
+        index=default_index,
+        help="Select the OpenAI model to use"
+    )
+
+    # Target Word Count
+    st.subheader("Target Word Count")
+    target_words = st.number_input(
+        "Expected resume length",
+        min_value=300,
+        max_value=1000,
+        value=int(os.getenv("TARGET_RESUME_WORDS", "400")),
+        step=50,
+        help="400-600 words for single page, 600-800 for two pages"
+    )
+
+    # Advanced Options
+    st.subheader("Advanced Options")
+    download_all = st.checkbox(
+        "Download all output files",
+        help="Include Markdown, JSON, and LaTeX files in addition to PDF"
+    )
+    allow_editing = st.checkbox(
+        "Allow final resume editing",
+        help="Edit the structured JSON before generating the final PDF"
+    )
 
 st.sidebar.divider()
 
@@ -397,20 +456,8 @@ else:
     st.markdown("""
     1. **Upload** your current resume (PDF format)
     2. **Paste** the complete job description
-    3. **Configure** AI model and target word count
-    4. **Process** and watch the multi-agent system optimize your resume
-    5. **Download** your tailored, ATS-optimized resume
+    3. **Process** and watch the multi-agent system optimize your resume
+    4. **Download** your tailored, ATS-optimized resume
 
-    The system uses 7 specialized AI agents to analyze, optimize, and format your resume
-    to maximize your chances of getting noticed by recruiters and passing ATS systems.
-    """)
-
-    st.subheader("Key Features:")
-    st.markdown("""
-    - ✅ Intelligent resume parsing
-    - ✅ Job fit scoring with detailed analysis
-    - ✅ ATS optimization with proper keywords
-    - ✅ Fact-checking to prevent AI hallucinations
-    - ✅ Harvard Business School formatting
-    - ✅ Professional PDF output
+    The system uses 7 specialized AI agents to analyze, optimize, and format your resume.
     """)
