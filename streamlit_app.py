@@ -200,28 +200,46 @@ def create_zip_archive():
     return zip_buffer
 
 
+@st.dialog("📊 Optimization Report", width="large")
+def show_optimization_report():
+    """Display the optimization report in a modal dialog."""
+    report_path = Path("output/final_report.md")
+
+    if report_path.exists():
+        report_content = report_path.read_text(encoding='utf-8')
+        st.markdown(report_content)
+    else:
+        st.warning("Report file not found")
+
+    # Close button at the end
+    if st.button("Close", type="primary", use_container_width=True):
+        st.rerun()
+
+
 # ===== SIDEBAR: INPUTS =====
 
+# Job Description
+st.sidebar.subheader("1. Job Description")
+job_description = st.sidebar.text_area(
+    "Add the complete job posting",
+    height=200,
+    placeholder="Add the complete job description here",
+    label_visibility="collapsed",
+    help="Include the full job description with requirements and responsibilities, the text formatting is not important"
+)
+
 # Upload Resume
-st.sidebar.subheader("1. Upload Resume")
+st.sidebar.subheader("2. Upload Resume")
 uploaded_file = st.sidebar.file_uploader(
     "Choose a PDF file",
     type=['pdf'],
-    help="Upload your current resume in PDF format"
+    help="Upload your current resume in PDF format",
+    label_visibility="collapsed"
 )
 
 # Show uploaded filename
 if uploaded_file is not None:
-    st.sidebar.success(f"✓ Uploaded: {uploaded_file.name}")
-
-# Job Description
-st.sidebar.subheader("2. Job Description")
-job_description = st.sidebar.text_area(
-    "Add the complete job posting",
-    height=250,
-    placeholder="Job description here",
-    help="Include the full job description with requirements and responsibilities, the text formatting is not important"
-)
+    st.toast(f"✓ Uploaded: {uploaded_file.name}", icon="✅")
 
 # Options Section (collapsible)
 with st.sidebar.expander("⚙️ Options", expanded=False):
@@ -388,6 +406,10 @@ elif st.session_state.completed:
                 elapsed = time.time() - st.session_state.start_time
                 st.info(f"⏱️ Processing completed in {int(elapsed//60)}m {int(elapsed%60)}s")
 
+        # OPTIMIZATION REPORT BUTTON
+        if st.button("📊 View Optimization Report", use_container_width=True, type="secondary"):
+            show_optimization_report()
+
         # COLLAPSIBLE EDIT RESUME SECTION
         with st.expander("✏️ Edit Structured Resume (Optional)", expanded=False):
             # Display toast messages after rerun
@@ -518,16 +540,6 @@ elif st.session_state.completed:
             )
 
         st.divider()
-
-        # OPTIMIZATION REPORT (at the end)
-        st.header("📊 Optimization Report")
-
-        report_path = Path("output/final_report.md")
-        if report_path.exists():
-            report_content = report_path.read_text(encoding='utf-8')
-            st.markdown(report_content)
-        else:
-            st.warning("Report file not found")
 
     else:
         # Error handling
