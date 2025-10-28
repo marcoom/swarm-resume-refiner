@@ -590,3 +590,9 @@ else:
 
     The system uses 7 specialized AI agents to analyze, optimize, and format your resume.
     """)
+
+
+# ===== FOOTER =====
+st.divider()
+st.caption("[Marco Mongi](https://www.linkedin.com/in/marco-mongi/) © 2025 • [GitHub](https://github.com/marcoom/swarm-resume-refiner) • MIT License")
+st.caption("This tool uses OpenAI API (paid service). AI suggestions should be reviewed before use.")
