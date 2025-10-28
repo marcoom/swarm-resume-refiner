@@ -1,0 +1,62 @@
+# Git repository
+.git
+.gitignore
+
+# Python virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# CrewAI temporary storage
+.crewai_temp/
+
+# System specific data (will be mounted as volumes or created at runtime)
+knowledge/
+knowledge/*
+output/
+output/*
+
+# Environment files (contains secrets)
+.env
+.env.local
+
+# Lock files
+uv.lock
+*.lock
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Documentation and project files
+*.md
+LICENSE
+
+# Code copilots
+CLAUDE.md
+.claude
+.claude/
+
+# Test files
+*.pytest_cache/
+.coverage
+htmlcov/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Other
+similar_projects/

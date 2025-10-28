@@ -243,6 +243,103 @@ The complete pipeline typically takes 3-5 minutes depending on resume complexity
 
 ---
 
+## Docker Usage
+
+Resume Refiner Crew is available as a Docker container, providing an isolated environment with all dependencies pre-installed. This is the easiest way to run the application without manually installing Python, LaTeX, or other dependencies.
+
+### Prerequisites
+
+- **Docker** or **Docker Desktop** installed on your system
+  - Linux: [Install Docker Engine](https://docs.docker.com/engine/install/)
+  - macOS: [Install Docker Desktop](https://docs.docker.com/desktop/install/mac-install/)
+  - Windows: [Install Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
+
+### Using Pre-built Image from Docker Hub
+
+The easiest way to get started is to pull the pre-built image from Docker Hub:
+
+```bash
+docker pull marcoom/swarm-resume-refiner:1.0.0
+```
+
+Run the container with environment variables:
+
+```bash
+docker run -p 8501:8501 \
+  -e OPENAI_API_KEY=your_openai_api_key_here \
+  -e OPENAI_MODEL=gpt-5-mini \
+  -e TARGET_RESUME_WORDS=500 \
+  -e DEVELOPER_MODE=false \
+  marcoom/swarm-resume-refiner:1.0.0
+```
+
+**Environment Variables Explained:**
+- `OPENAI_API_KEY` - **(Required)** Your OpenAI API key
+- `OPENAI_MODEL` - *(Optional)* Model to use (default: `gpt-5-mini`)
+- `TARGET_RESUME_WORDS` - *(Optional)* Target word count (default: `500`; single page: 400-600, two pages: 600-800)
+- `DEVELOPER_MODE` - *(Optional)* Set to `true` to simulate execution without API calls (default: `false`)
+
+**On Windows (PowerShell)**, use `${PWD}` instead of `$(pwd)`:
+
+```powershell
+docker run -p 8501:8501 `
+  -e OPENAI_API_KEY=your_openai_api_key_here `
+  -e OPENAI_MODEL=gpt-5-mini `
+  -e TARGET_RESUME_WORDS=500 `
+  -e DEVELOPER_MODE=false `
+  marcoom/swarm-resume-refiner:1.0.0
+```
+
+**Using an environment file** (recommended for managing multiple variables):
+
+```bash
+# Create .env file with your configuration
+cat > .env << EOF
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-5-mini
+TARGET_RESUME_WORDS=500
+DEVELOPER_MODE=false
+EOF
+
+# Run with --env-file
+docker run -p 8501:8501 \
+  --env-file .env \
+  marcoom/swarm-resume-refiner:1.0.0
+```
+
+The Streamlit web interface will be available at `http://localhost:8501`.
+
+### Building and Running Locally
+
+If you prefer to build the Docker image from source:
+
+#### 1. Build the Image
+
+```bash
+docker build -t swarm-resume-refiner .
+```
+
+#### 2. Run the Container
+
+```bash
+docker run -p 8501:8501 \
+  -e OPENAI_API_KEY=your_openai_api_key_here \
+  -e OPENAI_MODEL=gpt-5-mini \
+  -e TARGET_RESUME_WORDS=500 \
+  -e DEVELOPER_MODE=false \
+  swarm-resume-refiner
+```
+
+Or use an environment file:
+
+```bash
+docker run -p 8501:8501 \
+  --env-file .env \
+  swarm-resume-refiner
+```
+
+---
+
 ## Developer Mode
 
 **Developer Mode** allows you to test the application's UI and workflows without running the actual multi-agent system. This is particularly useful during development when you want to:
