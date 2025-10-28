@@ -1,19 +1,22 @@
-"""
-LaTeX Generator for Harvard-Formatted Resumes
+"""LaTeX Generator for Harvard-Formatted Resumes.
 
 Generates LaTeX directly from structured resume JSON data and compiles to PDF.
 Implements Harvard resume formatting standards with proper alignment and styling.
 """
 
 import json
-import os
 import re
+import logging
 import subprocess
 from pathlib import Path
-from typing import Dict, List, Optional
-import logging
+from typing import Dict, List, Optional, Tuple, Union
 
-logging.basicConfig(level=logging.INFO)
+from ..constants import (
+    JOB_ANALYSIS_FILE,
+    LATEX_VSPACE_SECTION,
+)
+from ..utils import sanitize_for_filename
+
 logger = logging.getLogger(__name__)
 
 
@@ -193,7 +196,7 @@ def generate_work_experience_section(experiences: List[Dict]) -> str:
                 latex += f"    \\item {formatted_achievement}\n"
             latex += r"\end{itemize}" + "\n"
 
-        latex += "\n\\vspace{12pt}\n\n"
+        latex += f"\n{LATEX_VSPACE_SECTION}\n\n"
 
     return latex
 
@@ -244,7 +247,7 @@ def generate_education_section(education_list: List[Dict]) -> str:
         if additional_info:
             latex += f"\n{escape_latex(additional_info)}\n"
 
-        latex += "\n\\vspace{12pt}\n\n"
+        latex += f"\n{LATEX_VSPACE_SECTION}\n\n"
 
     return latex
 
@@ -260,7 +263,7 @@ def generate_summary_section(summary: Optional[str]) -> str:
 
 """
     latex += f"{escape_latex(summary)}\n\n"
-    latex += "\\vspace{12pt}\n\n"
+    latex += f"{LATEX_VSPACE_SECTION}\n\n"
 
     return latex
 
@@ -290,7 +293,7 @@ def generate_certifications_section(certifications: List[Dict]) -> str:
         cert_line = ' | '.join(parts)
         latex += f"{cert_line}\n\n"
 
-    latex += "\\vspace{12pt}\n\n"
+    latex += f"{LATEX_VSPACE_SECTION}\n\n"
     return latex
 
 
@@ -310,13 +313,12 @@ def generate_skills_section(skills: Optional[Dict[str, List[str]]]) -> str:
         skills_str = escape_latex(', '.join(skill_list))
         latex += f"\\textbf{{{category_escaped}:}} {skills_str}\n\n"
 
-    latex += "\\vspace{12pt}\n\n"
+    latex += f"{LATEX_VSPACE_SECTION}\n\n"
     return latex
 
 
-def render_mixed_content(content: List) -> str:
-    """
-    Render mixed content (paragraphs and lists) to LaTeX.
+def render_mixed_content(content: List[Union[str, List[str]]]) -> str:
+    """Render mixed content (paragraphs and lists) to LaTeX.
 
     Args:
         content: List of content blocks where each block is either:
@@ -358,7 +360,7 @@ def generate_additional_sections(
 
 """
         latex += render_mixed_content(languages)
-        latex += "\\vspace{12pt}\n\n"
+        latex += f"{LATEX_VSPACE_SECTION}\n\n"
 
     # Projects
     if projects:
@@ -368,7 +370,7 @@ def generate_additional_sections(
 
 """
         latex += render_mixed_content(projects)
-        latex += "\\vspace{12pt}\n\n"
+        latex += f"{LATEX_VSPACE_SECTION}\n\n"
 
     # Additional sections
     if additional_sections:
@@ -381,7 +383,7 @@ def generate_additional_sections(
 
             latex += render_mixed_content(section_content)
 
-            latex += "\\vspace{12pt}\n\n"
+            latex += f"{LATEX_VSPACE_SECTION}\n\n"
 
     return latex
 
@@ -452,64 +454,35 @@ def generate_complete_latex(resume_data: Dict) -> str:
     return latex
 
 
-def sanitize_for_filename(text: str) -> str:
-    """Sanitize string for use in filename."""
-    sanitized = re.sub(r'[^\w\s-]', '', text)
-    sanitized = re.sub(r'\s+', '_', sanitized)
-    sanitized = re.sub(r'_+', '_', sanitized)
-    return sanitized.strip('_')
-
-
 def compile_latex_to_pdf(
     tex_content: str,
     output_dir: Path,
     filename_base: str
 ) -> Optional[str]:
-    """
-    Compile LaTeX content to PDF.
+    """Compile LaTeX content to PDF.
 
     Args:
-        tex_content: LaTeX document content
-        output_dir: Directory to save output files
-        filename_base: Base name for output files (without extension)
+        tex_content: LaTeX document content.
+        output_dir: Directory to save output files.
+        filename_base: Base name for output files (without extension).
 
     Returns:
-        Path to generated PDF, or None if compilation failed
+        Path to generated PDF, or None if compilation failed.
+
+    Raises:
+        FileNotFoundError: If pdflatex is not installed.
+        subprocess.TimeoutExpired: If compilation exceeds timeout.
     """
+    tex_path = output_dir / f"{filename_base}.tex"
+
     try:
-        # Write LaTeX file
-        tex_path = output_dir / f"{filename_base}.tex"
-        with open(tex_path, 'w', encoding='utf-8') as f:
-            f.write(tex_content)
-
-        logger.info(f"LaTeX file written: {tex_path}")
-
-        # Compile with pdflatex
-        logger.info("Compiling LaTeX to PDF...")
-        result = subprocess.run(
-            ['pdflatex', '-interaction=nonstopmode', '-output-directory', str(output_dir), str(tex_path)],
-            capture_output=True,
-            text=True,
-            timeout=60
-        )
-
-        if result.returncode != 0:
-            logger.error(f"pdflatex compilation failed:\n{result.stderr}")
-            return None
-
-        # Clean up auxiliary files
-        for ext in ['.aux', '.log', '.out']:
-            aux_file = output_dir / f"{filename_base}{ext}"
-            if aux_file.exists():
-                aux_file.unlink()
-
-        # Clean up the .tex file as well
-        if tex_path.exists():
-            tex_path.unlink()
+        _write_tex_file(tex_path, tex_content)
+        _run_pdflatex(tex_path, output_dir)
+        _cleanup_auxiliary_files(output_dir, filename_base, tex_path)
 
         pdf_path = output_dir / f"{filename_base}.pdf"
         if pdf_path.exists():
-            logger.info(f"✓ PDF generated successfully: {pdf_path}")
+            logger.info(f"PDF generated successfully: {pdf_path}")
             return str(pdf_path)
         else:
             logger.error("PDF file was not created")
@@ -518,87 +491,137 @@ def compile_latex_to_pdf(
     except subprocess.TimeoutExpired:
         logger.error("LaTeX compilation timed out")
         return None
-    except Exception as e:
-        logger.error(f"Error compiling LaTeX: {e}")
-        import traceback
-        logger.error(traceback.format_exc())
+    except FileNotFoundError:
+        logger.error("pdflatex not found. Please install a LaTeX distribution.")
         return None
+    except Exception as e:
+        logger.error(f"Error compiling LaTeX: {e}", exc_info=True)
+        return None
+
+
+def _write_tex_file(tex_path: Path, content: str) -> None:
+    """Write LaTeX content to file."""
+    with open(tex_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    logger.info(f"LaTeX file written: {tex_path}")
+
+
+def _run_pdflatex(tex_path: Path, output_dir: Path) -> None:
+    """Run pdflatex compiler."""
+    logger.info("Compiling LaTeX to PDF...")
+    subprocess.run(
+        [
+            'pdflatex',
+            '-interaction=nonstopmode',
+            '-output-directory',
+            str(output_dir),
+            str(tex_path)
+        ],
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=True
+    )
+
+
+def _cleanup_auxiliary_files(
+    output_dir: Path,
+    filename_base: str,
+    tex_path: Path
+) -> None:
+    """Clean up auxiliary LaTeX files."""
+    for ext in ['.aux', '.log', '.out', '.tex']:
+        aux_file = output_dir / f"{filename_base}{ext}"
+        if aux_file.exists():
+            aux_file.unlink()
+
+    if tex_path.exists():
+        tex_path.unlink()
+
+
+def _load_resume_data(json_path: Path) -> Dict:
+    """Load structured resume data from JSON file."""
+    if not json_path.exists():
+        raise FileNotFoundError(f"Structured resume JSON not found: {json_path}")
+
+    with open(json_path, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def _load_job_title(job_analysis_path: Path) -> str:
+    """Load job title from job analysis file."""
+    if not job_analysis_path.exists():
+        logger.warning("job_analysis.json not found, using default job title")
+        return 'Position'
+
+    with open(job_analysis_path, 'r', encoding='utf-8') as f:
+        job_analysis = json.load(f)
+
+    return job_analysis.get('job_title', 'Position')
+
+
+def _extract_candidate_names(candidate_name: str) -> Tuple[str, str]:
+    """Extract first and last names from candidate name string."""
+    name_parts = candidate_name.split()
+    if len(name_parts) >= 2:
+        return name_parts[0], name_parts[-1]
+    return candidate_name, ""
+
+
+def _generate_pdf_filename(
+    first_name: str,
+    last_name: str,
+    job_title: str
+) -> str:
+    """Generate PDF filename from candidate and job information."""
+    first_clean = sanitize_for_filename(first_name)
+    last_clean = sanitize_for_filename(last_name)
+    title_clean = sanitize_for_filename(job_title)
+
+    return f"CV_{last_clean}_{first_clean}_{title_clean}"
 
 
 def generate_resume_pdf_from_json(
     json_path: str = "output/structured_resume.json",
     output_dir: str = "output"
 ) -> Optional[str]:
-    """
-    Generate PDF resume from structured JSON data.
+    """Generate PDF resume from structured JSON data.
 
     Args:
-        json_path: Path to structured_resume.json file
-        output_dir: Directory to save output PDF
+        json_path: Path to structured_resume.json file.
+        output_dir: Directory to save output PDF.
 
     Returns:
-        Path to generated PDF, or None if generation failed
+        Path to generated PDF, or None if generation failed.
     """
     try:
         logger.info("Starting PDF generation from structured data...")
 
-        # Load structured resume data
         base_dir = Path.cwd()
-        json_path = base_dir / json_path
-        output_dir = base_dir / output_dir
+        json_full_path = base_dir / json_path
+        output_full_dir = base_dir / output_dir
 
-        if not json_path.exists():
-            logger.error(f"Structured resume JSON not found: {json_path}")
-            return None
-
-        with open(json_path, 'r', encoding='utf-8') as f:
-            resume_data = json.load(f)
-
+        resume_data = _load_resume_data(json_full_path)
         logger.info("Structured resume data loaded successfully")
 
-        # Extract name for filename
         candidate_name = resume_data.get('candidate_name', 'Resume')
+        job_title = _load_job_title(base_dir / JOB_ANALYSIS_FILE)
 
-        # Load job title from job_analysis.json
-        job_analysis_path = base_dir / "output/job_analysis.json"
-        if job_analysis_path.exists():
-            with open(job_analysis_path, 'r', encoding='utf-8') as f:
-                job_analysis = json.load(f)
-            job_title = job_analysis.get('job_title', 'Position')
-        else:
-            logger.warning("job_analysis.json not found, using default job title")
-            job_title = 'Position'
-
-        # Split name into first and last
-        name_parts = candidate_name.split()
-        if len(name_parts) >= 2:
-            first_name = name_parts[0]
-            last_name = name_parts[-1]
-        else:
-            first_name = candidate_name
-            last_name = ""
-
-        # Create filename
-        first_clean = sanitize_for_filename(first_name)
-        last_clean = sanitize_for_filename(last_name)
-        title_clean = sanitize_for_filename(job_title)
-
-        filename_base = f"CV_{last_clean}_{first_clean}_{title_clean}"
+        first_name, last_name = _extract_candidate_names(candidate_name)
+        filename_base = _generate_pdf_filename(first_name, last_name, job_title)
 
         logger.info(f"Generating PDF: {filename_base}.pdf")
 
-        # Generate LaTeX
         latex_content = generate_complete_latex(resume_data)
-
-        # Compile to PDF
-        pdf_path = compile_latex_to_pdf(latex_content, output_dir, filename_base)
+        pdf_path = compile_latex_to_pdf(latex_content, output_full_dir, filename_base)
 
         return pdf_path
 
+    except FileNotFoundError as e:
+        logger.error(str(e))
+        return None
     except Exception as e:
-        logger.error(f"Error generating PDF: {e}")
-        import traceback
-        logger.error(traceback.format_exc())
+        logger.error(f"Error generating PDF: {e}", exc_info=True)
         return None
 
 

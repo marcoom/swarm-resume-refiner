@@ -1,25 +1,40 @@
-"""
-Streamlit UI for Resume Refiner Crew
+"""Streamlit UI for Resume Refiner Crew.
 
 A user-friendly graphical interface for the Resume Refiner multi-agent system.
 Guides users through input, processing, and results phases.
 """
 
-import streamlit as st
-import os
 import json
-import zipfile
-import threading
+import multiprocessing
+import os
+import re
 import time
-from pathlib import Path
+import zipfile
 from io import BytesIO
+from pathlib import Path
 
+import streamlit as st
+from dotenv import load_dotenv
+
+from src.resume_refiner_crew.constants import TASKS_INFO, TOTAL_TASKS
 from src.resume_refiner_crew.streamlit_runner import run_crew_with_params
 from src.resume_refiner_crew.tools.latex_generator import generate_resume_pdf_from_json
-from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+
+# Streamlit Configuration
+DEFAULT_TARGET_WORDS = 400
+MIN_TARGET_WORDS = 300
+MAX_TARGET_WORDS = 1000
+
+# Fallback model list for when OpenAI API is unavailable
+FALLBACK_MODELS = [
+    "gpt-5-pro", "gpt-5", "gpt-5-mini", "gpt-5-nano",
+    "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano",
+    "gpt-4-turbo", "gpt-4o", "gpt-4o-mini", "gpt-4",
+    "gpt-3.5-turbo-16k", "gpt-3.5-turbo"
+]
 
 
 @st.cache_data
@@ -29,25 +44,16 @@ def get_openai_chat_models():
     Returns a filtered, sorted list of chat model IDs.
     Falls back to hardcoded list on error.
     """
-    import re
     from openai import OpenAI
-
-    # Fallback model list
-    fallback_models = [
-        "gpt-5-pro", "gpt-5", "gpt-5-mini", "gpt-5-nano",
-        "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano",
-        "gpt-4-turbo", "gpt-4o", "gpt-4o-mini", "gpt-4",
-        "gpt-3.5-turbo-16k", "gpt-3.5-turbo"
-    ]
 
     try:
         client = OpenAI()
         models = [m.id for m in client.models.list()]
 
         # Regex patterns for filtering
-        INC = re.compile(r"^(gpt-\d)", re.IGNORECASE)  # include GPT*
-        END_DATE = re.compile(r"-\d{4}-\d{2}-\d{2}$")  # ends with YYYY-MM-DD
-        EXCLUDE = re.compile(
+        inc_pattern = re.compile(r"^(gpt-\d)", re.IGNORECASE)
+        end_date_pattern = re.compile(r"-\d{4}-\d{2}-\d{2}$")
+        exclude_pattern = re.compile(
             r"(whisper|sora|dall-e|tts|audio|image|embed(?:ding)?|"
             r"moderation|realtime|search|transcribe|diarize|codex|"
             r"davinci|babbage|instruct)",
@@ -57,15 +63,15 @@ def get_openai_chat_models():
         # Filter and sort models
         chat_models = sorted(
             (mid for mid in models
-             if INC.search(mid) and not END_DATE.search(mid) and not EXCLUDE.search(mid)),
+             if inc_pattern.search(mid) and not end_date_pattern.search(mid)
+             and not exclude_pattern.search(mid)),
             reverse=True
         )
 
-        return chat_models if chat_models else fallback_models
+        return chat_models if chat_models else FALLBACK_MODELS
 
-    except Exception as e:
-        # Return fallback list on any error (invalid key, network issue, etc.)
-        return fallback_models
+    except Exception:
+        return FALLBACK_MODELS
 
 
 # Page configuration
@@ -76,35 +82,33 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+
+def init_session_state():
+    """Initialize all session state variables with default values."""
+    defaults = {
+        'processing': False,
+        'completed': False,
+        'result': None,
+        'edited_json': None,
+        'original_json': None,
+        'process': None,
+        'result_queue': None,
+        'start_time': None,
+        'elapsed_time': None,
+        'show_logs': False,
+        'balloons_shown': False,
+        'show_reset_toast': False,
+        'show_apply_toast': False,
+        'editor_key': 0,
+    }
+
+    for key, default_value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = default_value
+
+
 # Initialize session state
-if 'processing' not in st.session_state:
-    st.session_state.processing = False
-if 'completed' not in st.session_state:
-    st.session_state.completed = False
-if 'result' not in st.session_state:
-    st.session_state.result = None
-if 'edited_json' not in st.session_state:
-    st.session_state.edited_json = None
-if 'original_json' not in st.session_state:
-    st.session_state.original_json = None
-if 'thread' not in st.session_state:
-    st.session_state.thread = None
-if 'thread_result' not in st.session_state:
-    st.session_state.thread_result = None
-if 'start_time' not in st.session_state:
-    st.session_state.start_time = None
-if 'elapsed_time' not in st.session_state:
-    st.session_state.elapsed_time = None
-if 'show_logs' not in st.session_state:
-    st.session_state.show_logs = False
-if 'balloons_shown' not in st.session_state:
-    st.session_state.balloons_shown = False
-if 'show_reset_toast' not in st.session_state:
-    st.session_state.show_reset_toast = False
-if 'show_apply_toast' not in st.session_state:
-    st.session_state.show_apply_toast = False
-if 'editor_key' not in st.session_state:
-    st.session_state.editor_key = 0
+init_session_state()
 
 
 def reset_session():
@@ -114,8 +118,8 @@ def reset_session():
     st.session_state.result = None
     st.session_state.edited_json = None
     st.session_state.original_json = None
-    st.session_state.thread = None
-    st.session_state.thread_result = None
+    st.session_state.process = None
+    st.session_state.result_queue = None
     st.session_state.start_time = None
     st.session_state.elapsed_time = None
     st.session_state.show_logs = False
@@ -125,11 +129,16 @@ def reset_session():
     st.session_state.editor_key = 0
 
 
-def run_crew_thread(resume_bytes, job_desc, api_key, model, target_words, result_container):
-    """Run crew in a separate thread.
+def run_crew_process(resume_bytes, job_desc, api_key, model, target_words, result_queue):
+    """Run crew in a separate process.
 
     Args:
-        result_container: A mutable dict to store the result (avoids session state warnings)
+        resume_bytes: Resume PDF bytes.
+        job_desc: Job description text.
+        api_key: OpenAI API key.
+        model: OpenAI model name.
+        target_words: Target word count.
+        result_queue: multiprocessing.Queue for result communication.
     """
     result = run_crew_with_params(
         resume_pdf_bytes=resume_bytes,
@@ -139,9 +148,8 @@ def run_crew_thread(resume_bytes, job_desc, api_key, model, target_words, result
         target_words=target_words
     )
 
-    # Store result in the provided container (thread-safe, no session state access)
-    result_container['result'] = result
-    result_container['completed'] = True
+    # Put result in queue for main process to retrieve
+    result_queue.put(result)
 
 
 def get_current_progress():
@@ -156,34 +164,17 @@ def get_current_progress():
         return (0, "Initializing", "Starting up...", "")
 
     log_content = log_file.read_text(encoding='utf-8')
-
-    # Task mapping: task_name -> (position, agent_name, status_text)
-    task_info = {
-        "parse_resume_task": (1, "Resume PDF Parser", "Parsing your resume"),
-        "analyze_job_task": (2, "Job Analyzer", "Analyzing the provided job description"),
-        "optimize_resume_task": (3, "Resume Analyzer", "Identifying improvements to be made"),
-        "generate_resume_task": (4, "Resume Writer", "Generating optimized resume"),
-        "verify_resume_task": (5, "Fact Checker", "Verifying resume accuracy"),
-        "harvard_format_task": (6, "Harvard Formatter", "Formatting resume structure"),
-        "generate_report_task": (7, "Report Generator", "Generating final report")
-    }
-
-    # Find all task_name occurrences in logs
-    import re
     task_matches = re.findall(r'task_name="([^"]+)"', log_content)
 
     if not task_matches:
         return (0, "Initializing", "Starting up...", log_content)
 
-    # Last task found is the current executing task
     current_task = task_matches[-1]
 
-    if current_task not in task_info:
+    if current_task not in TASKS_INFO:
         return (0, "Unknown", "Processing...", log_content)
 
-    position, agent_name, status_text = task_info[current_task]
-
-    # Completed count = current task position - 1
+    position, agent_name, status_text = TASKS_INFO[current_task]
     completed_count = position - 1
 
     return (completed_count, agent_name, status_text, log_content)
@@ -277,9 +268,9 @@ with st.sidebar.expander("⚙️ Options", expanded=False):
     st.subheader("Target Word Count")
     target_words = st.number_input(
         "Expected resume length",
-        min_value=300,
-        max_value=1000,
-        value=int(os.getenv("TARGET_RESUME_WORDS", "400")),
+        min_value=MIN_TARGET_WORDS,
+        max_value=MAX_TARGET_WORDS,
+        value=int(os.getenv("TARGET_RESUME_WORDS", str(DEFAULT_TARGET_WORDS))),
         step=50,
         help="400-600 words for single page, 600-800 for two pages"
     )
@@ -310,22 +301,22 @@ if st.sidebar.button(
         st.session_state.processing = True
         st.session_state.start_time = time.time()
 
-        # Create a result container for thread communication
-        st.session_state.thread_result = {'result': None, 'completed': False}
+        # Create a queue for process communication
+        st.session_state.result_queue = multiprocessing.Queue()
 
-        # Start processing in background thread
-        st.session_state.thread = threading.Thread(
-            target=run_crew_thread,
+        # Start processing in background process (process isolation = automatic resource cleanup)
+        st.session_state.process = multiprocessing.Process(
+            target=run_crew_process,
             args=(
                 uploaded_file.read(),
                 job_description,
                 api_key,
                 model,
                 target_words,
-                st.session_state.thread_result
+                st.session_state.result_queue
             )
         )
-        st.session_state.thread.start()
+        st.session_state.process.start()
         st.rerun()
     else:
         st.error("No file uploaded")
@@ -347,12 +338,22 @@ st.markdown("Transform your resume into a job-specific, ATS-optimized document")
 @st.fragment(run_every=1.0)
 def show_processing_progress():
     """Auto-updating fragment that displays processing progress."""
-    # Check if thread has completed (checked every 1 second via fragment auto-refresh)
-    if st.session_state.thread_result and st.session_state.thread_result.get('completed'):
-        # Thread finished - update session state from main thread
-        st.session_state.result = st.session_state.thread_result.get('result')
+    # Check if process has completed (checked every 1 second via fragment auto-refresh)
+    if st.session_state.result_queue and not st.session_state.result_queue.empty():
+        # Process finished - get result from queue
+        result = st.session_state.result_queue.get()
+        st.session_state.result = result
         st.session_state.processing = False
         st.session_state.completed = True
+
+        # Terminate the process to release all resources (ChromaDB connections, file handles, etc.)
+        if st.session_state.process and st.session_state.process.is_alive():
+            st.session_state.process.terminate()
+            st.session_state.process.join(timeout=5)
+            # Force kill if it didn't terminate gracefully
+            if st.session_state.process.is_alive():
+                st.session_state.process.kill()
+
         # Store the elapsed time once when processing completes
         if st.session_state.start_time:
             st.session_state.elapsed_time = time.time() - st.session_state.start_time
@@ -369,7 +370,10 @@ def show_processing_progress():
     else:
         st.info("⏳ Working on your resume...")
 
-        # Progress bar
+    # Crew image
+    st.image("./media/agents-flow.png")
+
+    # Progress bar
     progress_value = completed / 7
     st.progress(progress_value, text=f"**Working Agent: {agent_name} ({completed+1}/7)**")
 
