@@ -31,9 +31,23 @@ Whether you're applying for your dream job or conducting a job search campaign, 
 
 ---
 
+## Try it Now
+
+![Swarm Resume Refiner Demo](media/demo.gif)
+
+Experience Swarm Resume Refiner directly in your browser without any installation:
+
+**[Launch on Streamlit Community Cloud](https://swarm-resume-refiner.streamlit.app/)**
+
+Upload your own resume and job description and see the system in action.
+
+---
+
 ## How It Works
 
 Resume Refiner Crew uses a **sequential pipeline** of seven specialized AI agents that work together to transform your resume:
+
+![Swarm Agents](media/agents-flow-2-rows.png)
 
 ### 1. Resume Parser Agent
 **Role:** PDF Parsing Specialist
