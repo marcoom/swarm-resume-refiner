@@ -31,9 +31,23 @@ Whether you're applying for your dream job or conducting a job search campaign, 
 
 ---
 
+## Try it Now
+
+![Swarm Resume Refiner Demo](media/demo.gif)
+
+Experience Swarm Resume Refiner directly in your browser without any installation:
+
+**[Launch on Streamlit Community Cloud](https://swarm-resume-refiner.streamlit.app/)**
+
+Upload your own resume and job description and see the system in action.
+
+---
+
 ## How It Works
 
 Resume Refiner Crew uses a **sequential pipeline** of seven specialized AI agents that work together to transform your resume:
+
+![Swarm Agents](media/agents-flow-2-rows.png)
 
 ### 1. Resume Parser Agent
 **Role:** PDF Parsing Specialist
@@ -87,26 +101,42 @@ Before installing, ensure you have the following:
 
 This project uses [UV](https://docs.astral.sh/uv/) for fast, reliable dependency management.
 
-### 1. Install UV Package Manager
-
-```bash
-pip install uv
-```
-
-### 2. Clone the Repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/marcoom/resume-refiner-crew.git
 cd resume-refiner-crew
 ```
 
-### 3. Install Dependencies
+### 2. Create Virtual Environment
+
+It is recommended to create a virtual environment:
 
 ```bash
-crewai install
+python -m venv .venv
 ```
 
-This command uses UV to lock and install all dependencies defined in `pyproject.toml`.
+Activate the virtual environment:
+
+```bash
+source .venv/bin/activate  # On Linux/Mac
+# or
+.venv\Scripts\activate     # On Windows
+```
+
+### 3. Install UV Package Manager
+
+```bash
+pip install uv
+```
+
+### 4. Install Dependencies
+
+```bash
+uv pip install -e .
+```
+
+This command installs the project and all dependencies defined in `pyproject.toml` using UV's fast resolver.
 
 ---
 
@@ -146,6 +176,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 # Optional: Customize these settings
 OPENAI_MODEL=gpt-5-mini                    # Default: gpt-5-mini
 TARGET_RESUME_WORDS=500                     # Default: 500 (400-600 for 1 page, 600-800 for 2 pages)
+DEVELOPER_MODE=false                        # Default: false (see Developer Mode section for details)
 ```
 
 ### 3. Prepare Input Files
@@ -159,13 +190,44 @@ Place your files in the appropriate locations:
 
 ## Usage
 
-### Basic Usage
+Resume Refiner Crew can be used in two ways: **Web UI** (recommended for most users) or **Command Line**.
 
-Run the complete pipeline:
+### Web Interface (Recommended)
+
+The easiest way to use Resume Refiner Crew is through the Streamlit web interface:
+
+```bash
+./start.sh
+```
+
+Or directly:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+The web interface will open in your browser at `http://localhost:8501` and provides:
+
+- **Visual file upload** - Drag and drop your resume PDF
+- **Guided inputs** - Clear form fields for all settings
+- **Real-time progress** - Watch the agents work with live logs
+- **Interactive results** - View reports and download files with one click
+- **Optional JSON editing** - Fine-tune the structured resume before PDF generation
+- **No file management** - Upload files directly, no need to place them in folders
+
+This is the recommended method for users who prefer a graphical interface and want to process multiple resumes without managing configuration files.
+
+### Command Line Interface
+
+For automation or integration into workflows, use the CLI:
 
 ```bash
 crewai run
 ```
+
+**Before running**, ensure your input files are in place:
+- Resume PDF: `knowledge/CV.pdf`
+- Job Description: `knowledge/job_description.txt`
 
 This command will:
 1. Parse your resume PDF
@@ -177,7 +239,7 @@ This command will:
 7. Generate a PDF resume
 8. Create a comprehensive report
 
-### Alternative Commands
+### Alternative CLI Commands
 
 ```bash
 resume_refiner_crew    # Same as crewai run
@@ -190,7 +252,137 @@ The complete pipeline typically takes 3-5 minutes depending on resume complexity
 
 ### Monitoring Progress
 
-The system runs in verbose mode, so you'll see each agent's progress, reasoning, and actions in the terminal output.
+- **Web UI**: Real-time progress indicators and live log streaming
+- **CLI**: Verbose terminal output showing each agent's reasoning and actions
+
+---
+
+## Docker Usage
+
+Resume Refiner Crew is available as a Docker container, providing an isolated environment with all dependencies pre-installed. This is the easiest way to run the application without manually installing Python, LaTeX, or other dependencies.
+
+### Prerequisites
+
+- **Docker** or **Docker Desktop** installed on your system
+  - Linux: [Install Docker Engine](https://docs.docker.com/engine/install/)
+  - macOS: [Install Docker Desktop](https://docs.docker.com/desktop/install/mac-install/)
+  - Windows: [Install Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
+
+### Using Pre-built Image from Docker Hub
+
+The easiest way to get started is to pull the pre-built image from Docker Hub:
+
+```bash
+docker pull marcoom/swarm-resume-refiner:1.0.0
+```
+
+Run the container with environment variables:
+
+```bash
+docker run -p 8501:8501 \
+  -e OPENAI_API_KEY=your_openai_api_key_here \
+  -e OPENAI_MODEL=gpt-5-mini \
+  -e TARGET_RESUME_WORDS=500 \
+  -e DEVELOPER_MODE=false \
+  marcoom/swarm-resume-refiner:1.0.0
+```
+
+**Environment Variables Explained:**
+- `OPENAI_API_KEY` - **(Required)** Your OpenAI API key
+- `OPENAI_MODEL` - *(Optional)* Model to use (default: `gpt-5-mini`)
+- `TARGET_RESUME_WORDS` - *(Optional)* Target word count (default: `500`; single page: 400-600, two pages: 600-800)
+- `DEVELOPER_MODE` - *(Optional)* Set to `true` to simulate execution without API calls (default: `false`)
+
+**On Windows (PowerShell)**, use `${PWD}` instead of `$(pwd)`:
+
+```powershell
+docker run -p 8501:8501 `
+  -e OPENAI_API_KEY=your_openai_api_key_here `
+  -e OPENAI_MODEL=gpt-5-mini `
+  -e TARGET_RESUME_WORDS=500 `
+  -e DEVELOPER_MODE=false `
+  marcoom/swarm-resume-refiner:1.0.0
+```
+
+**Using an environment file** (recommended for managing multiple variables):
+
+```bash
+# Create .env file with your configuration
+cat > .env << EOF
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-5-mini
+TARGET_RESUME_WORDS=500
+DEVELOPER_MODE=false
+EOF
+
+# Run with --env-file
+docker run -p 8501:8501 \
+  --env-file .env \
+  marcoom/swarm-resume-refiner:1.0.0
+```
+
+The Streamlit web interface will be available at `http://localhost:8501`.
+
+### Building and Running Locally
+
+If you prefer to build the Docker image from source:
+
+#### 1. Build the Image
+
+```bash
+docker build -t swarm-resume-refiner .
+```
+
+#### 2. Run the Container
+
+```bash
+docker run -p 8501:8501 \
+  -e OPENAI_API_KEY=your_openai_api_key_here \
+  -e OPENAI_MODEL=gpt-5-mini \
+  -e TARGET_RESUME_WORDS=500 \
+  -e DEVELOPER_MODE=false \
+  swarm-resume-refiner
+```
+
+Or use an environment file:
+
+```bash
+docker run -p 8501:8501 \
+  --env-file .env \
+  swarm-resume-refiner
+```
+
+---
+
+## Developer Mode
+
+**Developer Mode** allows you to test the application's UI and workflows without running the actual multi-agent system. This is particularly useful during development when you want to:
+
+- Test changes to the Streamlit interface without waiting for agents to complete
+- Iterate quickly on UI improvements without incurring API costs
+- Validate the flow from processing to results display
+- Test with consistent, known output data
+
+### How It Works
+
+When `DEVELOPER_MODE=true`, the system:
+
+1. **Skips crew execution** - No agents are run, no API calls are made
+2. **Simulates logs** - Writes realistic log messages to `.crewai_temp/crew_logs.txt` with 1-second delays between entries
+3. **Uses fixture files** - Copies pre-generated output files from `tests/fixtures/output/` to `output/`
+4. **Maintains normal flow** - All other parts of the system (PDF generation, file downloads, UI components) work exactly as they would with real execution
+
+### Using Developer Mode
+
+Edit your `.env` file:
+
+```bash
+DEVELOPER_MODE=true
+```
+
+Once enabled, use the application normally.
+
+The execution will complete in approximately 13 seconds (one second per log message) instead of 3-5 minutes.
 
 ---
 
@@ -209,13 +401,14 @@ resume-refiner-crew/
 │   │   └── latex_generator.py       # LaTeX generation and PDF compilation
 │   │
 │   ├── crew.py                      # Crew orchestration, agent/task initialization
-│   ├── main.py                      # Entry point, pipeline execution
+│   ├── main.py                      # Entry point, pipeline execution (CLI)
 │   ├── models.py                    # Pydantic models (JobRequirements, ResumeOptimization, etc.)
+│   ├── streamlit_runner.py          # Wrapper for running crew with custom parameters (Web UI)
 │   └── utils.py                     # Utility functions (storage cleanup)
 │
 ├── knowledge/
-│   ├── CV.pdf                       # Your input resume (place your PDF here)
-│   └── job_description.txt          # Target job posting (plain text)
+│   ├── CV.pdf                       # Your input resume (place your PDF here for CLI)
+│   └── job_description.txt          # Target job posting (plain text, for CLI)
 │
 ├── output/                          # All generated files go here
 │   ├── parsed_resume.md             # Original resume in markdown
@@ -229,6 +422,8 @@ resume-refiner-crew/
 │
 ├── templates/                       # LaTeX templates for reference
 │
+├── streamlit_app.py                 # Streamlit web interface
+├── start.sh                         # Launch script for web UI
 ├── .env                             # Environment configuration (not in git)
 ├── .env.example                     # Example environment configuration
 ├── pyproject.toml                   # Project dependencies and metadata

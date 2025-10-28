@@ -4,6 +4,8 @@ parse_resume_task:
 
     Your goal is to parse the entire resume content and convert it to clean, well-structured markdown format with proper headings and formatting.
 
+    Ensure that you got the entire resume content from the resume PDF before formatting it. Make additional tool calls if neccessary
+
     Ensure the markdown output:
     - Uses proper markdown heading hierarchy (# for main title, ## for sections, ### for subsections)
     - Preserves all resume sections (contact info, summary, experience, education, skills, etc.)
@@ -286,35 +288,19 @@ generate_report_task:
     1. Data Integration:
        - Job analysis and scores
        - Resume optimization details
-       - Final resume changes
 
     2. Report Sections:
-       ## Executive Summary
-       - Overall match score and quick wins
-       - Key strengths and improvement areas
-       - Action items priority list
-
-       ## Job Fit Analysis
-       - Detailed score breakdown
-       - Skills match assessment
-       - Experience alignment
-
-       ## Optimization Overview
-       - Key resume improvements
-       - ATS optimization results
-       - Impact metrics
-
-       ## Next Steps
-       - Prioritized action items
-       - Skill development plan
-       - Application strategy
+       - Match Score: overall match score breakdown (use table format)
+       - Applicant Strength and Gaps: key strengths and improvement areas (how well does the applicant fit the requirements in job description)
+       - Resume optimizations: key resume optimizations that were performed (brief summary in bullet list format, condensed, add a single bullet with ATS Keywords added)
 
     3. Formatting:
        - Use proper markdown headers
        - Include relevant emojis
-       - Create tables where appropriate
+       - Be clear and concise
        - Use bullet points for scannability
+       - Do not add additional comments
 
   expected_output: >
     A comprehensive markdown report that combines all analyses into an
-    actionable, clear document with concrete next steps.
+    actionable, clear document.
