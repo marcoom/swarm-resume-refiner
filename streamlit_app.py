@@ -239,7 +239,7 @@ with st.sidebar.expander("⚙️ Options", expanded=False):
         "Your OpenAI API key",
         type="password",
         value=os.getenv("OPENAI_API_KEY", ""),
-        help="Your API key is never stored permanently"
+        help="Create your API key at platform.openai.com/api-keys (paid service)"
     )
 
     # Model Selection

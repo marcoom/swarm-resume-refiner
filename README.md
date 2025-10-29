@@ -8,17 +8,39 @@ An intelligent system that transforms your resume into a job-specific, ATS-optim
 
 ## Overview
 
-Finding the right job is challenging, and getting past the initial screening is often the hardest part. **Applicant Tracking Systems (ATS)** are software tools used by over 75% of employers to automatically filter and rank resumes before a human ever sees them. If your resume isn't optimized for both ATS algorithms and the specific job description, it might never reach a hiring manager—even if you're qualified.
+Finding the right job is challenging, and getting past the initial screening is often the hardest part. **Applicant Tracking Systems (ATS)** are software tools used by over 75% of employers (and increasing) to automatically filter and rank resumes before a human ever sees them. If your resume isn't optimized for both ATS algorithms and the specific job description, it might never reach a hiring manager—even if you're qualified.
 
-**Resume Refiner Crew** solves this problem by analyzing your resume against a specific job posting and automatically generating a tailored, ATS-friendly version. The system rewrites your resume in a way that emphasizes the most relevant skills for the role (using words from the job description), removes irrelevant content to reach a target number of pages, and uses clear and professional writing, in standarized sections, all without hallucinating or exaggerating the facts from your original resume.
+**Resume Refiner Crew** analyzes your resume and a target job description to automatically produce a tailored, ATS-friendly version of your CV. The system highlights the skills and achievements that matter most for that role, incorporates job-specific keywords, and removes irrelevant content to meet the ideal length—while always staying truthful and aligned to your original resume.
 
-This project leverages **Multi-Agent Systems (MAS)**, a branch of artificial intelligence where multiple specialized AI agents work cooperatively toward a shared goal. Instead of a single AI trying to handle everything, seven specialized agents collaborate—each with unique expertise—to transform your resume. This cooperative approach mirrors how expert teams work together: one agent parses documents, another analyzes job requirements, another optimizes content, and so on. The result is a professionally formatted resume that maximizes your chances of getting noticed.
+The result is a clean, professionally written resume with standardized structure and **Harvard-style PDF formatting**, making it easier for automated Applicant Tracking Systems to parse and score.
 
-Whether you're applying for your dream job or conducting a job search campaign, Resume Refiner Crew helps you put your best foot forward with minimal effort.
+![High Level View](/media/agents-simplified.png)
+
+By ensuring your resume clearly matches what recruiters and ATS algorithms are looking for, you **dramatically increase your chances of passing the initial filter** and landing an interview—so your qualifications are actually seen by the people who make hiring decisions.
+
+---
+
+## Table of Contents
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [How It Works](#how-it-works)
+- [Quick Start](#quick-start)
+- [Setup & Configuration](#setup--configuration)
+- [Local Installation and Usage](#local-installation-and-usage)
+- [Docker Usage](#docker-usage)
+- [User Guide](#user-guide)
+- [Developer Mode](#developer-mode)
+- [Project Structure](#project-structure)
+- [Output Files](#output-files)
+- [Technical Notes](#technical-notes)
+- [Acknowledgments](#acknowledgments)
+- [License](#license)
 
 ---
 
 ## Key Features
+
+Resume Refiner Crew combines automation, AI collaboration, and professional formatting to deliver high-impact resumes. Key features include:
 
 - **Intelligent Resume Parsing** - Automatically extracts content from PDF resumes into structured format
 - **Job Fit Scoring** - Analyzes how well your background matches job requirements with weighted scoring (technical skills 35%, experience 25%, soft skills 20%, education 10%, industry 10%)
@@ -31,60 +53,103 @@ Whether you're applying for your dream job or conducting a job search campaign, 
 
 ---
 
-## Try it Now
-
-![Swarm Resume Refiner Demo](media/demo.gif)
-
-Experience Swarm Resume Refiner directly in your browser without any installation:
-
-**[Launch on Streamlit Community Cloud](https://swarm-resume-refiner.streamlit.app/)**
-
-Upload your own resume and job description and see the system in action.
-
----
-
 ## How It Works
 
-Resume Refiner Crew uses a **sequential pipeline** of seven specialized AI agents that work together to transform your resume:
+Resume Refiner Crew leverages **Multi-Agent Systems (MAS)**, a branch of artificial intelligence where multiple specialized AI agents work cooperatively toward a shared goal. Instead of a single AI trying to handle everything, seven specialized agents collaborate—each with unique expertise—to transform your resume. This cooperative approach mirrors how expert teams work together: one agent parses documents, another analyzes job requirements, another optimizes content, and so on. The result is a professionally formatted resume that maximizes your chances of getting noticed.
+
+This project uses a **sequential pipeline** of seven specialized AI agents that work together to transform your resume:
 
 ![Swarm Agents](media/agents-flow-2-rows.png)
 
-### 1. Resume Parser Agent
-**Role:** PDF Parsing Specialist
-**Task:** Converts your PDF resume into clean markdown format, preserving all structure and content without modifications.
-
-### 2. Job Analyzer Agent
-**Role:** Job Requirements Analyst
-**Task:** Reads the job description, extracts technical skills, soft skills, experience requirements, and responsibilities. Scores your candidacy across multiple dimensions using the parsed resume as context.
-
-### 3. Resume Analyzer Agent
-**Role:** Resume Optimization Expert
-**Task:** Compares your resume against job requirements and creates structured optimization suggestions. Identifies missing keywords, recommends content improvements with before/after examples, and flags irrelevant sections for removal.
-
-### 4. Resume Writer Agent
-**Role:** Resume Markdown Specialist
-**Task:** Applies optimization suggestions to create a tailored resume in markdown format. Uses the Word Counter Tool iteratively to ensure the resume meets target length (85-115% of specified word count).
-
-### 5. Fact Checker Agent
-**Role:** Resume Verification Specialist
-**Task:** Cross-references every claim in the optimized resume against your original resume. Removes any embellishments, hallucinations, or unverifiable content to ensure absolute accuracy.
-
-### 6. Harvard Formatter Agent
-**Role:** Harvard Formatting Specialist
-**Task:** Structures the verified resume into Harvard-compliant format with proper sections (work experience, education, certifications, skills). Identifies 3-5 keywords per experience to emphasize with bold formatting.
-
-### 7. Report Generator Agent
-**Role:** Career Report Generator
-**Task:** Creates a comprehensive markdown report combining job analysis, optimization details, and actionable next steps for your job search.
-
-### Final Step: PDF Generation
-After all agents complete their tasks, the system uses LaTeX to compile the structured resume into a professional PDF with proper typesetting, alignment, and Harvard formatting standards.
-
-**Output:** A tailored, fact-checked, ATS-optimized resume in both markdown and PDF formats, plus a detailed analysis report.
+**Output:** A tailored, fact-checked, ATS-optimized resume, plus a detailed analysis report.
 
 ---
 
-## Prerequisites
+## Quick Start
+
+You can use **Resume Refiner Crew** in three different ways, depending on your setup and preferences. 
+All methods share the same workflow and *require an OpenAI API key*, you can generate one following the steps in the [Create OpenAI API Key](#create-openai-api-key) section.
+
+### Option 1 — Online Demo (No Installation)
+
+Try the system instantly through the hosted Streamlit app, without any installation:
+**[Launch on Streamlit Community Cloud](https://swarm-resume-refiner.streamlit.app/)**
+Upload your resume and job description directly in the browser and watch the agents work in real time.
+
+### Option 2 — Local Installation
+
+Run Resume Refiner Crew on your own machine for full control and faster execution.
+You’ll need **Python 3.10+**, **LaTeX**, and an **OpenAI API key**.
+Follow the steps in the [Setup & Configuration](#setup--configuration) and [Local Installation and usage](#local-installation-and-usage) sections to install dependencies, configure environment variables, and launch the web interface locally.
+
+### Option 3 — Docker Deployment
+
+Deploy the system in an isolated environment using Docker.
+Either pull the pre-built image from Docker Hub or build it locally.
+This option is ideal if you want a clean setup without installing Python or LaTeX manually.
+Follow the steps in [Docker Usage](#docker-usage) if you prefer this method.
+
+---
+
+Once you’ve chosen your preferred method, the usage flow is the same, as described in the [User Guide](#user-guide) section:
+
+1. Add your **job description** and **resume**
+2. Wait for the **agents** to complete processing
+3. Review, edit, and **download** your optimized resume
+
+---
+
+### Demo
+Here is an example of an execution of the system:
+![Swarm Resume Refiner Demo](media/demo.gif)
+
+---
+
+## Setup & Configuration
+
+### Create OpenAI API Key
+
+This project requires an OpenAI API key to function. **Note: OpenAI API usage is a paid service** and you will be charged based on token consumption.
+
+**Steps to create your API key:**
+
+1. Visit [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+2. Sign in to your OpenAI account (or create one if needed)
+3. Click "Create new secret key"
+4. Copy the generated API key (you won't be able to see it again)
+5. Store it securely
+
+**Important Notes:**
+- You must have an OpenAI account with credits to use the API
+- Monitor your usage at [https://platform.openai.com/usage](https://platform.openai.com/usage)
+- **Disclaimer:** The author of this project takes no responsibility for any charges incurred through OpenAI API usage or any misuse of API keys. Users are solely responsible for managing their API keys securely and monitoring their usage costs.
+
+### Set Up Environment Variables
+> For users running the system through the hosted streamlit app, this step is not required
+
+Copy the example environment file and add your API key:
+
+```bash
+cp .env.example .env
+```
+
+Edit the `.env` file:
+
+```bash
+# Required: Your OpenAI API key
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Optional: Customize these settings
+OPENAI_MODEL=gpt-5-mini                    # Default: gpt-5-mini
+TARGET_RESUME_WORDS=500                     # Default: 500 (400-600 for 1 page, 600-800 for 2 pages)
+DEVELOPER_MODE=false                        # Default: false (see Developer Mode section for details)
+```
+
+---
+
+## Local Installation and Usage
+
+### Prerequisites
 
 Before installing, ensure you have the following:
 
@@ -93,13 +158,6 @@ Before installing, ensure you have the following:
   - Ubuntu/Debian: `sudo apt-get install texlive-latex-base texlive-latex-extra`
   - macOS: `brew install --cask mactex`
   - Windows: Install [MiKTeX](https://miktex.org/) or [TeX Live](https://www.tug.org/texlive/)
-- **OpenAI API Key** (required - see Configuration section)
-
----
-
-## Installation
-
-This project uses [UV](https://docs.astral.sh/uv/) for fast, reliable dependency management.
 
 ### 1. Clone the Repository
 
@@ -125,6 +183,7 @@ source .venv/bin/activate  # On Linux/Mac
 ```
 
 ### 3. Install UV Package Manager
+This project uses [UV](https://docs.astral.sh/uv/) for fast, reliable dependency management. Install it:
 
 ```bash
 pip install uv
@@ -138,86 +197,24 @@ uv pip install -e .
 
 This command installs the project and all dependencies defined in `pyproject.toml` using UV's fast resolver.
 
----
-
-## Configuration
-
-### 1. Create OpenAI API Key
-
-This project requires an OpenAI API key to function. **Note: OpenAI API usage is a paid service** and you will be charged based on token consumption.
-
-**Steps to create your API key:**
-
-1. Visit [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
-2. Sign in to your OpenAI account (or create one if needed)
-3. Click "Create new secret key"
-4. Copy the generated API key (you won't be able to see it again)
-5. Store it securely
-
-**Important Notes:**
-- You must have a paid OpenAI account with credits to use the API
-- Monitor your usage at [https://platform.openai.com/usage](https://platform.openai.com/usage)
-- **Disclaimer:** The author of this project takes no responsibility for any charges incurred through OpenAI API usage or any misuse of API keys. Users are solely responsible for managing their API keys securely and monitoring their usage costs.
-
-### 2. Set Up Environment Variables
-
-Copy the example environment file and add your API key:
-
-```bash
-cp .env.example .env
-```
-
-Edit the `.env` file:
-
-```bash
-# Required: Your OpenAI API key
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Optional: Customize these settings
-OPENAI_MODEL=gpt-5-mini                    # Default: gpt-5-mini
-TARGET_RESUME_WORDS=500                     # Default: 500 (400-600 for 1 page, 600-800 for 2 pages)
-DEVELOPER_MODE=false                        # Default: false (see Developer Mode section for details)
-```
-
-### 3. Prepare Input Files
-
-Place your files in the appropriate locations:
-
-- **Your Resume PDF:** Save as `knowledge/CV.pdf` (or set custom path in `RESUME_PDF_PATH`)
-- **Job Description:** Create `knowledge/job_description.txt` with the complete job posting text
-
----
-
-## Usage
+### 5. Execute the system
 
 Resume Refiner Crew can be used in two ways: **Web UI** (recommended for most users) or **Command Line**.
 
-### Web Interface (Recommended)
+#### Web Interface (Recommended)
 
-The easiest way to use Resume Refiner Crew is through the Streamlit web interface:
+The easiest way to use Resume Refiner Crew is through the Streamlit web interface. Start it with:
 
 ```bash
 ./start.sh
 ```
 
-Or directly:
+The web interface will open in your browser at `http://localhost:8501`.
 
-```bash
-streamlit run streamlit_app.py
-```
+From there, you can follow the steps in [User Guide](#user-guide) section.
 
-The web interface will open in your browser at `http://localhost:8501` and provides:
 
-- **Visual file upload** - Drag and drop your resume PDF
-- **Guided inputs** - Clear form fields for all settings
-- **Real-time progress** - Watch the agents work with live logs
-- **Interactive results** - View reports and download files with one click
-- **Optional JSON editing** - Fine-tune the structured resume before PDF generation
-- **No file management** - Upload files directly, no need to place them in folders
-
-This is the recommended method for users who prefer a graphical interface and want to process multiple resumes without managing configuration files.
-
-### Command Line Interface
+#### Command Line Interface
 
 For automation or integration into workflows, use the CLI:
 
@@ -229,31 +226,7 @@ crewai run
 - Resume PDF: `knowledge/CV.pdf`
 - Job Description: `knowledge/job_description.txt`
 
-This command will:
-1. Parse your resume PDF
-2. Analyze the job description
-3. Generate optimization suggestions
-4. Create a tailored resume
-5. Verify all facts
-6. Format in Harvard style
-7. Generate a PDF resume
-8. Create a comprehensive report
-
-### Alternative CLI Commands
-
-```bash
-resume_refiner_crew    # Same as crewai run
-run_crew               # Another alias
-```
-
-### Expected Runtime
-
-The complete pipeline typically takes 3-5 minutes depending on resume complexity and API response times.
-
-### Monitoring Progress
-
-- **Web UI**: Real-time progress indicators and live log streaming
-- **CLI**: Verbose terminal output showing each agent's reasoning and actions
+This command will kickoff a crew execution, and the resulting files will be provided at the `output` folder.
 
 ---
 
@@ -307,13 +280,9 @@ docker run -p 8501:8501 `
 **Using an environment file** (recommended for managing multiple variables):
 
 ```bash
-# Create .env file with your configuration
-cat > .env << EOF
-OPENAI_API_KEY=your_openai_api_key_here
-OPENAI_MODEL=gpt-5-mini
-TARGET_RESUME_WORDS=500
-DEVELOPER_MODE=false
-EOF
+# Copy .env.example and edit with your configuration
+cp .env.example .env
+# Then edit .env and add your OpenAI API key
 
 # Run with --env-file
 docker run -p 8501:8501 \
@@ -323,9 +292,11 @@ docker run -p 8501:8501 \
 
 The Streamlit web interface will be available at `http://localhost:8501`.
 
+From here, you can follow the steps in the [User Guide](#user-guide) section.
+
 ### Building and Running Locally
 
-If you prefer to build the Docker image from source:
+If you prefer to build the Docker image from source, instead of downloading from DockerHub:
 
 #### 1. Build the Image
 
@@ -352,13 +323,78 @@ docker run -p 8501:8501 \
   swarm-resume-refiner
 ```
 
+From here, you can follow the steps in the [User Guide](#user-guide) section.
+
+---
+
+## User Guide
+
+> You need an OpenAI API Key to run the Crew, see Configuration section for steps on how to create it, if you don't have one already
+
+### 1. Add the Inputs
+
+Provide the job description, upload your resume, and configure the execution settings.
+
+![User Interface](/media/ui-1-inputs.png)
+
+**Steps:**
+
+1. **Job Description**: Paste the full job posting into the sidebar field. Formatting does not matter—plain, unstructured text works perfectly.
+
+2. **Resume PDF**: Upload your resume in PDF format (required). Single-column layouts ensure the best parsing accuracy, but multi-column or visually complex designs are also supported. Make sure your resume is up to date and includes all relevant information—the system reorganizes and optimizes what is already there.
+
+3. **Execution Options**
+
+   * **OpenAI API Key** – Paste your key to enable agent execution.
+   * **Model Selection** – Choose from OpenAI GPT models based on your quality and cost preferences. Larger models generally produce better results but are more expensive. Current recommended models for strong performance are gpt-5 and gpt-5-mini, though this may evolve as new models are released. Pricing details: https://platform.openai.com/docs/pricing
+   * **Target Word Count** – Guides output length (e.g., ~500 words typically results in a two-page resume).
+
+4. **Run the Process**: Click **Process Resume** to start the multi-agent pipeline and generate your optimized resume.
+
+This will provide all the required inputs and kickoff the crew execution that will process the optimized resume.
+
+> Note: sometimes when the target resume words is set too high, the agents drift and hallucinate untrue facts, which are not picked by the fact-checker agent. If this happens to you, try using a bigger model, or lowering the target number of words.
+
+
+### 2. Wait for the Agents to Complete
+The optimization process typically takes around 8 minutes. During this phase, the multi-agent system analyzes and transforms your resume. You can monitor real-time progress, including which agent is currently working, execution status, elapsed time, and detailed activity logs.
+
+![User Interface](/media/ui-2-processing.png)
+
+
+### 3. Review and Download Your Optimized Resume
+
+After processing completes, you can review the results, refine content if needed, and download all generated files.
+
+![User Interface](/media/ui-3-results.png)
+
+Here you can:
+
+* **View the Executive Summary Report**
+  A clear breakdown of:
+
+  * Overall job match score and weighted sub-scores
+  * Key strengths and improvement areas
+  * Optimization decisions applied to your resume
+  * ATS-relevant keywords incorporated into the final version
+
+* **Refine Your Tailored Resume (Optional)**
+  Edit the structured resume content in JSON format directly in the UI.
+  Apply your changes with one click—or restore the original version generated by the agents.
+
+* **Download All Output Files**
+  Get your optimized resume in **PDF** and supporting artifacts for full transparency. 
+  Filename follows this format: `CV_[LastName]_[FirstName]_[JobTitle].pdf`, where your name and filename are automatically obtained from the input resume, and the job title from the job description.
+
+To start the process again with new inputs, click **Start Over** in the sidebar.
+
 ---
 
 ## Developer Mode
 
 **Developer Mode** allows you to test the application's UI and workflows without running the actual multi-agent system. This is particularly useful during development when you want to:
 
-- Test changes to the Streamlit interface without waiting for agents to complete
+- Test changes to the Streamlit interface without waiting for agents to complete (crew execution will take about 13 seconds instead of 5+ minutes)
 - Iterate quickly on UI improvements without incurring API costs
 - Validate the flow from processing to results display
 - Test with consistent, known output data
@@ -371,18 +407,6 @@ When `DEVELOPER_MODE=true`, the system:
 2. **Simulates logs** - Writes realistic log messages to `.crewai_temp/crew_logs.txt` with 1-second delays between entries
 3. **Uses fixture files** - Copies pre-generated output files from `tests/fixtures/output/` to `output/`
 4. **Maintains normal flow** - All other parts of the system (PDF generation, file downloads, UI components) work exactly as they would with real execution
-
-### Using Developer Mode
-
-Edit your `.env` file:
-
-```bash
-DEVELOPER_MODE=true
-```
-
-Once enabled, use the application normally.
-
-The execution will complete in approximately 13 seconds (one second per log message) instead of 3-5 minutes.
 
 ---
 
@@ -400,15 +424,22 @@ resume-refiner-crew/
 │   │   ├── word_counter_tool.py     # Tool for iterative word count validation
 │   │   └── latex_generator.py       # LaTeX generation and PDF compilation
 │   │
+│   ├── constants.py                 # Application constants and configuration
 │   ├── crew.py                      # Crew orchestration, agent/task initialization
 │   ├── main.py                      # Entry point, pipeline execution (CLI)
 │   ├── models.py                    # Pydantic models (JobRequirements, ResumeOptimization, etc.)
 │   ├── streamlit_runner.py          # Wrapper for running crew with custom parameters (Web UI)
-│   └── utils.py                     # Utility functions (storage cleanup)
+│   ├── utils.py                     # Utility functions (storage cleanup)
+│   └── validation.py                # Input validation functions
 │
-├── knowledge/
-│   ├── CV.pdf                       # Your input resume (place your PDF here for CLI)
-│   └── job_description.txt          # Target job posting (plain text, for CLI)
+├── tests/
+│   └── fixtures/                    # Test fixtures for developer mode
+│       ├── knowledge/               # Sample input files for testing
+│       └── output/                  # Sample output files for testing
+│
+├── knowledge/                       # Folder to upload input (CLI Usage only)
+│   ├── CV.pdf                       # Input resume
+│   └── job_description.txt          # Target job posting (plain text)
 │
 ├── output/                          # All generated files go here
 │   ├── parsed_resume.md             # Original resume in markdown
@@ -420,14 +451,19 @@ resume-refiner-crew/
 │   ├── final_report.md              # Comprehensive analysis report
 │   └── CV_[LastName]_[FirstName]_[JobTitle].pdf  # Final PDF resume
 │
-├── templates/                       # LaTeX templates for reference
+├── templates/                       # LaTeX templates
+│   ├── harvard_resume.tex           # Main Harvard-style resume template
+│   └── harvard_resume_pandoc.tex    # Alternative Pandoc-compatible template
+│
+├── media/                           # Documentation images and diagrams
 │
 ├── streamlit_app.py                 # Streamlit web interface
 ├── start.sh                         # Launch script for web UI
+├── Dockerfile                       # Docker container configuration
 ├── .env                             # Environment configuration (not in git)
 ├── .env.example                     # Example environment configuration
 ├── pyproject.toml                   # Project dependencies and metadata
-├── CLAUDE.md                        # Technical documentation for Claude Code
+├── uv.lock                          # UV package manager lock file
 ├── LICENSE                          # MIT License
 └── README.md                        # This file
 ```
@@ -449,8 +485,6 @@ After running the pipeline, you'll find these files in the `output/` directory:
 | `final_report.md` | Comprehensive report with job fit analysis and recommendations |
 | `CV_[LastName]_[FirstName]_[JobTitle].pdf` | **Final PDF resume** ready to submit |
 
-The PDF filename is automatically constructed from your name (extracted from the resume) and the job title (from the job posting).
-
 ---
 
 ## Technical Notes
@@ -465,9 +499,7 @@ During development, I attempted to run this system using local open-source langu
 
 For these reasons, **an OpenAI API key is required** to use this system. OpenAI's models (like GPT-4 and GPT-5) provide the reliability, instruction-following capability, and reasoning power necessary for high-quality resume optimization.
 
-### Future Considerations
-
-As open-source models continue to improve, particularly larger models that can run on more powerful hardware or cloud infrastructure, local LLM support may become viable in future versions.
+As open-source models continue to improve, local LLM support may become viable in future versions.
 
 ---
 

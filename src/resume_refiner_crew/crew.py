@@ -57,6 +57,8 @@ class ResumeRefinerCrew():
         model = os.getenv("OPENAI_MODEL", DEFAULT_OPENAI_MODEL)
         self.llm = LLM(model=model)
 
+    # PARSE RESUME
+    # Parse PDF resume to markdown format
     @agent
     def resume_parser(self) -> Agent:
         return Agent(
@@ -74,6 +76,8 @@ class ResumeRefinerCrew():
             agent=self.resume_parser()
         )
 
+    # ANALYZE JOB
+    # Analyze job descriptions and score candidate fit
     @agent
     def job_analyzer(self) -> Agent:
         return Agent(
@@ -93,6 +97,8 @@ class ResumeRefinerCrew():
             context=[self.parse_resume_task()]
         )
 
+    # OPTIMIZE RESUME
+    # Analyze resumes and provide structured optimization suggestions
     @agent
     def resume_analyzer(self) -> Agent:
         return Agent(
@@ -111,6 +117,8 @@ class ResumeRefinerCrew():
             context=[self.parse_resume_task(), self.analyze_job_task()]
         )
 
+    # GENERATE RESUME
+    # Create beautifully formatted, ATS-optimized resumes in markdown
     @agent
     def resume_writer(self) -> Agent:
         return Agent(
@@ -129,6 +137,9 @@ class ResumeRefinerCrew():
             context=[self.parse_resume_task(), self.optimize_resume_task()]
         )
 
+    # VERIFY RESUME
+    # Verify all claims in the optimized resume against the original CV
+    # and remove any hallucinated content
     @agent
     def fact_checker(self) -> Agent:
         return Agent(
@@ -146,6 +157,9 @@ class ResumeRefinerCrew():
             context=[self.parse_resume_task(), self.generate_resume_task()]
         )
 
+    # FORMAT TO HARVARD
+    # Parse and structure resume content into Harvard-compliant format 
+    # with precise data extraction
     @agent
     def harvard_formatter(self) -> Agent:
         return Agent(
@@ -164,6 +178,9 @@ class ResumeRefinerCrew():
             context=[self.verify_resume_task()]
         )
 
+    # GENERATE REPORT
+    # Create comprehensive, visually appealing, and actionable reports 
+    # from job application analysis
     @agent
     def report_generator(self) -> Agent:
         return Agent(
