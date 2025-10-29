@@ -92,7 +92,7 @@ class JobRequirements(BaseModel):
         default_factory=list
     )
     job_title: str = Field(
-        description="Job title (simplified)",
+        description="Job title simplified to 2-3 words maximum. Extract ONLY the core role name, excluding qualifiers, specializations, team names, seniority indicators, and locations. Examples: 'Computer Vision Engineer' (not 'Senior Computer Vision Engineer for Manufacturing'), 'Data Scientist' (not 'Data Scientist - NLP Team'), 'Product Manager' (not 'Senior Product Manager - Cloud Platform')",
         default=""
     )
     department: Optional[str] = Field(

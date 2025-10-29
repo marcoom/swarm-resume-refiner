@@ -357,7 +357,9 @@ This will provide all the required inputs and kickoff the crew execution that wi
 
 
 ### 2. Wait for the Agents to Complete
-The optimization process typically takes around 8 minutes. During this phase, the multi-agent system analyzes and transforms your resume. You can monitor real-time progress, including which agent is currently working, execution status, elapsed time, and detailed activity logs.
+The optimization process typically takes around 8 minutes (bigger models tend to be slower). During this phase, the multi-agent system analyzes and transforms your resume. You can monitor real-time progress, including which agent is currently working, execution status, elapsed time, and detailed activity logs.
+
+Go grab a cup of coffee ☕
 
 ![User Interface](/media/ui-2-processing.png)
 
@@ -387,6 +389,8 @@ Here you can:
   Filename follows this format: `CV_[LastName]_[FirstName]_[JobTitle].pdf`, where your name and filename are automatically obtained from the input resume, and the job title from the job description.
 
 To start the process again with new inputs, click **Start Over** in the sidebar.
+
+  > Note: the provided editor allows to edit every field in the resume, but if you need to perform major modifications, it may be easier to do it elsewhere (as JSON editing can become tedious). For that purpose, if you download all artifacts, a .tex file is provided. This file can be opened in any LaTeX editor such as [Overleaf](https://www.overleaf.com/) for a simpler editing experience (you may have to compress the .tex file inside a .zip before uploading to Overleaf).
 
 ---
 

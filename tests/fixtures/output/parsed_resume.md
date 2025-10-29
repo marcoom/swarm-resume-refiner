@@ -6,20 +6,20 @@ marcomongi@gmail.com • LinkedIn: marco-mongi • GitHub: marcoom • Río Cuar
 
 ### Ascentio Technologies, Río Cuarto, Argentina
 Product Owner, Systems Engineer | July 2022 – July 2025
-- Managed teamsof up to 10 people asProduct OwnerandSystems Engineer, leading the Technological Infrastructure and Science Data Processing subsystems of the SABIA-Mar satellite mission.
-- Launched the company’sartificial-intelligence division, transferring expertise to the team and enabling the acquisition of new clients in computer vision and Industry 4.0.
-- Led end-to-end acomputer-vision production-control systemfor an industrial plant, covering design, production rollout and ongoing maintenance. The solution blends multi-object detection and tracking, edge computing, IoT protocols and real-time dashboards, enabling performance and efficiency monitoring.
-- Implementedover20improvementstotheL0processoroftheSABIA-MarsatellitemissioninPython, fulfilling client-required functionalities within a 3-month timeframe.
+- Managed teams of up to 10 people as Product Owner and Systems Engineer, leading the Technological Infrastructure and Science Data Processing subsystems of the SABIA-Mar satellite mission.
+- Launched the company’s artificial-intelligence division, transferring expertise to the team and enabling the acquisition of new clients in computer vision and Industry 4.0.
+- Led end-to-end a computer-vision production-control system for an industrial plant, covering design, production rollout and ongoing maintenance. The solution blends multi-object detection and tracking, edge computing, IoT protocols and real-time dashboards, enabling performance and efficiency monitoring.
+- Implemented over 20 improvements to the L0 processor of the SABIA-Mar satellite mission in Python, fulfilling client-required functionalities within a 3-month timeframe.
 
 ### Ascentio Technologies, Río Cuarto, Argentina
 Intern | September 2020 – December 2020
-- Developed a platform forautomatic crop detectionin Python, achieving 80% accuracy using supervised classification algorithms applied to time series of multi-spectral satellite images.
+- Developed a platform for automatic crop detection in Python, achieving 80% accuracy using supervised classification algorithms applied to time series of multi-spectral satellite images.
 
 ### Faculty of Engineering, UNRC, Río Cuarto, Argentina
 Intern | 2018 – 2019
-- Contributed to the project "Improving university campus accessibility – Hearing loops", implementingsystems
+- Contributed to the project "Improving university campus accessibility – Hearing loops", implementing systems
 - Public speaking & training materials(English/Spanish); effective communication.
-- Englishproficiency: C2 EF SET, C1 Cambridge FCE.
+- English proficiency: C2 EF SET, C1 Cambridge FCE.
 
 ## Education
 
@@ -61,37 +61,37 @@ Additional courses on LinkedIn profile.
 - Hardware & Prototyping: Arduino, robotics, sensor integration, soldering, 3D design (SolidWorks/Fusion 360) and 3D printing (FDM).
 - Operating systems: Windows & Linux.
 - Public speaking & training materials(English/Spanish); effective communication.
-- Englishproficiency: C2 EF SET, C1 Cambridge FCE.
+- English proficiency: C2 EF SET, C1 Cambridge FCE.
 
 ### SOFT SKILLS
-- Product visionand strategicroadmap definition.
-- Backlogmanagement and feature prioritization.
+- Product vision and strategic roadmap definition.
+- Backlog management and feature prioritization.
 - Effective stakeholder communication, expectation management and negotiation.
-- Effective communication of technical conceptsto non-technical audiences.
-- Cross-functional leadershipandcoordination, fostering teamwork.
-- Risk, scope, resource and budgetmanagement.
-- Systems analysis and evaluation;KPI- andOKR-driven decision making.
-- Continuous improvement and innovationof processes, products and working methods.
+- Effective communication of technical concepts to non-technical audiences.
+- Cross-functional leadership and coordination, fostering teamwork.
+- Risk, scope, resource and budget management.
+- Systems analysis and evaluation;KPI- and OKR-driven decision making.
+- Continuous improvement and innovation of processes, products and working methods.
 - Mentoring, knowledge transfer and peer reviews.
-- Customer-centricfocus.
-- Emotional intelligenceand empathic collaboration.
+- Customer-centric focus.
+- Emotional intelligence and empathic collaboration.
 - Critical and analytical thinking, complex problem solving.
-- Time managementand high-quality delivery under pressure.
-- Continuous learning and adaptabilityto change.
+- Time management and high-quality delivery under pressure.
+- Continuous learning and adaptability to change.
 
 ## Academic Publications
 
-- 2021 |First author: Design of 5G-oriented patch antennas, a comprehensive survey. EAI Endorsed Transac-tions on Mobile Communications and Applications. doi: 10.4108/eai.16-3-2021.169031
+- 2021 |First author: Design of 5G-oriented patch antennas, a comprehensive survey. EAI Endorsed Transactions on Mobile Communications and Applications. doi: 10.4108/eai.16-3-2021.169031
 - 2019 |First author: Deep Learning applied to the handoff of cellular systems: a survey. TechRxiv. doi: 10.36227/techrxiv.11391906.v1
 
 ## PRESENTATIONS AND Recognitions
 
 ### PRESENTATIONS
-- 2024 |Presenterat the Infopork Swine Innovation Forum, presenting how artificial intelligence transforms the agro-industry and its challenges.
-- 2023 |Presenterof systems in charge to stakeholders during the Critical Design Review of the SABIA-Mar mission (MCDR), evaluated by experts from institutions like NASA, CNES, AEB, and INPE. The presentation was in English, reviewing the satellite’s science data processing systems (L0 Processor) and generated product publication.
+- 2024 |Presenter at the Infopork Swine Innovation Forum, presenting how artificial intelligence transforms the agro-industry and its challenges.
+- 2023 |Presenter of systems in charge to stakeholders during the Critical Design Review of the SABIA-Mar mission (MCDR), evaluated by experts from institutions like NASA, CNES, AEB, and INPE. The presentation was in English, reviewing the satellite’s science data processing systems (L0 Processor) and generated product publication.
 
 ### COMPETITIONS
-- 2024 | Winner of theDatathonRío Cuarto 2024, developing improvements for an LLM chatbot for bullying prevention. Competed in groups of 4 people with approximately 100 participants, performing ETL activities.
+- 2024 | Winner of the Datathon Río Cuarto 2024, developing improvements for an LLM chatbot for bullying prevention. Competed in groups of 4 people with approximately 100 participants, performing ETL activities.
 
 ## Personal Projects
 I have developed a comprehensive portfolio of AI and data engineering projects, including:

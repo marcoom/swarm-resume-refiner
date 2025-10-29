@@ -1,23 +1,30 @@
 parse_resume_task:
   description: >
-    Use the PDFSearchTool to access and extract content from the resume PDF at: {RESUME_PDF_PATH}
+      Use the PDFSearchTool to extract content from the resume PDF at: {RESUME_PDF_PATH}
 
-    Your goal is to parse the entire resume content and convert it to clean, well-structured markdown format with proper headings and formatting.
+      Your goal is to convert the entire resume to clean, well-structured markdown format.
 
-    Ensure that you got the entire resume content from the resume PDF before formatting it. Make additional tool calls if neccessary
+      Ensure complete extraction by making additional tool calls if necessary to capture all pages.
 
-    Ensure the markdown output:
-    - Uses proper markdown heading hierarchy (# for main title, ## for sections, ### for subsections)
-    - Preserves all resume sections (contact info, summary, experience, education, skills, etc.)
-    - Maintains proper formatting for lists, dates, and other content
-    - Is clean and professionally formatted
+      After extraction, review and fix:
+      - Missing spaces between words (common PDF parsing artifact)
+      - Spacing around punctuation and parentheses
+      - Text concatenation issues (e.g., "asProduct" → "as Product")
 
-    CRITICAL OUTPUT REQUIREMENTS:
-    - Output ONLY the parsed markdown resume content
-    - DO NOT include ANY introductory text (e.g., "Here is the resume:", "I parsed the PDF:")
-    - DO NOT include ANY concluding remarks or explanations
-    - DO NOT include ANY meta-commentary about the parsing process
-    - The output must be the pure markdown content, starting with the resume header
+      Apply markdown formatting:
+      - Use proper heading hierarchy (# for name, ## for sections, ### for subsections)
+      - Convert bullets to markdown format (- prefix)
+      - Preserve all content and maintain proper list/date formatting
+
+      Content organization:
+      - Preserve the extraction order by default
+      - Only reorder content if something is clearly misplaced (e.g., headers mid-paragraph, contact info within unrelated sections)
+      - When uncertain about placement, keep the original order
+
+      CRITICAL OUTPUT REQUIREMENTS:
+      - Output ONLY the parsed markdown resume content
+      - DO NOT include ANY introductory text, conclusions, or meta-commentary
+      - The output must be pure markdown content, starting with the resume header
 
   expected_output: >
     Pure markdown text of the complete resume with proper structure and formatting.

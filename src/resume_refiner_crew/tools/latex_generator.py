@@ -478,7 +478,7 @@ def compile_latex_to_pdf(
     try:
         _write_tex_file(tex_path, tex_content)
         _run_pdflatex(tex_path, output_dir)
-        _cleanup_auxiliary_files(output_dir, filename_base, tex_path)
+        _cleanup_auxiliary_files(output_dir, filename_base)
 
         pdf_path = output_dir / f"{filename_base}.pdf"
         if pdf_path.exists():
@@ -526,17 +526,13 @@ def _run_pdflatex(tex_path: Path, output_dir: Path) -> None:
 
 def _cleanup_auxiliary_files(
     output_dir: Path,
-    filename_base: str,
-    tex_path: Path
+    filename_base: str
 ) -> None:
     """Clean up auxiliary LaTeX files."""
-    for ext in ['.aux', '.log', '.out', '.tex']:
+    for ext in ['.aux', '.log', '.out']:
         aux_file = output_dir / f"{filename_base}{ext}"
         if aux_file.exists():
             aux_file.unlink()
-
-    if tex_path.exists():
-        tex_path.unlink()
 
 
 def _load_resume_data(json_path: Path) -> Dict:
