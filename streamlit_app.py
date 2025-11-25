@@ -4,6 +4,7 @@ A user-friendly graphical interface for the Resume Refiner multi-agent system.
 Guides users through input, processing, and results phases.
 """
 
+import base64
 import json
 import multiprocessing
 import os
@@ -18,7 +19,7 @@ from dotenv import load_dotenv
 
 from src.resume_refiner_crew.constants import TASKS_INFO, TOTAL_TASKS
 from src.resume_refiner_crew.streamlit_runner import run_crew_with_params
-from src.resume_refiner_crew.tools.latex_generator import generate_resume_pdf_from_json
+from src.resume_refiner_crew.tools.latex_generator import generate_resume_pdf_from_json, compile_latex_to_pdf
 
 # Load environment variables
 load_dotenv()
@@ -89,8 +90,8 @@ def init_session_state():
         'processing': False,
         'completed': False,
         'result': None,
-        'edited_json': None,
-        'original_json': None,
+        'edited_tex': None,
+        'original_tex': None,
         'process': None,
         'result_queue': None,
         'start_time': None,
@@ -116,8 +117,8 @@ def reset_session():
     st.session_state.processing = False
     st.session_state.completed = False
     st.session_state.result = None
-    st.session_state.edited_json = None
-    st.session_state.original_json = None
+    st.session_state.edited_tex = None
+    st.session_state.original_tex = None
     st.session_state.process = None
     st.session_state.result_queue = None
     st.session_state.start_time = None
@@ -420,110 +421,139 @@ elif st.session_state.completed:
         if st.button("📊 View Optimization Report", use_container_width=True, type="secondary"):
             show_optimization_report()
 
-        # COLLAPSIBLE EDIT RESUME SECTION
-        with st.expander("✏️ Edit Structured Resume (Optional)", expanded=False):
-            # Display toast messages after rerun
-            if st.session_state.show_reset_toast:
-                st.toast("Changes reset to original", icon="↩️")
-                st.session_state.show_reset_toast = False
+        # Get PDF path and derive TeX path
+        pdf_path_str = result.get('pdf_path')
+        
+        if pdf_path_str:
+            pdf_path = Path(pdf_path_str)
+            tex_path = pdf_path.with_suffix('.tex')
 
-            if st.session_state.show_apply_toast:
-                st.toast("PDF regenerated successfully", icon="✅")
-                st.session_state.show_apply_toast = False
+            if tex_path.exists():
+                # Load original TeX if not already loaded
+                if st.session_state.original_tex is None:
+                    original_content = tex_path.read_text(encoding='utf-8')
+                    st.session_state.original_tex = original_content
+                    st.session_state.edited_tex = original_content
 
-            json_path = Path("output/structured_resume.json")
+                # PDF PREVIEW SECTION (Outside expander)
+                st.subheader("PDF Preview")
+                if pdf_path.exists():
+                    # Display PDF using iframe
+                    with open(pdf_path, "rb") as f:
+                        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+                    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="800" type="application/pdf"></iframe>'
+                    st.markdown(pdf_display, unsafe_allow_html=True)
+                else:
+                    st.warning("PDF file not found")
 
-            if json_path.exists():
-                # Load original JSON if not already loaded
-                if st.session_state.original_json is None:
-                    original_content = json_path.read_text(encoding='utf-8')
-                    # Format JSON for better readability
-                    formatted_json = json.dumps(json.loads(original_content), indent=2)
-                    st.session_state.original_json = formatted_json
-                    st.session_state.edited_json = formatted_json
+                # COLLAPSIBLE EDIT RESUME SECTION
+                with st.expander("✏️ Edit Resume (LaTeX)", expanded=False):
+                    # Display toast messages after rerun
+                    if st.session_state.show_reset_toast:
+                        st.toast("Changes reset to original", icon="↩️")
+                        st.session_state.show_reset_toast = False
 
-                st.info("Edit the structured resume data below and apply changes to regenerate the PDF")
+                    if st.session_state.show_apply_toast:
+                        st.toast("PDF regenerated successfully", icon="✅")
+                        st.session_state.show_apply_toast = False
 
-                # JSON editor
-                edited_json = st.text_area(
-                    "Structured Resume JSON",
-                    value=st.session_state.edited_json,
-                    height=400,
-                    key=f"json_editor_{st.session_state.editor_key}",
-                    label_visibility="collapsed"
-                )
+                    st.info("Edit the LaTeX code below and apply changes to regenerate the PDF")
+                    
+                    # LaTeX Reference Expander
+                    with st.expander("LaTeX Reference", expanded=False):
+                        st.markdown("""
+                        **Common Commands:**
+                        - **Bold**: `\\textbf{text}`
+                        - *Italic*: `\\textit{text}`
+                        - New line: `\\\\`
+                        - Page break: `\\pagebreak`
+                        
+                        **Lists:**
+                        - Bulleted list:
+                            ```latex
+                            \\begin{itemize}
+                                \\item Item 1
+                                \\item Item 2
+                            \\end{itemize}
+                            ```
+                        - Numbered list:
+                            ```latex
+                            \\begin{enumerate}
+                                \\item First item
+                                \\item Second item
+                            \\end{enumerate}
+                            ```
+                        
+                        [Full LaTeX Cheat Sheet](https://wch.github.io/latexsheet/latexsheet-a4.pdf)
+                        """)
 
-                # Update session state
-                st.session_state.edited_json = edited_json
+                    # LaTeX editor
+                    edited_tex = st.text_area(
+                        "LaTeX Source",
+                        value=st.session_state.edited_tex,
+                        height=600,
+                        key=f"tex_editor_{st.session_state.editor_key}",
+                        label_visibility="collapsed"
+                    )
 
-                # Validate JSON
-                try:
-                    if edited_json is not None:
-                        json.loads(edited_json)
-                        json_valid = True
-                        json_error = None
-                    else:
-                        json_valid = False
-                        json_error = "No JSON content"
-                except json.JSONDecodeError as e:
-                    json_valid = False
-                    json_error = str(e)
+                    # Update session state
+                    st.session_state.edited_tex = edited_tex
 
-                # Show validation error
-                if not json_valid:
-                    st.error(f"Invalid JSON: {json_error}")
+                    # Buttons
+                    col_btn1, col_btn2 = st.columns(2)
 
-                # Buttons
-                col1, col2 = st.columns(2)
+                    with col_btn1:
+                        if st.button("↺ Reset Changes", use_container_width=True):
+                            # Reset to original content
+                            st.session_state.edited_tex = st.session_state.original_tex
+                            st.session_state.editor_key += 1  # Force re-render
+                            
+                            # Revert file content
+                            if st.session_state.original_tex:
+                                tex_path.write_text(st.session_state.original_tex, encoding='utf-8')
+                                
+                                # Regenerate PDF from original TeX
+                                with st.spinner("Regenerating PDF..."):
+                                    new_pdf_path = compile_latex_to_pdf(
+                                        tex_content=st.session_state.original_tex,
+                                        output_dir=pdf_path.parent,
+                                        filename_base=pdf_path.stem
+                                    )
+                                    if new_pdf_path:
+                                        st.session_state.show_reset_toast = True
+                                        st.rerun()
+                                    else:
+                                        st.error("PDF generation failed")
 
-                with col1:
-                    if st.button("↺ Reset Changes", use_container_width=True):
-                        # Reload original JSON from file
-                        original_content = json_path.read_text(encoding='utf-8')
-                        formatted_json = json.dumps(json.loads(original_content), indent=2)
-                        st.session_state.original_json = formatted_json
-                        st.session_state.edited_json = formatted_json
-                        st.session_state.editor_key += 1  # Force re-render
+                    with col_btn2:
+                        if st.button(
+                            "✓ Apply Changes",
+                            type="primary",
+                            use_container_width=True
+                        ):
+                            # Save edited TeX to file
+                            if edited_tex:
+                                tex_path.write_text(edited_tex, encoding='utf-8')
 
-                        # Regenerate PDF from original JSON
-                        with st.spinner("Regenerating PDF from original resume..."):
-                            pdf_path = generate_resume_pdf_from_json(
-                                json_path=str(json_path)
-                            )
-                            if pdf_path and st.session_state.result is not None:
-                                st.session_state.result['pdf_path'] = pdf_path
-                                st.session_state.show_reset_toast = True
-                                st.rerun()
+                                # Regenerate PDF from modified TeX
+                                with st.spinner("Regenerating PDF..."):
+                                    new_pdf_path = compile_latex_to_pdf(
+                                        tex_content=edited_tex,
+                                        output_dir=pdf_path.parent,
+                                        filename_base=pdf_path.stem
+                                    )
+                                    if new_pdf_path:
+                                        st.session_state.show_apply_toast = True
+                                        st.rerun()
+                                    else:
+                                        st.error("PDF generation failed")
                             else:
-                                st.error("PDF generation failed")
+                                st.error("No LaTeX content to save")
 
-                with col2:
-                    if st.button(
-                        "✓ Apply Changes",
-                        disabled=not json_valid,
-                        type="primary",
-                        use_container_width=True
-                    ):
-                        # Save edited JSON to new file (validated via button disabled state)
-                        if edited_json is not None:
-                            modified_json_path = Path("output/structured_resume_modified.json")
-                            modified_json_path.write_text(edited_json, encoding='utf-8')
-
-                            # Regenerate PDF from modified JSON
-                            with st.spinner("Regenerating PDF from modified resume..."):
-                                pdf_path = generate_resume_pdf_from_json(
-                                    json_path=str(modified_json_path)
-                                )
-                                if pdf_path and st.session_state.result is not None:
-                                    st.session_state.result['pdf_path'] = pdf_path
-                                    st.session_state.show_apply_toast = True
-                                    st.rerun()
-                                else:
-                                    st.error("PDF generation failed")
-                        else:
-                            st.error("No JSON content to save")
             else:
-                st.warning("structured_resume.json not found")
+                st.warning(f"TeX file not found: {tex_path}")
+        else:
+            st.warning("PDF path not found in result")
 
         # DOWNLOAD BUTTONS (always visible)
         st.write("&nbsp;")
