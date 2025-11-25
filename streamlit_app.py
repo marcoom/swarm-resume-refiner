@@ -26,7 +26,7 @@ load_dotenv()
 
 # Streamlit Configuration
 DEFAULT_TARGET_WORDS = 400
-MIN_TARGET_WORDS = 300
+MIN_TARGET_WORDS = 100
 MAX_TARGET_WORDS = 1000
 
 # Fallback model list for when OpenAI API is unavailable
