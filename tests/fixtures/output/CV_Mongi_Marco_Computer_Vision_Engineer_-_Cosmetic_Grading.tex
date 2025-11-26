@@ -16,31 +16,44 @@
     pdfborder={0 0 0}
 }
 
+% Section formatting - make sections look like centered bold text
+\usepackage{titlesec}
+\titleformat{\section}{\centering\bfseries}{}{}{}
+\titleformat{\subsection}{\bfseries}{}{}{}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+\titlespacing*{\subsection}{0pt}{0pt}{3pt}
+
+% Title formatting - remove space before title
+\usepackage{titling}
+\setlength{\droptitle}{-7em}  % Move title to top (negative = upward)
+
+% Title content
+\title{Marco Mongi}
+\author{}
+\date{}
+
 \begin{document}
 
-% Header: Name and Contact
-\begin{center}
-    \textbf{Marco Mongi}\\
-    \hrulefill
-\end{center}
+% Header: Name with horizontal rule
+\maketitle
+\vspace{-8em}
+\noindent\rule{\textwidth}{0.4pt}
 
-\begin{center}
-    Email: marcomongi@gmail.com | LinkedIn: https://www.linkedin.com/in/marco-mongi | GitHub: https://github.com/marcoom | Río Cuarto, Argentina
-\end{center}
+% Contact info - centered with wrapping
+{\centering
+Email: marcomongi@gmail.com | LinkedIn: https://www.linkedin.com/in/marco-mongi | GitHub: https://github.com/marcoom | Río Cuarto, Argentina
 
-\vspace{0.5pt}
+}
 
-\begin{center}
-    \textbf{Summary}
-\end{center}
+\vspace{5pt}
+
+\section*{Summary}
 
 Computer Vision and Systems Engineer with 3 years delivering end-to-end industrial production-control solutions. Skilled in Python, OpenCV, detection/tracking/segmentation, and edge/IoT deployments with real-time dashboards. Cross-functional collaboration; English C1/C2.
 
 \vspace{12pt}
 
-\begin{center}
-    \textbf{Work Experience}
-\end{center}
+\section*{Work Experience}
 
 \textbf{Ascentio Technologies} \hfill Río Cuarto, Argentina
 
@@ -72,9 +85,7 @@ Computer Vision and Systems Engineer with 3 years delivering end-to-end industri
 
 \vspace{12pt}
 
-\begin{center}
-    \textbf{Education}
-\end{center}
+\section*{Education}
 
 \textbf{Stanford University} \hfill Online
 
@@ -96,9 +107,7 @@ GPA 8.71
 
 \vspace{12pt}
 
-\begin{center}
-    \textbf{Courses and Certifications}
-\end{center}
+\section*{Courses and Certifications}
 
 2025 | EF SET English Certificate | EF SET | C2 Proficient
 
@@ -110,9 +119,7 @@ GPA 8.71
 
 \vspace{12pt}
 
-\begin{center}
-    \textbf{Skills}
-\end{center}
+\section*{Skills}
 
 \textbf{Computer Vision:} object detection, segmentation, tracking; OpenCV.
 
@@ -132,9 +139,7 @@ GPA 8.71
 
 \vspace{12pt}
 
-\begin{center}
-    \textbf{Languages}
-\end{center}
+\section*{Languages}
 
 \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, parsep=0pt]
     \item Spanish: Native
@@ -143,9 +148,7 @@ GPA 8.71
 
 \vspace{12pt}
 
-\begin{center}
-    \textbf{Projects}
-\end{center}
+\section*{Projects}
 
 \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, parsep=0pt]
     \item Computer Vision: real-time license plate detection/tracking (YOLOv8, DeepSORT, OCR); blood cell counting with detection+segmentation (YOLO + SAM2).
@@ -154,9 +157,7 @@ GPA 8.71
 
 \vspace{12pt}
 
-\begin{center}
-    \textbf{Presentations}
-\end{center}
+\section*{Presentations}
 
 \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, parsep=0pt]
     \item 2024 — Presenter at Infopork Swine Innovation Forum on AI in agro-industry.
@@ -165,9 +166,7 @@ GPA 8.71
 
 \vspace{12pt}
 
-\begin{center}
-    \textbf{Awards}
-\end{center}
+\section*{Awards}
 
 \begin{itemize}[noitemsep, topsep=0pt, partopsep=0pt, parsep=0pt]
     \item 2024 — Winner, Datathon Río Cuarto (LLM chatbot ETL improvements)
