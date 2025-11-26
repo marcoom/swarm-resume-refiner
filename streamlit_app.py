@@ -431,7 +431,7 @@ def show_processing_progress():
         st.info("⏳ Working on your resume...")
 
     # Crew image
-    st.image("./media/agents-flow.png")
+    st.image("./media/agents-flow-2-rows.png")
 
     # Progress bar
     progress_value = completed / total_tasks
@@ -496,7 +496,6 @@ elif st.session_state.completed:
                     st.session_state.edited_tex = original_content
 
                 # PDF PREVIEW SECTION (Outside expander)
-                st.subheader("PDF Preview")
                 if pdf_path.exists():
                     # Display PDF using iframe
                     with open(pdf_path, "rb") as f:
@@ -649,8 +648,6 @@ elif st.session_state.completed:
                 type="secondary",
                 use_container_width=True
             )
-
-        st.divider()
 
     else:
         # Error handling

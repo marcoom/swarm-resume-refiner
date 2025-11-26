@@ -44,9 +44,21 @@
 
 ### **Skills Section**
 
-* 6–10 relevant skills; specific, not vague.
+* Include only 6-10 skills relevant to the target role.
 * Match job wording to job description (truthfully).
-* Can group (e.g., Programming • Tools • Languages).
+* Use one-line, category-based formatting.
+* Can group in categories. Start each category with a **bold title**.
+* Separate categories using • (dot separators).
+* Keep skills specific, not vague.
+* Use two blocks (if applicable): **Technical Skills** and **Soft Skills**.
+
+Example:
+**TECHNICAL SKILLS**
+**Programming:** Python, SQL • **Data:** ETL, Data Analysis • **Tools:** Git, Docker • **Cloud:** AWS, GCP
+
+**SOFT SKILLS**
+Communication • Problem Solving • Adaptability • Teamwork
+
 
 ### **Optional Sections**
 
