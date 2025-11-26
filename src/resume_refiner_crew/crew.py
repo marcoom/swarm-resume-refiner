@@ -13,6 +13,7 @@ from .constants import (
     TASKS_CONFIG,
     DEFAULT_RESUME_PATH,
     DEFAULT_JOB_DESC_PATH,
+    DEFAULT_RESUME_BEST_PRACTICES_PATH,
     DEFAULT_OPENAI_MODEL,
 )
 from .models import (
@@ -35,6 +36,7 @@ class ResumeRefinerCrew():
         self,
         job_description_path: str = str(DEFAULT_JOB_DESC_PATH),
         resume_pdf_path: str = str(DEFAULT_RESUME_PATH),
+        resume_best_practices_path: str = str(DEFAULT_RESUME_BEST_PRACTICES_PATH),
         **kwargs
     ) -> None:
         """Initialize crew with job description and resume.
@@ -53,6 +55,7 @@ class ResumeRefinerCrew():
         self.job_description_path = job_description_path
         self.resume_pdf_path = resume_pdf_path
         self.job_description = TextFileKnowledgeSource(file_paths=[job_description_path])
+        self.resume_best_practices = TextFileKnowledgeSource(file_paths=[resume_best_practices_path])
         self.pdf_search_tool = PDFSearchTool(pdf=resume_pdf_path)
 
         model = os.getenv("OPENAI_MODEL", DEFAULT_OPENAI_MODEL)
@@ -108,7 +111,8 @@ class ResumeRefinerCrew():
         return Agent(
             config=self.agents_config['resume_analyzer'],
             verbose=True,
-            llm=self.llm
+            llm=self.llm,
+            knowledge_sources=[self.resume_best_practices]
         )
 
     @task

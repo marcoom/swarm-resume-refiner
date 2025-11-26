@@ -1,0 +1,64 @@
+# **Resume Best Practices**
+
+## **1. General Rules**
+
+* **Tailor every resume** to the job. Use keywords from the description naturally.
+* **Show impact, not tasks.** Every bullet = *action + result*, ideally quantified.
+* **Use active voice + strong verbs.** No “responsible for”, no pronouns (“I”).
+* **Be concise.** Keep only high-value content; remove fluff.
+* **Keep only what is relevant to the job description.** Discard any content that does not add value to the job description. 
+* **Error-free.** Zero typos, consistent formatting, clean structure.
+* **ATS-friendly.** No tables, columns, images, text boxes, icons, or fancy bullets.
+* **Be truthful.** Do not include fake achievements or experiences, or exaggerated claims. Always be faithful to the resume content.
+
+---
+
+## **2. Structure**
+
+### **Header**
+
+* Name
+* Contact information: phone, email, LinkedIn, Website, GitHub, other.
+* No photo, no personal data (do not add age, marital status, exact address instead of city or country).
+
+### **Summary**
+
+* Should be 2–4 sentences
+* Who you are + key skills + most relevant achievements + fit for role.
+* Include keywords aligned to job.
+
+### **Work Experience**
+
+* Reverse chronological.
+* Bullet points starting with action verbs.
+* Focus on **achievements**, not responsibilities.
+* Quantify (%, $, time saved, volume…).
+* 2–5 bullets per role (more only if highly relevant).
+* Avoid internal jargon.
+
+### **Education**
+
+* Degree, major, institution, location, graduation year.
+* GPA/honors only if helpful.
+* Coursework only for early-career or field change.
+
+### **Skills Section**
+
+* 6–10 relevant skills; specific, not vague.
+* Match job wording to job description (truthfully).
+* Can group (e.g., Programming • Tools • Languages).
+
+### **Optional Sections**
+
+* **Certifications**, **Projects**, **Awards**, **Volunteer/Leadership**, **Interests**, **Languages** (if meaningful).
+* Include only what strengthens the application.
+
+---
+
+## **3. Language & Content Principles**
+
+* **Specific > general.** Provide context + outcome.
+* **Quantify impact** whenever possible.
+* **Avoid fillers:** “team player”, “hard worker”, “motivated”.
+* **No irrelevant info:** age, marital status, hobbies with no value.
+* **Truthful & verifiable.**
