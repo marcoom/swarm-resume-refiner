@@ -77,7 +77,6 @@ def get_openai_chat_models():
     except Exception:
         return FALLBACK_MODELS
 
-
 # Page configuration
 st.set_page_config(
     page_title="Resume Refiner Crew",
@@ -265,15 +264,26 @@ uploaded_file = st.sidebar.file_uploader(
 
 # Options Section (collapsible)
 with st.sidebar.expander("⚙️ Options", expanded=False):
-    # API Key
-    st.subheader("OpenAI API Key")
-    api_key = st.text_input(
-        "Your OpenAI API key",
-        type="password",
-        value=os.getenv("OPENAI_API_KEY", ""),
-        help="Create your API key at platform.openai.com/api-keys (paid service)"
-    )
+    
+    # Determine if API config should be shown
+    show_api_config = os.getenv("SHOW_API_CONFIG_UI", "true").lower() == "true"
+    
+    api_key = os.getenv("OPENAI_API_KEY", "")
 
+    if show_api_config:
+        # API Key
+        st.subheader("OpenAI API Key")
+        api_key = st.text_input(
+            "Your OpenAI API key",
+            type="password",
+            value=api_key,
+            help="Create your API key at platform.openai.com/api-keys (paid service)"
+        )
+        
+        # Show credit balance link if API key is available
+        if api_key:
+            st.markdown("💰 Check credit balance [here](https://platform.openai.com/settings/organization/billing/overview)")
+    
     # Model Selection
     st.subheader("Model Selection")
 
@@ -304,7 +314,7 @@ with st.sidebar.expander("⚙️ Options", expanded=False):
         max_value=MAX_TARGET_WORDS,
         value=int(os.getenv("TARGET_RESUME_WORDS", str(DEFAULT_TARGET_WORDS))),
         step=50,
-        help="400-600 words for single page, 600-800 for two pages"
+        help="200 words for single page, 400-500 for two pages"
     )
 
     st.subheader("Agents Configuration")

@@ -145,6 +145,7 @@ TARGET_RESUME_WORDS=500                     # Default: 500 (400-600 for 1 page, 
 DEVELOPER_MODE=false                        # Default: false (see Developer Mode section for details)
 ENABLE_REPORTS=true                         # Default: true (enable/disable report generator agent)
 ENABLE_FACT_CHECK=true                      # Default: true (enable/disable fact checker agent)
+SHOW_API_CONFIG_UI=true                     # Default: true (show/hide API key input in UI)
 ```
 
 ---
@@ -265,6 +266,7 @@ docker run -p 8501:8501 \
   -e DEVELOPER_MODE=false \
   -e ENABLE_REPORTS=true \
   -e ENABLE_FACT_CHECK=true \
+  -e SHOW_API_CONFIG_UI=true \
   marcoom/swarm-resume-refiner:1.0.0
 ```
 
@@ -275,6 +277,7 @@ docker run -p 8501:8501 \
 - `DEVELOPER_MODE` - *(Optional)* Set to `true` to simulate execution without API calls (default: `false`)
 - `ENABLE_REPORTS` - *(Optional)* Set to `false` to disable the report generator agent (default: `true`)
 - `ENABLE_FACT_CHECK` - *(Optional)* Set to `false` to disable the fact checker agent (default: `true`)
+- `SHOW_API_CONFIG_UI` - *(Optional)* Set to `false` to hide the API Key input in the UI (default: `true`)
 
 **On Windows (PowerShell)**, use `${PWD}` instead of `$(pwd)`:
 
