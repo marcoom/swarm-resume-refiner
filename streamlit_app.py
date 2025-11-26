@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 
 from src.resume_refiner_crew.constants import TASKS_INFO, TOTAL_TASKS
 from src.resume_refiner_crew.streamlit_runner import run_crew_with_params
-from src.resume_refiner_crew.tools.latex_generator import generate_resume_pdf_from_json, compile_latex_to_pdf
+from src.resume_refiner_crew.tools.latex_generator import generate_resume_pdf_from_json, compile_latex_to_pdf, convert_latex_to_docx
 
 # Load environment variables
 load_dotenv()
@@ -520,6 +520,8 @@ elif st.session_state.completed:
                                         filename_base=pdf_path.stem
                                     )
                                     if new_pdf_path:
+                                        # Also regenerate DOCX
+                                        convert_latex_to_docx(tex_path, pdf_path.parent)
                                         st.session_state.show_reset_toast = True
                                         st.rerun()
                                     else:
@@ -536,13 +538,15 @@ elif st.session_state.completed:
                                 tex_path.write_text(edited_tex, encoding='utf-8')
 
                                 # Regenerate PDF from modified TeX
-                                with st.spinner("Regenerating PDF..."):
+                                with st.spinner("Regenerating PDF and DOCX..."):
                                     new_pdf_path = compile_latex_to_pdf(
                                         tex_content=edited_tex,
                                         output_dir=pdf_path.parent,
                                         filename_base=pdf_path.stem
                                     )
                                     if new_pdf_path:
+                                        # Also regenerate DOCX
+                                        convert_latex_to_docx(tex_path, pdf_path.parent)
                                         st.session_state.show_apply_toast = True
                                         st.rerun()
                                     else:

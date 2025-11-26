@@ -11,6 +11,12 @@ import subprocess
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
+try:
+    import pypandoc
+    PYPANDOC_AVAILABLE = True
+except ImportError:
+    PYPANDOC_AVAILABLE = False
+
 from ..constants import (
     JOB_ANALYSIS_FILE,
     LATEX_VSPACE_SECTION,
@@ -157,9 +163,7 @@ def generate_work_experience_section(experiences: List[Dict]) -> str:
     if not experiences:
         return ""
 
-    latex = r"""\begin{center}
-    \textbf{Work Experience}
-\end{center}
+    latex = r"""\section*{Work Experience}
 
 """
 
@@ -206,9 +210,7 @@ def generate_education_section(education_list: List[Dict]) -> str:
     if not education_list:
         return ""
 
-    latex = r"""\begin{center}
-    \textbf{Education}
-\end{center}
+    latex = r"""\section*{Education}
 
 """
 
@@ -257,9 +259,7 @@ def generate_summary_section(summary: Optional[str]) -> str:
     if not summary:
         return ""
 
-    latex = r"""\begin{center}
-    \textbf{Summary}
-\end{center}
+    latex = r"""\section*{Summary}
 
 """
     latex += f"{escape_latex(summary)}\n\n"
@@ -273,9 +273,7 @@ def generate_certifications_section(certifications: List[Dict]) -> str:
     if not certifications:
         return ""
 
-    latex = r"""\begin{center}
-    \textbf{Courses and Certifications}
-\end{center}
+    latex = r"""\section*{Courses and Certifications}
 
 """
 
@@ -302,9 +300,7 @@ def generate_skills_section(skills: Optional[Dict[str, List[str]]]) -> str:
     if not skills:
         return ""
 
-    latex = r"""\begin{center}
-    \textbf{Skills}
-\end{center}
+    latex = r"""\section*{Skills}
 
 """
 
@@ -354,9 +350,7 @@ def generate_additional_sections(
 
     # Languages
     if languages:
-        latex += r"""\begin{center}
-    \textbf{Languages}
-\end{center}
+        latex += r"""\section*{Languages}
 
 """
         latex += render_mixed_content(languages)
@@ -364,9 +358,7 @@ def generate_additional_sections(
 
     # Projects
     if projects:
-        latex += r"""\begin{center}
-    \textbf{Projects}
-\end{center}
+        latex += r"""\section*{Projects}
 
 """
         latex += render_mixed_content(projects)
@@ -377,9 +369,7 @@ def generate_additional_sections(
         for section_name, section_content in additional_sections.items():
             section_name_formatted = format_section_title(section_name)
             section_name_escaped = escape_latex(section_name_formatted)
-            latex += r"\begin{center}" + "\n"
-            latex += f"    \\textbf{{{section_name_escaped}}}\n"
-            latex += r"\end{center}" + "\n\n"
+            latex += f"\\section*{{{section_name_escaped}}}\n\n"
 
             latex += render_mixed_content(section_content)
 
@@ -421,19 +411,36 @@ def generate_complete_latex(resume_data: Dict) -> str:
     pdfborder={0 0 0}
 }
 
+% Section formatting - make sections look like centered bold text
+\usepackage{titlesec}
+\titleformat{\section}{\centering\bfseries}{}{}{}
+\titleformat{\subsection}{\bfseries}{}{}{}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+\titlespacing*{\subsection}{0pt}{0pt}{3pt}
+
+% Title formatting - remove space before title
+\usepackage{titling}
+\setlength{\droptitle}{-7em}  % Move title to top (negative = upward)
+
+% Title content
+\title{""" + escape_latex(candidate_name) + r"""}
+\author{}
+\date{}
+
 \begin{document}
 
-% Header: Name and Contact
-\begin{center}
-    \textbf{""" + escape_latex(candidate_name) + r"""}\\
-    \hrulefill
-\end{center}
+% Header: Name with horizontal rule
+\maketitle
+\vspace{-8em}
+\noindent\rule{\textwidth}{0.4pt}
 
-\begin{center}
-    """ + escape_latex(contact_info) + r"""
-\end{center}
+% Contact info - centered with wrapping
+{\centering
+""" + escape_latex(contact_info) + r"""
 
-\vspace{0.5pt}
+}
+
+\vspace{5pt}
 
 """
 
@@ -535,6 +542,78 @@ def _cleanup_auxiliary_files(
             aux_file.unlink()
 
 
+def convert_latex_to_docx(
+    tex_path: Path,
+    output_dir: Optional[Path] = None
+) -> Optional[str]:
+    """Convert LaTeX file to DOCX format using pypandoc.
+    
+    Uses a custom reference document template to maintain consistent styling
+    that better matches the Harvard resume format.
+    
+    Args:
+        tex_path: Path to the .tex file to convert.
+        output_dir: Directory to save the DOCX file. If None, uses the same directory as tex_path.
+    
+    Returns:
+        Path to generated DOCX file, or None if conversion failed.
+    """
+    if not PYPANDOC_AVAILABLE:
+        logger.error("pypandoc is not available. Cannot convert to DOCX.")
+        return None
+    
+    if not tex_path.exists():
+        logger.error(f"LaTeX file not found: {tex_path}")
+        return None
+    
+    try:
+        # Determine output directory
+        if output_dir is None:
+            output_dir = tex_path.parent
+        
+        # Generate output filename
+        docx_filename = tex_path.stem + ".docx"
+        docx_path = output_dir / docx_filename
+        
+        logger.info(f"Converting {tex_path} to DOCX...")
+        
+        # Look for custom reference document
+        reference_doc = Path.cwd() / "templates" / "reference-resume.docx"
+        
+        # Build extra arguments for pandoc
+        extra_args = [
+            '--standalone',
+            '--preserve-tabs',
+            '--columns=999'
+        ]
+        
+        # Add reference document if it exists
+        if reference_doc.exists():
+            extra_args.append(f'--reference-doc={reference_doc}')
+            logger.info(f"Using reference document: {reference_doc}")
+        else:
+            logger.warning(f"Reference document not found: {reference_doc}, using default styles")
+        
+        # Convert using pypandoc with improved formatting options
+        pypandoc.convert_file(
+            str(tex_path),
+            'docx',
+            outputfile=str(docx_path),
+            extra_args=extra_args
+        )
+        
+        if docx_path.exists():
+            logger.info(f"DOCX generated successfully: {docx_path}")
+            return str(docx_path)
+        else:
+            logger.error("DOCX file was not created")
+            return None
+            
+    except Exception as e:
+        logger.error(f"Error converting LaTeX to DOCX: {e}", exc_info=True)
+        return None
+
+
 def _load_resume_data(json_path: Path) -> Dict:
     """Load structured resume data from JSON file."""
     if not json_path.exists():
@@ -610,6 +689,13 @@ def generate_resume_pdf_from_json(
 
         latex_content = generate_complete_latex(resume_data)
         pdf_path = compile_latex_to_pdf(latex_content, output_full_dir, filename_base)
+        
+        # Also generate DOCX file
+        if pdf_path:
+            tex_path = output_full_dir / f"{filename_base}.tex"
+            if tex_path.exists():
+                logger.info("Generating DOCX file...")
+                convert_latex_to_docx(tex_path, output_full_dir)
 
         return pdf_path
 

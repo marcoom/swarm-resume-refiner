@@ -11,10 +11,12 @@ ENV PYTHONUNBUFFERED=1 \
 
 # Install system dependencies
 # - LaTeX for PDF generation (texlive-latex-base, texlive-latex-extra)
+# - pandoc for converting LaTeX to DOCX
 # - curl for health checks and potential future use
 RUN apt-get update && apt-get install -y --no-install-recommends \
     texlive-latex-base \
     texlive-latex-extra \
+    pandoc \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
