@@ -125,7 +125,8 @@ def run_crew_with_params(
     model: str,
     target_words: int,
     enable_report: bool = True,
-    enable_fact_check: bool = True
+    enable_fact_check: bool = True,
+    include_summary: bool = True
 ) -> CrewResult:
     """Run the Resume Refiner Crew with custom parameters.
 
@@ -139,6 +140,7 @@ def run_crew_with_params(
         target_words: Target resume word count.
         enable_report: Whether to generate a report.
         enable_fact_check: Whether to run fact checker.
+        include_summary: Whether to include summary section in output.
 
     Returns:
         CrewResult dictionary with execution results.
@@ -162,7 +164,7 @@ def run_crew_with_params(
                     enable_fact_check
                 )
 
-            pdf_path = generate_resume_pdf_from_json()
+            pdf_path = generate_resume_pdf_from_json(include_summary=include_summary)
 
             if pdf_path:
                 return CrewResult(

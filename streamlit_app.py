@@ -31,6 +31,7 @@ MAX_TARGET_WORDS = 1000
 
 ENABLE_REPORTS = os.getenv("ENABLE_REPORTS", "true").lower() == "true"
 ENABLE_FACT_CHECK = os.getenv("ENABLE_FACT_CHECK", "true").lower() == "true"
+INCLUDE_SUMMARY = os.getenv("INCLUDE_SUMMARY", "true").lower() == "true"
 
 # Fallback model list for when OpenAI API is unavailable
 FALLBACK_MODELS = [
@@ -132,7 +133,7 @@ def reset_session():
     st.session_state.editor_key = 0
 
 
-def run_crew_process(resume_bytes, job_desc, api_key, model, target_words, result_queue, enable_report, enable_fact_check):
+def run_crew_process(resume_bytes, job_desc, api_key, model, target_words, result_queue, enable_report, enable_fact_check, include_summary):
     """Run crew in a separate process.
 
     Args:
@@ -144,6 +145,7 @@ def run_crew_process(resume_bytes, job_desc, api_key, model, target_words, resul
         result_queue: multiprocessing.Queue for result communication.
         enable_report: Whether to generate a report.
         enable_fact_check: Whether to run fact checker.
+        include_summary: Whether to include summary section in output.
     """
     result = run_crew_with_params(
         resume_pdf_bytes=resume_bytes,
@@ -152,7 +154,8 @@ def run_crew_process(resume_bytes, job_desc, api_key, model, target_words, resul
         model=model,
         target_words=target_words,
         enable_report=enable_report,
-        enable_fact_check=enable_fact_check
+        enable_fact_check=enable_fact_check,
+        include_summary=include_summary
     )
 
     # Put result in queue for main process to retrieve
@@ -329,6 +332,13 @@ with st.sidebar.expander("⚙️ Options", expanded=False):
         help="Enable the Fact Checker agent"
     )
 
+    st.subheader("Resume Formatting Configuration")
+    include_summary = st.checkbox(
+        "Include Summary Section",
+        value=INCLUDE_SUMMARY,
+        help="Include the Summary section in the generated resume"
+    )
+
 # Validate inputs
 inputs_valid = (
     uploaded_file is not None
@@ -361,6 +371,7 @@ if st.sidebar.button(
         # Store configuration in session state for progress tracking
         st.session_state.enable_report = enable_report
         st.session_state.enable_fact_check = enable_fact_check
+        st.session_state.include_summary = include_summary
 
         # Start processing in background process (process isolation = automatic resource cleanup)
         st.session_state.process = multiprocessing.Process(
@@ -373,7 +384,8 @@ if st.sidebar.button(
                 target_words,
                 st.session_state.result_queue,
                 enable_report,
-                enable_fact_check
+                enable_fact_check,
+                include_summary
             )
         )
         st.session_state.process.start()

@@ -378,12 +378,13 @@ def generate_additional_sections(
     return latex
 
 
-def generate_complete_latex(resume_data: Dict) -> str:
+def generate_complete_latex(resume_data: Dict, include_summary: bool = True) -> str:
     """
     Generate complete LaTeX document from structured resume data.
 
     Args:
         resume_data: Dictionary containing HarvardFormattedResume data
+        include_summary: Whether to include summary section in output
 
     Returns:
         Complete LaTeX document as string
@@ -444,8 +445,9 @@ def generate_complete_latex(resume_data: Dict) -> str:
 
 """
 
-    # Add sections in order: Summary, Work Experience, Education, then others
-    latex += generate_summary_section(resume_data.get('summary'))
+    # Add sections in order: Summary (conditionally), Work Experience, Education, then others
+    if include_summary:
+        latex += generate_summary_section(resume_data.get('summary'))
     latex += generate_work_experience_section(resume_data.get('work_experience', []))
     latex += generate_education_section(resume_data.get('education', []))
     latex += generate_certifications_section(resume_data.get('certifications', []))
@@ -658,13 +660,15 @@ def _generate_pdf_filename(
 
 def generate_resume_pdf_from_json(
     json_path: str = "output/structured_resume.json",
-    output_dir: str = "output"
+    output_dir: str = "output",
+    include_summary: bool = True
 ) -> Optional[str]:
     """Generate PDF resume from structured JSON data.
 
     Args:
         json_path: Path to structured_resume.json file.
         output_dir: Directory to save output PDF.
+        include_summary: Whether to include summary section in output.
 
     Returns:
         Path to generated PDF, or None if generation failed.
@@ -687,7 +691,7 @@ def generate_resume_pdf_from_json(
 
         logger.info(f"Generating PDF: {filename_base}.pdf")
 
-        latex_content = generate_complete_latex(resume_data)
+        latex_content = generate_complete_latex(resume_data, include_summary=include_summary)
         pdf_path = compile_latex_to_pdf(latex_content, output_full_dir, filename_base)
         
         # Also generate DOCX file
