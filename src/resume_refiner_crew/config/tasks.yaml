@@ -180,8 +180,14 @@ verify_resume_task:
     CRITICAL OUTPUT REQUIREMENTS:
     - Output ONLY the markdown resume content
     - DO NOT include ANY extra commentary
+    - You have available two resumes: the original and the optimized one. 
+      You must verify the optimized resume against the original one, and make changes (only if needed) 
+      to the optimized resume.
     - Make the minimal changes to the optimized resume to ensure accuracy
     - DO NOT add additional information to the optimized resume, even if it is in the original one
+    - Target approximately {TARGET_RESUME_WORDS} words for the resume content. 
+      You MUST use the Word Counter and Target Checker tool iteratively to ensure the final
+      resume meets this target.
 
     1. Fact Verification Process:
        - Compare every claim in the optimized resume against the original resume

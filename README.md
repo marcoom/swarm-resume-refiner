@@ -143,6 +143,8 @@ OPENAI_API_KEY=your_openai_api_key_here
 OPENAI_MODEL=gpt-5-mini                    # Default: gpt-5-mini
 TARGET_RESUME_WORDS=500                     # Default: 500 (400-600 for 1 page, 600-800 for 2 pages)
 DEVELOPER_MODE=false                        # Default: false (see Developer Mode section for details)
+ENABLE_REPORTS=true                         # Default: true (enable/disable report generator agent)
+ENABLE_FACT_CHECK=true                      # Default: true (enable/disable fact checker agent)
 ```
 
 ---
@@ -261,6 +263,8 @@ docker run -p 8501:8501 \
   -e OPENAI_MODEL=gpt-5-mini \
   -e TARGET_RESUME_WORDS=500 \
   -e DEVELOPER_MODE=false \
+  -e ENABLE_REPORTS=true \
+  -e ENABLE_FACT_CHECK=true \
   marcoom/swarm-resume-refiner:1.0.0
 ```
 
@@ -269,6 +273,8 @@ docker run -p 8501:8501 \
 - `OPENAI_MODEL` - *(Optional)* Model to use (default: `gpt-5-mini`)
 - `TARGET_RESUME_WORDS` - *(Optional)* Target word count (default: `500`; single page: 400-600, two pages: 600-800)
 - `DEVELOPER_MODE` - *(Optional)* Set to `true` to simulate execution without API calls (default: `false`)
+- `ENABLE_REPORTS` - *(Optional)* Set to `false` to disable the report generator agent (default: `true`)
+- `ENABLE_FACT_CHECK` - *(Optional)* Set to `false` to disable the fact checker agent (default: `true`)
 
 **On Windows (PowerShell)**, use `${PWD}` instead of `$(pwd)`:
 

@@ -34,7 +34,8 @@ class ResumeRefinerCrew():
     def __init__(
         self,
         job_description_path: str = str(DEFAULT_JOB_DESC_PATH),
-        resume_pdf_path: str = str(DEFAULT_RESUME_PATH)
+        resume_pdf_path: str = str(DEFAULT_RESUME_PATH),
+        **kwargs
     ) -> None:
         """Initialize crew with job description and resume.
 
@@ -56,6 +57,9 @@ class ResumeRefinerCrew():
 
         model = os.getenv("OPENAI_MODEL", DEFAULT_OPENAI_MODEL)
         self.llm = LLM(model=model)
+
+        self.enable_report = kwargs.get('enable_report', True)
+        self.enable_fact_check = kwargs.get('enable_fact_check', True)
 
     # PARSE RESUME
     # Parse PDF resume to markdown format
@@ -145,7 +149,8 @@ class ResumeRefinerCrew():
         return Agent(
             config=self.agents_config['fact_checker'],
             verbose=True,
-            llm=self.llm
+            llm=self.llm,
+            tools=[WordCounterTool()]
         )
 
     @task
@@ -170,12 +175,13 @@ class ResumeRefinerCrew():
 
     @task
     def harvard_format_task(self) -> Task:
+        context = [self.verify_resume_task()] if self.enable_fact_check else [self.generate_resume_task()]
         return Task(
             config=self.tasks_config['harvard_format_task'],
             output_file='output/structured_resume.json',
             output_pydantic=HarvardFormattedResume,
             agent=self.harvard_formatter(),
-            context=[self.verify_resume_task()]
+            context=context
         )
 
     # GENERATE REPORT
@@ -200,9 +206,24 @@ class ResumeRefinerCrew():
 
     @crew
     def crew(self) -> Crew:
+        tasks = [
+            self.parse_resume_task(),
+            self.analyze_job_task(),
+            self.optimize_resume_task(),
+            self.generate_resume_task(),
+        ]
+
+        if self.enable_fact_check:
+            tasks.append(self.verify_resume_task())
+
+        tasks.append(self.harvard_format_task())
+
+        if self.enable_report:
+            tasks.append(self.generate_report_task())
+
         return Crew(
-            agents=self.agents,
-            tasks=self.tasks,
+            agents=[t.agent for t in tasks],
+            tasks=tasks,
             verbose=True,
             process=Process.sequential,
             memory=False,

@@ -29,6 +29,9 @@ DEFAULT_TARGET_WORDS = 400
 MIN_TARGET_WORDS = 100
 MAX_TARGET_WORDS = 1000
 
+ENABLE_REPORTS = os.getenv("ENABLE_REPORTS", "true").lower() == "true"
+ENABLE_FACT_CHECK = os.getenv("ENABLE_FACT_CHECK", "true").lower() == "true"
+
 # Fallback model list for when OpenAI API is unavailable
 FALLBACK_MODELS = [
     "gpt-5-pro", "gpt-5", "gpt-5-mini", "gpt-5-nano",
@@ -130,7 +133,7 @@ def reset_session():
     st.session_state.editor_key = 0
 
 
-def run_crew_process(resume_bytes, job_desc, api_key, model, target_words, result_queue):
+def run_crew_process(resume_bytes, job_desc, api_key, model, target_words, result_queue, enable_report, enable_fact_check):
     """Run crew in a separate process.
 
     Args:
@@ -140,13 +143,17 @@ def run_crew_process(resume_bytes, job_desc, api_key, model, target_words, resul
         model: OpenAI model name.
         target_words: Target word count.
         result_queue: multiprocessing.Queue for result communication.
+        enable_report: Whether to generate a report.
+        enable_fact_check: Whether to run fact checker.
     """
     result = run_crew_with_params(
         resume_pdf_bytes=resume_bytes,
         job_description=job_desc,
         api_key=api_key,
         model=model,
-        target_words=target_words
+        target_words=target_words,
+        enable_report=enable_report,
+        enable_fact_check=enable_fact_check
     )
 
     # Put result in queue for main process to retrieve
@@ -157,28 +164,52 @@ def get_current_progress():
     """Parse crew logs to determine current progress.
 
     Returns:
-        tuple: (completed_count, agent_name, status_text, log_content)
+        tuple: (completed_count, total_tasks, agent_name, status_text, log_content)
     """
     log_file = Path(".crewai_temp/crew_logs.txt")
+    
+    # Determine active tasks based on session state
+    active_tasks = [
+        "parse_resume_task",
+        "analyze_job_task",
+        "optimize_resume_task",
+        "generate_resume_task"
+    ]
+    
+    if st.session_state.get('enable_fact_check', True):
+        active_tasks.append("verify_resume_task")
+        
+    active_tasks.append("harvard_format_task")
+    
+    if st.session_state.get('enable_report', True):
+        active_tasks.append("generate_report_task")
+        
+    total_tasks = len(active_tasks)
 
     if not log_file.exists():
-        return (0, "Initializing", "Starting up...", "")
+        return (0, total_tasks, "Initializing", "Starting up...", "")
 
     log_content = log_file.read_text(encoding='utf-8')
     task_matches = re.findall(r'task_name="([^"]+)"', log_content)
 
     if not task_matches:
-        return (0, "Initializing", "Starting up...", log_content)
+        return (0, total_tasks, "Initializing", "Starting up...", log_content)
 
     current_task = task_matches[-1]
 
     if current_task not in TASKS_INFO:
-        return (0, "Unknown", "Processing...", log_content)
+        return (0, total_tasks, "Unknown", "Processing...", log_content)
+    
+    # Get agent name and status text from constants (ignore position)
+    _, agent_name, status_text = TASKS_INFO[current_task]
+    
+    # Calculate dynamic position
+    try:
+        completed_count = active_tasks.index(current_task)
+    except ValueError:
+        completed_count = 0
 
-    position, agent_name, status_text = TASKS_INFO[current_task]
-    completed_count = position - 1
-
-    return (completed_count, agent_name, status_text, log_content)
+    return (completed_count, total_tasks, agent_name, status_text, log_content)
 
 
 def create_zip_archive():
@@ -276,6 +307,18 @@ with st.sidebar.expander("⚙️ Options", expanded=False):
         help="400-600 words for single page, 600-800 for two pages"
     )
 
+    st.subheader("Agents Configuration")
+    enable_report = st.checkbox(
+        "Generate report",
+        value=ENABLE_REPORTS,
+        help="Enable the Report Generator agent"
+    )
+    enable_fact_check = st.checkbox(
+        "Check facts",
+        value=ENABLE_FACT_CHECK,
+        help="Enable the Fact Checker agent"
+    )
+
 # Validate inputs
 inputs_valid = (
     uploaded_file is not None
@@ -305,6 +348,10 @@ if st.sidebar.button(
         # Create a queue for process communication
         st.session_state.result_queue = multiprocessing.Queue()
 
+        # Store configuration in session state for progress tracking
+        st.session_state.enable_report = enable_report
+        st.session_state.enable_fact_check = enable_fact_check
+
         # Start processing in background process (process isolation = automatic resource cleanup)
         st.session_state.process = multiprocessing.Process(
             target=run_crew_process,
@@ -314,7 +361,9 @@ if st.sidebar.button(
                 api_key,
                 model,
                 target_words,
-                st.session_state.result_queue
+                st.session_state.result_queue,
+                enable_report,
+                enable_fact_check
             )
         )
         st.session_state.process.start()
@@ -361,7 +410,7 @@ def show_processing_progress():
         st.rerun()
 
     # Get current progress
-    completed, agent_name, status_text, logs = get_current_progress()
+    completed, total_tasks, agent_name, status_text, logs = get_current_progress()
 
     # Manual elapsed time display (replaces spinner)
     if st.session_state.start_time:
@@ -375,8 +424,8 @@ def show_processing_progress():
     st.image("./media/agents-flow.png")
 
     # Progress bar
-    progress_value = completed / 7
-    st.progress(progress_value, text=f"**Working Agent: {agent_name} ({completed+1}/7)**")
+    progress_value = completed / total_tasks
+    st.progress(progress_value, text=f"**Working Agent: {agent_name} ({completed+1}/{total_tasks})**")
 
     # Checkbox to control log expansion (persists across fragment reruns)
     show_logs = st.checkbox("Show detailed logs", value=st.session_state.show_logs, key="show_logs_check")
@@ -418,8 +467,9 @@ elif st.session_state.completed:
                 st.info(f"⏱️ Processing completed in {int(elapsed//60)}m {int(elapsed%60)}s")
 
         # OPTIMIZATION REPORT BUTTON
-        if st.button("📊 View Optimization Report", use_container_width=True, type="secondary"):
-            show_optimization_report()
+        if st.session_state.get('enable_report', True):
+            if st.button("📊 View Optimization Report", use_container_width=True, type="secondary"):
+                show_optimization_report()
 
         # Get PDF path and derive TeX path
         pdf_path_str = result.get('pdf_path')
