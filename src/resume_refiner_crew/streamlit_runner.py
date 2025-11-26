@@ -78,7 +78,9 @@ def _run_developer_mode() -> None:
 def _run_production_mode(
     resume_pdf_bytes: bytes,
     job_description: str,
-    target_words: int
+    target_words: int,
+    enable_report: bool,
+    enable_fact_check: bool
 ) -> None:
     """Execute crew in production mode with actual data.
 
@@ -86,6 +88,8 @@ def _run_production_mode(
         resume_pdf_bytes: PDF file content as bytes.
         job_description: Job description text.
         target_words: Target resume word count.
+        enable_report: Whether to generate a report.
+        enable_fact_check: Whether to run fact checker.
     """
     KNOWLEDGE_DIR.mkdir(exist_ok=True)
     resume_path = KNOWLEDGE_DIR / "CV.pdf"
@@ -107,7 +111,9 @@ def _run_production_mode(
     # but PDFSearchTool does not prepend to resume_pdf_path
     crew = ResumeRefinerCrew(
         job_description_path="job_description.txt",
-        resume_pdf_path="knowledge/CV.pdf"
+        resume_pdf_path="knowledge/CV.pdf",
+        enable_report=enable_report,
+        enable_fact_check=enable_fact_check
     ).crew()
     crew.kickoff(inputs=inputs)
 
@@ -117,7 +123,9 @@ def run_crew_with_params(
     job_description: str,
     api_key: str,
     model: str,
-    target_words: int
+    target_words: int,
+    enable_report: bool = True,
+    enable_fact_check: bool = True
 ) -> CrewResult:
     """Run the Resume Refiner Crew with custom parameters.
 
@@ -129,6 +137,8 @@ def run_crew_with_params(
         api_key: OpenAI API key.
         model: OpenAI model name (e.g., 'gpt-5-mini').
         target_words: Target resume word count.
+        enable_report: Whether to generate a report.
+        enable_fact_check: Whether to run fact checker.
 
     Returns:
         CrewResult dictionary with execution results.
@@ -144,7 +154,13 @@ def run_crew_with_params(
             if _is_developer_mode():
                 _run_developer_mode()
             else:
-                _run_production_mode(resume_pdf_bytes, job_description, target_words)
+                _run_production_mode(
+                    resume_pdf_bytes,
+                    job_description,
+                    target_words,
+                    enable_report,
+                    enable_fact_check
+                )
 
             pdf_path = generate_resume_pdf_from_json()
 
