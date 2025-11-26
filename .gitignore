@@ -212,6 +212,7 @@ CLAUDE.md
 
 # System specific data
 knowledge/*
+!knowledge/resume_best_practices.txt
 output/*
 .crewai_temp/
 

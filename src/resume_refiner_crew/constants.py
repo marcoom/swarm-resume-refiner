@@ -21,6 +21,7 @@ TASKS_CONFIG = CONFIG_DIR / "tasks.yaml"
 # Default Input/Output Paths
 DEFAULT_RESUME_PATH = KNOWLEDGE_DIR / "CV.pdf"
 DEFAULT_JOB_DESC_PATH = Path("job_description.txt")  # TextFileKnowledgeSource will prepend "knowledge/"
+DEFAULT_RESUME_BEST_PRACTICES_PATH = Path("resume_best_practices.txt")  # TextFileKnowledgeSource will prepend "knowledge/"
 FIXTURE_LOGS_FILE = FIXTURES_DIR / "crew_logs.txt"
 CREW_LOGS_FILE = CREWAI_TEMP_DIR / "crew_logs.txt"
 
