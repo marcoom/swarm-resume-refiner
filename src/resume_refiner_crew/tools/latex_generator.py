@@ -587,7 +587,6 @@ def _run_pdflatex(tex_path: Path, output_dir: Path) -> None:
             str(tex_path)
         ],
         capture_output=True,
-        text=True,
         timeout=60,
         check=True
     )
