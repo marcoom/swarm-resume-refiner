@@ -315,15 +315,15 @@ class HarvardFormattedResume(BaseModel):
         default=None
     )
     languages: Optional[MixedContent] = Field(
-        description="Languages and proficiency levels. Can contain paragraphs (str) and/or bullet lists (List[str]).",
+        description="Languages and proficiency levels as a flat list. Can contain paragraphs (str) and/or bullet lists (List[str]). Do not nest lists within lists.",
         default=None
     )
     projects: Optional[MixedContent] = Field(
-        description="Notable projects or portfolio items. Can contain paragraphs (str) and/or bullet lists (List[str]).",
+        description="Notable projects or portfolio items as a flat list. Can contain paragraphs (str) and/or bullet lists (List[str]). Do not nest lists within lists.",
         default=None
     )
     additional_sections: Optional[Dict[str, MixedContent]] = Field(
-        description="Any other sections not covered above with section name as key. Each section can contain paragraphs (str) and/or bullet lists (List[str]).",
+        description="Any other sections not covered above with section name as key. Each section value should be a flat list that can contain paragraphs (str) and/or bullet lists (List[str]). Do not nest lists within lists.",
         default=None
     )
     language: str = Field(
