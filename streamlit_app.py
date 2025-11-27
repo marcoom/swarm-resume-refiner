@@ -273,6 +273,9 @@ def show_optimization_report():
 
 # ===== SIDEBAR: INPUTS =====
 
+# Determine if inputs should be disabled
+inputs_disabled = st.session_state.processing or st.session_state.completed
+
 # Job Description
 st.sidebar.subheader("1. Job Description")
 job_description = st.sidebar.text_area(
@@ -280,7 +283,8 @@ job_description = st.sidebar.text_area(
     height=150,
     placeholder="Add the complete job description here",
     label_visibility="collapsed",
-    help="Include the full job description with requirements and responsibilities, the text formatting is not important"
+    help="Include the full job description with requirements and responsibilities, the text formatting is not important",
+    disabled=inputs_disabled
 )
 
 # Upload Resume
@@ -289,7 +293,8 @@ uploaded_file = st.sidebar.file_uploader(
     "Choose a PDF file",
     type=['pdf'],
     help="Upload your current resume in PDF format",
-    label_visibility="collapsed"
+    label_visibility="collapsed",
+    disabled=inputs_disabled
 )
 
 # Options Section (collapsible)
@@ -307,7 +312,8 @@ with st.sidebar.expander("⚙️ Options", expanded=False):
             "Your OpenAI API key",
             type="password",
             value=api_key,
-            help="Create your API key at platform.openai.com/api-keys (paid service)"
+            help="Create your API key at platform.openai.com/api-keys (paid service)",
+            disabled=inputs_disabled
         )
         
         # Show credit balance link if API key is available
@@ -333,7 +339,8 @@ with st.sidebar.expander("⚙️ Options", expanded=False):
         "Choose AI model",
         options=available_models,
         index=default_index,
-        help="Select the OpenAI model to use"
+        help="Select the OpenAI model to use",
+        disabled=inputs_disabled
     )
 
     # Target Word Count
@@ -344,26 +351,30 @@ with st.sidebar.expander("⚙️ Options", expanded=False):
         max_value=MAX_TARGET_WORDS,
         value=int(os.getenv("TARGET_RESUME_WORDS", str(DEFAULT_TARGET_WORDS))),
         step=50,
-        help="200 words for single page, 400-500 for two pages"
+        help="200 words for single page, 400-500 for two pages",
+        disabled=inputs_disabled
     )
 
     st.subheader("Agents Configuration")
     enable_report = st.checkbox(
         "Generate report",
         value=ENABLE_REPORTS,
-        help="Enable the Report Generator agent"
+        help="Enable the Report Generator agent",
+        disabled=inputs_disabled
     )
     enable_fact_check = st.checkbox(
         "Check facts",
         value=ENABLE_FACT_CHECK,
-        help="Enable the Fact Checker agent"
+        help="Enable the Fact Checker agent",
+        disabled=inputs_disabled
     )
 
     st.subheader("Resume Configuration")
     include_summary = st.checkbox(
         "Include Summary Section",
         value=INCLUDE_SUMMARY,
-        help="Include the Summary section in the generated resume"
+        help="Include the Summary section in the generated resume",
+        disabled=inputs_disabled
     )
     
     # Language options
@@ -379,14 +390,16 @@ with st.sidebar.expander("⚙️ Options", expanded=False):
         "Target Language",
         options=language_options,
         index=default_lang_index,
-        help="Select the language for the generated resume. 'Auto' will infer the language from the job description (experimental)."
+        help="Select the language for the generated resume. 'Auto' will infer the language from the job description (experimental).",
+        disabled=inputs_disabled
     )
     
     # Custom Header Override
     header_override = st.checkbox(
         "Custom header override",
         value=st.session_state.get('header_override', HEADER_OVERRIDE_DEFAULT),
-        help="Replace the LLM-generated contact info with a custom structured header that can contain links"
+        help="Replace the LLM-generated contact info with a custom structured header that can contain links",
+        disabled=inputs_disabled
     )
     st.session_state.header_override = header_override
 
@@ -413,25 +426,28 @@ with st.sidebar.expander("⚙️ Options", expanded=False):
                     "Prefix (optional)",
                     value=item['prefix'],
                     placeholder="e.g. LinkedIn:",
-                    key=f"prefix_{i}"
+                    key=f"prefix_{i}",
+                    disabled=inputs_disabled
                 )
                 
                 item['text'] = st.text_input(
                     "Text (Required)",
                     value=item['text'],
                     placeholder="e.g. your-username",
-                    key=f"text_{i}"
+                    key=f"text_{i}",
+                    disabled=inputs_disabled
                 )
                 
                 item['url'] = st.text_input(
                     "URL (Optional)",
                     value=item['url'],
                     placeholder="e.g. https://www.linkedin.com/in/your-name/",
-                    key=f"url_{i}"
+                    key=f"url_{i}",
+                    disabled=inputs_disabled
                 )
                 
                 # Delete button
-                if st.button("✕ Remove Item", key=f"del_header_{i}", type="secondary"):
+                if st.button("✕ Remove Item", key=f"del_header_{i}", type="secondary", disabled=inputs_disabled):
                     items_to_remove.append(i)
         
         # Remove marked items
@@ -440,7 +456,7 @@ with st.sidebar.expander("⚙️ Options", expanded=False):
                 st.session_state.header_items.pop(index)
             st.rerun()
 
-        if st.button("➕ Add Item", type="secondary"):
+        if st.button("➕ Add Item", type="secondary", disabled=inputs_disabled):
             st.session_state.header_items.append({"prefix": "", "text": "", "url": ""})
             st.rerun()
 
