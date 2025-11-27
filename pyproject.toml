@@ -8,7 +8,7 @@ dependencies = [
     "crewai[tools]==1.1.0",
     "pypandoc>=1.13",
     "qdrant-client>=1.15.1",
-    "streamlit>=1.28.0",
+    "streamlit[pdf]>=1.51.0",
     "python-dotenv>=1.0.0"
 ]
 

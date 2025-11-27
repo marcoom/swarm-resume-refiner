@@ -1,34 +1,33 @@
 parse_resume_task:
   description: >
-      Use the PDFSearchTool to extract content from the resume PDF at: {RESUME_PDF_PATH}
-
-      Your goal is to convert the entire resume to clean, well-structured markdown format.
-
-      Ensure complete extraction by making additional tool calls if necessary to capture all pages.
-
-      After extraction, review and fix:
-      - Missing spaces between words (common PDF parsing artifact)
-      - Spacing around punctuation and parentheses
-      - Text concatenation issues (e.g., "asProduct" → "as Product")
-
-      Apply markdown formatting:
-      - Use proper heading hierarchy (# for name, ## for sections, ### for subsections)
-      - Convert bullets to markdown format (- prefix)
-      - Preserve all content and maintain proper list/date formatting
-
-      Content organization:
-      - Preserve the extraction order by default
-      - Only reorder content if something is clearly misplaced (e.g., headers mid-paragraph, contact info within unrelated sections)
-      - When uncertain about placement, keep the original order
-
-      CRITICAL OUTPUT REQUIREMENTS:
-      - Output ONLY the parsed markdown resume content
-      - DO NOT include ANY introductory text, conclusions, or meta-commentary
-      - The output must be pure markdown content, starting with the resume header
+    Use the PDFSearchTool to extract ALL content from the resume PDF at: {RESUME_PDF_PATH}
+    
+    Make multiple tool calls if needed to retrieve every page of the document.
+    
+    Fix common PDF parsing errors:
+    - Missing spaces between words
+    - Spacing issues around punctuation
+    - Text concatenation (e.g., "asProduct" → "as Product")
+    
+    Apply markdown formatting:
+    - Use proper heading hierarchy (# for name, ## for sections, ### for subsections)
+    - Convert bullets to markdown list format (- prefix)
+    - Maintain proper date and list formatting
+    
+    Preserve the original content organization unless something is clearly misplaced
+    (e.g., headers appearing mid-paragraph, contact info in wrong sections).
+    
+    Output ONLY the markdown resume content. Do not include thoughts, explanations,
+    or meta-commentary. Your entire output must be pure markdown starting with the
+    candidate's name.
 
   expected_output: >
-    Pure markdown text of the complete resume with proper structure and formatting.
-    No introductions, no conclusions, no commentary - only the parsed content.
+    The complete resume as clean markdown text with proper structure and formatting.
+    
+    Your output must be the actual markdown content itself - not a description of it,
+    not your thoughts about it, and not an explanation of what you did.
+    
+    Start directly with: # [Candidate Name]
 
 analyze_job_task:
   description: >

@@ -4,7 +4,7 @@ A user-friendly graphical interface for the Resume Refiner multi-agent system.
 Guides users through input, processing, and results phases.
 """
 
-import base64
+
 import json
 import multiprocessing
 import os
@@ -638,11 +638,8 @@ elif st.session_state.completed:
 
                 # PDF PREVIEW SECTION (Outside expander)
                 if pdf_path.exists():
-                    # Display PDF using iframe
-                    with open(pdf_path, "rb") as f:
-                        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-                    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="800" type="application/pdf"></iframe>'
-                    st.markdown(pdf_display, unsafe_allow_html=True)
+                    # Display PDF using Streamlit's built-in PDF viewer
+                    st.pdf(pdf_path, height=300)
                 else:
                     st.warning("PDF file not found")
 
