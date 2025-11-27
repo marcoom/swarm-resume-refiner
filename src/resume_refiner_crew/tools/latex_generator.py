@@ -397,20 +397,57 @@ def generate_additional_sections(
     return latex
 
 
-def generate_complete_latex(resume_data: Dict, include_summary: bool = True) -> str:
+def _build_custom_header(header_items: List[Dict[str, str]]) -> str:
+    """Build custom header string from items."""
+    if not header_items:
+        return ""
+
+    parts = []
+    for item in header_items:
+        prefix = escape_latex(item.get('prefix', ''))
+        text = escape_latex(item.get('text', ''))
+        url = item.get('url', '')  # Don't escape URL for href
+
+        if not text:
+            continue
+
+        if url:
+            # <Prefix>\href{<URL>}{<Text>}
+            part = f"{prefix}\\href{{{url}}}{{{text}}}"
+        else:
+            # <Prefix><Text>
+            part = f"{prefix}{text}"
+        
+        parts.append(part)
+
+    return " \\textbullet\\ ".join(parts)
+
+
+def generate_complete_latex(
+    resume_data: Dict,
+    include_summary: bool = True,
+    header_override: bool = False,
+    header_items: List[Dict] = None
+) -> str:
     """
     Generate complete LaTeX document from structured resume data.
 
     Args:
         resume_data: Dictionary containing HarvardFormattedResume data
         include_summary: Whether to include summary section in output
+        header_override: Whether to override the contact info header
+        header_items: List of custom header items
 
     Returns:
         Complete LaTeX document as string
     """
     # Extract metadata
     candidate_name = resume_data.get('candidate_name', 'Candidate Name')
-    contact_info = resume_data.get('contact_info', '')
+    
+    if header_override:
+        contact_info = _build_custom_header(header_items)
+    else:
+        contact_info = resume_data.get('contact_info', '')
 
     # Start LaTeX document
     latex = r"""\documentclass[11pt]{article}
@@ -456,7 +493,7 @@ def generate_complete_latex(resume_data: Dict, include_summary: bool = True) -> 
 
 % Contact info - centered with wrapping
 {\centering
-""" + escape_latex(contact_info) + r"""
+""" + (contact_info if header_override else escape_latex(contact_info)) + r"""
 
 }
 
@@ -684,7 +721,9 @@ def _generate_pdf_filename(
 def generate_resume_pdf_from_json(
     json_path: str = "output/structured_resume.json",
     output_dir: str = "output",
-    include_summary: bool = True
+    include_summary: bool = True,
+    header_override: bool = False,
+    header_items: List[Dict] = None
 ) -> Optional[str]:
     """Generate PDF resume from structured JSON data.
 
@@ -692,6 +731,8 @@ def generate_resume_pdf_from_json(
         json_path: Path to structured_resume.json file.
         output_dir: Directory to save output PDF.
         include_summary: Whether to include summary section in output.
+        header_override: Whether to override the contact info header.
+        header_items: List of custom header items.
 
     Returns:
         Path to generated PDF, or None if generation failed.
@@ -714,7 +755,14 @@ def generate_resume_pdf_from_json(
 
         logger.info(f"Generating PDF: {filename_base}.pdf")
 
-        latex_content = generate_complete_latex(resume_data, include_summary=include_summary)
+        logger.info(f"Generating PDF: {filename_base}.pdf")
+
+        latex_content = generate_complete_latex(
+            resume_data,
+            include_summary=include_summary,
+            header_override=header_override,
+            header_items=header_items
+        )
         pdf_path = compile_latex_to_pdf(latex_content, output_full_dir, filename_base)
         
         # Also generate DOCX file

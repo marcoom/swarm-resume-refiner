@@ -129,7 +129,9 @@ def run_crew_with_params(
     enable_report: bool = True,
     enable_fact_check: bool = True,
     include_summary: bool = True,
-    language: str = "Auto"
+    language: str = "Auto",
+    header_override: bool = False,
+    header_items: list = None
 ) -> CrewResult:
     """Run the Resume Refiner Crew with custom parameters.
 
@@ -145,6 +147,8 @@ def run_crew_with_params(
         enable_fact_check: Whether to run fact checker.
         include_summary: Whether to include summary section in output.
         language: Target language for the resume ("Auto", "English", "Spanish").
+        header_override: Whether to override the contact info header.
+        header_items: List of custom header items (prefix, text, url).
 
     Returns:
         CrewResult dictionary with execution results.
@@ -169,7 +173,11 @@ def run_crew_with_params(
                     language
                 )
 
-            pdf_path = generate_resume_pdf_from_json(include_summary=include_summary)
+            pdf_path = generate_resume_pdf_from_json(
+                include_summary=include_summary,
+                header_override=header_override,
+                header_items=header_items
+            )
 
             if pdf_path:
                 return CrewResult(

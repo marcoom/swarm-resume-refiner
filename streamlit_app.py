@@ -34,6 +34,9 @@ ENABLE_FACT_CHECK = os.getenv("ENABLE_FACT_CHECK", "true").lower() == "true"
 INCLUDE_SUMMARY = os.getenv("INCLUDE_SUMMARY", "true").lower() == "true"
 DEFAULT_RESUME_LANGUAGE = os.getenv("DEFAULT_RESUME_LANGUAGE", "Auto")
 
+# Custom Header Defaults
+HEADER_OVERRIDE_DEFAULT = os.getenv("HEADER_OVERRIDE_DEFAULT", "").lower() == "true"
+
 # Fallback model list for when OpenAI API is unavailable
 FALLBACK_MODELS = [
     "gpt-5-pro", "gpt-5", "gpt-5-mini", "gpt-5-nano",
@@ -105,7 +108,27 @@ def init_session_state():
         'show_reset_toast': False,
         'show_apply_toast': False,
         'editor_key': 0,
+        'header_override': HEADER_OVERRIDE_DEFAULT,
+        'header_items': [],
     }
+
+    # Initialize header items from env vars if not already set
+    if 'header_items' not in st.session_state or not st.session_state.header_items:
+        initial_items = []
+        # Look for HEADER_N_TEXT variables
+        # We'll scan up to 20 to be safe, or until we stop finding them
+        for i in range(1, 21):
+            text = os.getenv(f"HEADER_{i}_TEXT")
+            if text:
+                prefix = os.getenv(f"HEADER_{i}_PREFIX", "")
+                url = os.getenv(f"HEADER_{i}_URL", "")
+                initial_items.append({"prefix": prefix, "text": text, "url": url})
+        
+        if initial_items:
+            defaults['header_items'] = initial_items
+            # If override default wasn't explicitly set but we have items, default to true
+            if os.getenv("HEADER_OVERRIDE_DEFAULT") is None:
+                defaults['header_override'] = True
 
     for key, default_value in defaults.items():
         if key not in st.session_state:
@@ -134,7 +157,7 @@ def reset_session():
     st.session_state.editor_key = 0
 
 
-def run_crew_process(resume_bytes, job_desc, api_key, model, target_words, result_queue, enable_report, enable_fact_check, include_summary, language):
+def run_crew_process(resume_bytes, job_desc, api_key, model, target_words, result_queue, enable_report, enable_fact_check, include_summary, language, header_override, header_items):
     """Run crew in a separate process.
 
     Args:
@@ -157,7 +180,9 @@ def run_crew_process(resume_bytes, job_desc, api_key, model, target_words, resul
         enable_report=enable_report,
         enable_fact_check=enable_fact_check,
         include_summary=include_summary,
-        language=language
+        language=language,
+        header_override=header_override,
+        header_items=header_items
     )
 
     # Put result in queue for main process to retrieve
@@ -356,6 +381,68 @@ with st.sidebar.expander("⚙️ Options", expanded=False):
         index=default_lang_index,
         help="Select the language for the generated resume. 'Auto' will infer the language from the job description (experimental)."
     )
+    
+    # Custom Header Override
+    header_override = st.checkbox(
+        "Custom header override",
+        value=st.session_state.get('header_override', HEADER_OVERRIDE_DEFAULT),
+        help="Replace the LLM-generated contact info with a custom structured header that can contain links"
+    )
+    st.session_state.header_override = header_override
+
+    if header_override:
+        st.markdown("Define your contact info items:")
+        
+        # Ensure header_items is initialized in session state
+        if 'header_items' not in st.session_state:
+            st.session_state.header_items = [{"prefix": "", "text": "", "url": ""}]
+        
+        # Dynamic form for items
+        items_to_remove = []
+        
+        for i, item in enumerate(st.session_state.header_items):
+            # Create a descriptive label for the expander
+            item_label = f"#{i+1}: "
+            if item.get('prefix'):
+                item_label += f"{item['prefix']} "
+            if item.get('text'):
+                item_label += item['text']
+            
+            with st.expander(item_label, expanded=False):
+                item['prefix'] = st.text_input(
+                    "Prefix (optional)",
+                    value=item['prefix'],
+                    placeholder="e.g. LinkedIn:",
+                    key=f"prefix_{i}"
+                )
+                
+                item['text'] = st.text_input(
+                    "Text (Required)",
+                    value=item['text'],
+                    placeholder="e.g. your-username",
+                    key=f"text_{i}"
+                )
+                
+                item['url'] = st.text_input(
+                    "URL (Optional)",
+                    value=item['url'],
+                    placeholder="e.g. https://www.linkedin.com/in/your-name/",
+                    key=f"url_{i}"
+                )
+                
+                # Delete button
+                if st.button("✕ Remove Item", key=f"del_header_{i}", type="secondary"):
+                    items_to_remove.append(i)
+        
+        # Remove marked items
+        if items_to_remove:
+            for index in sorted(items_to_remove, reverse=True):
+                st.session_state.header_items.pop(index)
+            st.rerun()
+
+        if st.button("➕ Add Item", type="secondary"):
+            st.session_state.header_items.append({"prefix": "", "text": "", "url": ""})
+            st.rerun()
 
 # Validate inputs
 inputs_valid = (
@@ -390,7 +477,11 @@ if st.sidebar.button(
         st.session_state.enable_report = enable_report
         st.session_state.enable_fact_check = enable_fact_check
         st.session_state.include_summary = include_summary
+        st.session_state.include_summary = include_summary
         st.session_state.language = language
+        st.session_state.header_override = header_override
+        # Deep copy header items to avoid reference issues
+        st.session_state.header_items_snapshot = [item.copy() for item in st.session_state.header_items] if header_override else []
 
         # Start processing in background process (process isolation = automatic resource cleanup)
         st.session_state.process = multiprocessing.Process(
@@ -405,7 +496,9 @@ if st.sidebar.button(
                 enable_report,
                 enable_fact_check,
                 include_summary,
-                language
+                language,
+                st.session_state.header_override,
+                st.session_state.header_items_snapshot
             )
         )
         st.session_state.process.start()
