@@ -1,56 +1,45 @@
 # Marco Mongi
-
-Email: marcomongi@gmail.com | LinkedIn: https://www.linkedin.com/in/marco-mongi | GitHub: https://github.com/marcoom | Río Cuarto, Argentina
+marcomongi@gmail.com • LinkedIn: https://www.linkedin.com/in/marco-mongi • GitHub: https://github.com/marcoom
+Río Cuarto, Argentina
 
 ## Summary
-Computer Vision and Systems Engineer with 3+ years delivering end-to-end industrial visual inspection and production-control solutions. Skilled in Python, OpenCV, detection/tracking/segmentation, and edge/IoT deployments with real-time dashboards. Cross-functional collaboration with software/QA/hardware; English C1/C2. Seeking to apply industrial CV expertise to high-throughput quality inspection and cosmetic/defect grading.
-
-## Skills
-- Computer Vision: object detection, segmentation, tracking; OpenCV; image preprocessing (normalization, contrast); augmentation; fine-grained classification.
-- Deep Learning: PyTorch; TensorFlow/Keras.
-- Python & Data: Python (NumPy, Pandas, OOP); SQL; Scikit-learn.
-- MLOps & Deployment: CI/CD (GitHub Actions); Docker; FastAPI; testing (pytest, unittest; Robot/Behave); edge deployment; production integration.
-- Pipelines: ETL; Apache Airflow.
-- Cloud: AWS, GCP.
-- Visualization: Grafana; Power BI.
-- Methods: Agile/Scrum (JIRA); Product Ownership; systems design.
+Results-driven Computer Vision and AI engineer with 4+ years delivering production-grade CV systems for aerospace and manufacturing. Led cross-functional teams, deploying edge pipelines and real-time dashboards. Proficient in Python, PyTorch, OpenCV, ETL, and cloud deployments; skilled at communicating complex concepts to non-technical stakeholders.
 
 ## Work Experience
-### Ascentio Technologies | Río Cuarto, Argentina
-Product Owner, Systems Engineer | Jul 2022 – Jul 2025
-- Led infrastructure and science data processing for SABIA-Mar; managed cross-functional teams (up to 10).
-- Founded the AI division, mentoring engineers and enabling new client work in computer vision and Industry 4.0.
-- Delivered an industrial visual inspection/production-control system with multi-object detection/tracking, edge computing (IoT/MQTT), and real-time dashboards.
-- Implemented 20+ Python enhancements to the SABIA-Mar L0 processor within 3 months.
 
-### Ascentio Technologies | Río Cuarto, Argentina
-Intern | Sep 2020 – Dec 2020
-- Built a Python platform for automatic crop detection (supervised classification on time-series multispectral satellite imagery), achieving 80% accuracy.
+### Ascentio Technologies, Río Cuarto
+- Product Owner, Systems Engineer — 2022–2025
+  - Led teams of up to 10; managed infrastructure and data processing for the SABIA-Mar mission.
+  - Launched AI division, enabling acquisition of CV and Industry 4.0 clients.
+  - Delivered end-to-end CV production-control system with detection/tracking, edge computing, IoT, and dashboards.
 
-Additional: Intern, UNRC, 2018–2019 — Hearing loop accessibility systems.
+- Intern — 2020
+  - Built crop-detection platform in Python; 80% accuracy on multi-spectral imagery.
 
-## Projects
-- Computer Vision: real-time license plate detection/tracking (YOLOv8, DeepSORT, OCR); blood cell counting with detection+segmentation (YOLO + SAM2).
-- Pipelines & MLOps: Apache Airflow ETL; real-time anomaly streaming (TIG stack).
+### Faculty of Engineering, UNRC, Río Cuarto
+- Intern — 2018–2019
+  - Contributed to accessibility project; implemented hearing-assist systems.
 
 ## Education
-- Stanford University (Online) — Machine Learning Specialization, 2025
-- National University of Córdoba / MundosE — University Diploma in Data Science, 2024
-- National University of Río Cuarto (UNRC) — Telecommunications Engineering; GPA 8.71, 2013–2022
+- Stanford University Online — ML Specialization, 2025
+- Univ. of Córdoba / Mundos Córdoba — Data Science Diploma, 2024
+- UNRC — Telecommunications Engineering, Radiocommunications; GPA 8.71, 2013–2022
 
-## Certifications & Training
-- 2025 — EF SET English Certificate (C2 Proficient)
-- 2025 — Gen AI Intensive Course (Google/Kaggle)
-- 2024 — Introduction to Statistics (Stanford University)
-- 2017 — Cambridge First Certificate in English (C1), Grade A
+## Certifications
+- EF SET English Certificate — C2, 2025
+- Gen AI Intensive Course — Google/Kaggle, 2025
+- Intro to Statistics — Stanford, 2024
 
-## Presentations
-- 2024 — Presenter at Infopork Swine Innovation Forum on AI in agro-industry.
-- 2023 — Presented SABIA-Mar data processing at Mission Critical Design Review (MCDR) to stakeholders incl. NASA, CNES, AEB, INPE.
-
-## Awards
-- 2024 — Winner, Datathon Río Cuarto (LLM chatbot ETL improvements)
+## Skills
+### Technical
+- Python, PyTorch, OpenCV, TF/Keras, ETL, Airflow; AWS, GCP; Docker, Kubernetes; MQTT
+### CV/AI
+- Object detection/tracking/segmentation; edge computing; time-series; GIS
+### Soft
+- Leadership; Agile/Scrum; stakeholder communication
 
 ## Languages
-- Spanish: Native
-- English: C1 (ESOL) / C2 (EF SET)
+- Spanish (Native); English (C2)
+
+## Projects
+- Real-time license plate detection; Local AI chat platform with RAG

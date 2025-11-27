@@ -25,6 +25,31 @@ from ..utils import sanitize_for_filename
 
 logger = logging.getLogger(__name__)
 
+SECTION_TRANSLATIONS = {
+    "Spanish": {
+        "Work Experience": "Experiencia Laboral",
+        "Education": "Educación",
+        "Summary": "Resumen Profesional",
+        "Courses and Certifications": "Cursos y Certificaciones",
+        "Skills": "Habilidades",
+        "Languages": "Idiomas",
+        "Projects": "Proyectos"
+    },
+    "English": {
+        "Work Experience": "Work Experience",
+        "Education": "Education",
+        "Summary": "Summary",
+        "Courses and Certifications": "Courses and Certifications",
+        "Skills": "Skills",
+        "Languages": "Languages",
+        "Projects": "Projects"
+    }
+}
+
+def get_section_title(key: str, language: str = "English") -> str:
+    """Get translated section title."""
+    return SECTION_TRANSLATIONS.get(language, SECTION_TRANSLATIONS["English"]).get(key, key)
+
 
 def escape_latex(text: str) -> str:
     r"""
@@ -158,14 +183,13 @@ def bold_keywords(text: str, keywords: List[str]) -> str:
     return result
 
 
-def generate_work_experience_section(experiences: List[Dict]) -> str:
+def generate_work_experience_section(experiences: List[Dict], language: str = "English") -> str:
     """Generate LaTeX for work experience section."""
     if not experiences:
         return ""
 
-    latex = r"""\section*{Work Experience}
-
-"""
+    title = get_section_title("Work Experience", language)
+    latex = f"\\section*{{{title}}}\n\n"
 
     for exp in experiences:
         institution = escape_latex(exp.get('institution', ''))
@@ -205,14 +229,13 @@ def generate_work_experience_section(experiences: List[Dict]) -> str:
     return latex
 
 
-def generate_education_section(education_list: List[Dict]) -> str:
+def generate_education_section(education_list: List[Dict], language: str = "English") -> str:
     """Generate LaTeX for education section."""
     if not education_list:
         return ""
 
-    latex = r"""\section*{Education}
-
-"""
+    title = get_section_title("Education", language)
+    latex = f"\\section*{{{title}}}\n\n"
 
     for edu in education_list:
         institution = escape_latex(edu.get('institution', ''))
@@ -254,28 +277,26 @@ def generate_education_section(education_list: List[Dict]) -> str:
     return latex
 
 
-def generate_summary_section(summary: Optional[str]) -> str:
+def generate_summary_section(summary: Optional[str], language: str = "English") -> str:
     """Generate LaTeX for summary/objective section."""
     if not summary:
         return ""
 
-    latex = r"""\section*{Summary}
-
-"""
+    title = get_section_title("Summary", language)
+    latex = f"\\section*{{{title}}}\n\n"
     latex += f"{escape_latex(summary)}\n\n"
     latex += f"{LATEX_VSPACE_SECTION}\n\n"
 
     return latex
 
 
-def generate_certifications_section(certifications: List[Dict]) -> str:
+def generate_certifications_section(certifications: List[Dict], language: str = "English") -> str:
     """Generate LaTeX for certifications section."""
     if not certifications:
         return ""
 
-    latex = r"""\section*{Courses and Certifications}
-
-"""
+    title = get_section_title("Courses and Certifications", language)
+    latex = f"\\section*{{{title}}}\n\n"
 
     for cert in certifications:
         year = escape_latex(cert.get('year', ''))
@@ -295,14 +316,13 @@ def generate_certifications_section(certifications: List[Dict]) -> str:
     return latex
 
 
-def generate_skills_section(skills: Optional[Dict[str, List[str]]]) -> str:
+def generate_skills_section(skills: Optional[Dict[str, List[str]]], language: str = "English") -> str:
     """Generate LaTeX for skills section."""
     if not skills:
         return ""
 
-    latex = r"""\section*{Skills}
-
-"""
+    title = get_section_title("Skills", language)
+    latex = f"\\section*{{{title}}}\n\n"
 
     for category, skill_list in skills.items():
         category_escaped = escape_latex(category)
@@ -343,24 +363,23 @@ def render_mixed_content(content: List[Union[str, List[str]]]) -> str:
 def generate_additional_sections(
     languages: Optional[List] = None,
     projects: Optional[List] = None,
-    additional_sections: Optional[Dict] = None
+    additional_sections: Optional[Dict] = None,
+    language: str = "English"
 ) -> str:
     """Generate LaTeX for additional sections."""
     latex = ""
 
     # Languages
     if languages:
-        latex += r"""\section*{Languages}
-
-"""
+        title = get_section_title("Languages", language)
+        latex += f"\\section*{{{title}}}\n\n"
         latex += render_mixed_content(languages)
         latex += f"{LATEX_VSPACE_SECTION}\n\n"
 
     # Projects
     if projects:
-        latex += r"""\section*{Projects}
-
-"""
+        title = get_section_title("Projects", language)
+        latex += f"\\section*{{{title}}}\n\n"
         latex += render_mixed_content(projects)
         latex += f"{LATEX_VSPACE_SECTION}\n\n"
 
@@ -445,17 +464,21 @@ def generate_complete_latex(resume_data: Dict, include_summary: bool = True) -> 
 
 """
 
+    # Extract language
+    language = resume_data.get('language', 'English')
+
     # Add sections in order: Summary (conditionally), Work Experience, Education, then others
     if include_summary:
-        latex += generate_summary_section(resume_data.get('summary'))
-    latex += generate_work_experience_section(resume_data.get('work_experience', []))
-    latex += generate_education_section(resume_data.get('education', []))
-    latex += generate_certifications_section(resume_data.get('certifications', []))
-    latex += generate_skills_section(resume_data.get('skills'))
+        latex += generate_summary_section(resume_data.get('summary'), language)
+    latex += generate_work_experience_section(resume_data.get('work_experience', []), language)
+    latex += generate_education_section(resume_data.get('education', []), language)
+    latex += generate_certifications_section(resume_data.get('certifications', []), language)
+    latex += generate_skills_section(resume_data.get('skills'), language)
     latex += generate_additional_sections(
         languages=resume_data.get('languages'),
         projects=resume_data.get('projects'),
-        additional_sections=resume_data.get('additional_sections')
+        additional_sections=resume_data.get('additional_sections'),
+        language=language
     )
 
     latex += r"\end{document}"

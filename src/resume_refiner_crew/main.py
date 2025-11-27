@@ -12,6 +12,7 @@ from resume_refiner_crew.constants import (
     DEFAULT_TARGET_WORDS,
     DEFAULT_RESUME_PATH,
     DEFAULT_JOB_DESC_PATH,
+    DEFAULT_RESUME_LANGUAGE,
 )
 from resume_refiner_crew.crew import ResumeRefinerCrew
 from resume_refiner_crew.tools.latex_generator import generate_resume_pdf_from_json
@@ -53,6 +54,12 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=int(os.getenv("TARGET_RESUME_WORDS", str(DEFAULT_TARGET_WORDS))),
         help="Target word count for resume"
+    )
+    parser.add_argument(
+        "--language",
+        dest="language",
+        default=os.getenv("DEFAULT_RESUME_LANGUAGE", str(DEFAULT_RESUME_LANGUAGE)),
+        help="Target language for resume (e.g. 'English', 'Spanish', 'Auto')"
     )
     parser.add_argument(
         "--developer-mode",
@@ -120,7 +127,8 @@ def run() -> None:
     inputs = {
         'TARGET_RESUME_WORDS': str(args.target_words),
         'RESUME_PDF_PATH': args.resume,
-        'JOB_DESCRIPTION_PATH': args.job_description
+        'JOB_DESCRIPTION_PATH': args.job_description,
+        'TARGET_LANGUAGE': args.language
     }
 
     try:
