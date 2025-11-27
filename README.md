@@ -148,6 +148,8 @@ ENABLE_FACT_CHECK=true                      # Default: true (enable/disable fact
 INCLUDE_SUMMARY=true                        # Default: true (include/exclude summary section in output)
 DEFAULT_RESUME_LANGUAGE="Auto"              # Default: Auto (Auto, English, Spanish)
 SHOW_API_CONFIG_UI=true                     # Default: true (show/hide API key input in UI)
+HEADER_OVERRIDE_DEFAULT=false               # Default: false (enable/disable custom header override)
+# HEADER_N_PREFIX/TEXT/URL variables can also be used to pre-define header items
 ```
 
 ---
@@ -365,6 +367,7 @@ Provide the job description, upload your resume, and configure the execution set
    * **OpenAI API Key** – Paste your key to enable agent execution.
    * **Model Selection** – Choose from OpenAI GPT models based on your quality and cost preferences. Larger models generally produce better results but are more expensive. Current recommended models for strong performance are gpt-5 and gpt-5-mini, though this may evolve as new models are released. Pricing details: https://platform.openai.com/docs/pricing
    * **Target Word Count** – Guides output length (e.g., ~500 words typically results in a two-page resume).
+   * **Custom Header Override** - Check this to replace the AI-generated contact info with your own structured items (Prefix, Text, URL).
 
 4. **Run the Process**: Click **Process Resume** to start the multi-agent pipeline and generate your optimized resume.
 
