@@ -194,6 +194,10 @@ class JobRequirements(BaseModel):
         description="Detailed explanation of how scores were calculated",
         default_factory=list
     )
+    language: str = Field(
+        description="Language in which the job description is written (e.g., 'English', 'Spanish', 'French'). This will be used to determine the language of the output resume.",
+        default="English"
+    )
 
 class ResumeOptimization(BaseModel):
     content_suggestions: List[Dict[str, Any]] = Field(
@@ -321,4 +325,8 @@ class HarvardFormattedResume(BaseModel):
     additional_sections: Optional[Dict[str, MixedContent]] = Field(
         description="Any other sections not covered above with section name as key. Each section can contain paragraphs (str) and/or bullet lists (List[str]).",
         default=None
+    )
+    language: str = Field(
+        description="Language of the resume content (e.g., 'English', 'Spanish').",
+        default="English"
     )

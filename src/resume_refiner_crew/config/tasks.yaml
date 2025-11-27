@@ -41,6 +41,7 @@ analyze_job_task:
        - Experience levels
        - Education requirements
        - Industry knowledge
+       - Language in which the job description is written (e.g. English, Spanish, French, etc.)
 
     2. Score Technical Skills (35% of total):
        - For each required skill:
@@ -119,6 +120,11 @@ generate_resume_task:
     Using the provided resume from context, apply the optimization suggestions from previous steps, to
     create a polished resume in markdown format.
     Do not add markdown code blocks like '```'.
+
+    CRITICAL: resume language must match the TARGET LANGUAGE: {TARGET_LANGUAGE}.
+    If the target language is "Auto", check for the value of the "language" key in the JSON output of the job analysis task and write the resume in that language.
+    Otherwise, if the target language is explicitly set (e.g., "English", "Spanish"), use that language for the output resume, regardless of the job description language.
+    Translate the content if necessary to match the target language.
 
     CRITICAL: Target approximately {TARGET_RESUME_WORDS} words for the resume content.
     You MUST use the Word Counter and Target Checker tool iteratively to ensure the final
@@ -214,6 +220,7 @@ harvard_format_task:
     Parse the verified markdown resume and structure it into Harvard format
     with precise data extraction.
 
+    TARGET LANGUAGE: {TARGET_LANGUAGE}
     CRITICAL: This task is ONLY to reformat the content from the verified resume
     into the required structured format. ALL information must be preserved - no
     content should be lost or omitted. The output must contain the same content
@@ -221,7 +228,10 @@ harvard_format_task:
     schema. Every section present in the verified resume must be captured in the
     appropriate fields.
 
-    1. Extract Metadata:
+    1. Set Language:
+       - Set the 'language' field to either "English" or "Spanish", depending on the verified resume's language.
+
+    2. Extract Metadata:
        - Candidate's full name from the first heading (# Name)
        - Contact information line (email, LinkedIn, GitHub, location, etc.)
        - Summary/Objective: Extract from "## Summary" section if present in the
@@ -258,6 +268,7 @@ harvard_format_task:
     5. Parse Additional Sections (with Mixed Content Support):
        - Skills: organize by category (Technical Skills, Soft Skills, etc.)
        - Languages, Projects, and Additional Sections: Use mixed content format
+       - CRITICAL: For 'additional_sections', translate the section name (key) to the TARGET LANGUAGE.
 
        MIXED CONTENT FORMAT:
        Each section (languages, projects, additional_sections) should be structured

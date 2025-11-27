@@ -146,6 +146,7 @@ DEVELOPER_MODE=false                        # Default: false (see Developer Mode
 ENABLE_REPORTS=true                         # Default: true (enable/disable report generator agent)
 ENABLE_FACT_CHECK=true                      # Default: true (enable/disable fact checker agent)
 INCLUDE_SUMMARY=true                        # Default: true (include/exclude summary section in output)
+DEFAULT_RESUME_LANGUAGE="Auto"              # Default: Auto (Auto, English, Spanish)
 SHOW_API_CONFIG_UI=true                     # Default: true (show/hide API key input in UI)
 ```
 
@@ -279,6 +280,7 @@ docker run -p 8501:8501 \
 - `ENABLE_REPORTS` - *(Optional)* Set to `false` to disable the report generator agent (default: `true`)
 - `ENABLE_FACT_CHECK` - *(Optional)* Set to `false` to disable the fact checker agent (default: `true`)
 - `INCLUDE_SUMMARY` - *(Optional)* Set to `false` to exclude the summary section from output (default: `true`)
+- `DEFAULT_RESUME_LANGUAGE` - *(Optional)* Default language for resume generation. Options: "Auto", "English", "Spanish" (default: `Auto`)
 - `SHOW_API_CONFIG_UI` - *(Optional)* Set to `false` to hide the API Key input in the UI (default: `true`)
 
 **On Windows (PowerShell)**, use `${PWD}` instead of `$(pwd)`:

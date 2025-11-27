@@ -80,7 +80,8 @@ def _run_production_mode(
     job_description: str,
     target_words: int,
     enable_report: bool,
-    enable_fact_check: bool
+    enable_fact_check: bool,
+    language: str
 ) -> None:
     """Execute crew in production mode with actual data.
 
@@ -101,7 +102,8 @@ def _run_production_mode(
     inputs = {
         'TARGET_RESUME_WORDS': str(target_words),
         'RESUME_PDF_PATH': str(resume_path),
-        'JOB_DESCRIPTION_PATH': str(job_desc_path)
+        'JOB_DESCRIPTION_PATH': str(job_desc_path),
+        'TARGET_LANGUAGE': language
     }
 
     setup_clean_storage()
@@ -126,7 +128,8 @@ def run_crew_with_params(
     target_words: int,
     enable_report: bool = True,
     enable_fact_check: bool = True,
-    include_summary: bool = True
+    include_summary: bool = True,
+    language: str = "Auto"
 ) -> CrewResult:
     """Run the Resume Refiner Crew with custom parameters.
 
@@ -141,6 +144,7 @@ def run_crew_with_params(
         enable_report: Whether to generate a report.
         enable_fact_check: Whether to run fact checker.
         include_summary: Whether to include summary section in output.
+        language: Target language for the resume ("Auto", "English", "Spanish").
 
     Returns:
         CrewResult dictionary with execution results.
@@ -161,7 +165,8 @@ def run_crew_with_params(
                     job_description,
                     target_words,
                     enable_report,
-                    enable_fact_check
+                    enable_fact_check,
+                    language
                 )
 
             pdf_path = generate_resume_pdf_from_json(include_summary=include_summary)
