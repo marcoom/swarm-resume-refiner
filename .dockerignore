@@ -20,16 +20,13 @@ __pycache__/
 # System specific data (will be mounted as volumes or created at runtime)
 knowledge/
 knowledge/*
+!knowledge/resume_best_practices.txt
 output/
 output/*
 
 # Environment files (contains secrets)
 .env
 .env.local
-
-# Lock files
-uv.lock
-*.lock
 
 # IDE and editor files
 .vscode/
